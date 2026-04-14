@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NestMate AI — Live Almost Free in London</title>
+<link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+
+<div class="container">
+  <nav>
+    <div class="logo">NestMate AI</div>
+    <div class="badge">Beta</div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">
+      <span class="dot"></span>
+      Built for International Graduates in London
+    </div>
+    <h1>Live in London<br>for <span>almost free</span></h1>
+    <p class="hero-sub">
+      An AI assistant that walks you through every step of renting a 3-bed house,
+      filling spare rooms, and cutting your rent from £2,400 to under £600/month.
+    </p>
+    <div class="savings-row">
+      <div class="savings-pill">
+        <span class="num">£1,800</span>
+        <span class="label">Avg. saved per month</span>
+      </div>
+      <div class="savings-pill">
+        <span class="num">48hrs</span>
+        <span class="label">To find room tenants</span>
+      </div>
+      <div class="savings-pill">
+        <span class="num">100%</span>
+        <span class="label">Legal on Graduate Visa</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="chat-wrapper">
+    <div class="chat-header">
+      <div class="ai-avatar">🤖</div>
+      <div>
+        <div class="chat-header-text">NestMate AI</div>
+        <div class="chat-header-sub">Your London housing guide</div>
+      </div>
+      <div class="online-dot"></div>
+    </div>
+
+    <div class="chat-messages" id="chatBox">
+      <div class="msg ai">
+        <div class="msg-avatar ai">🤖</div>
+        <div class="msg-bubble">
+          Hey! 👋 I'm NestMate. I help international graduates in London
+          <strong>rent a 3-bed house</strong>, fill the spare rooms, and live for almost nothing.<br><br>
+          Tell me — what's your monthly budget for rent?
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK PROMPTS -->
+    <div class="quick-prompts">
+      <div class="qp" onclick="quickPrompt('📄 Generate landlord letter')">📄 Landlord letter</div>
+      <div class="qp" onclick="quickPrompt('🔍 Find tenants for my spare rooms')">🔍 Find tenants</div>
+      <div class="qp" onclick="quickPrompt('📋 Give me a lodger contract')">📋 Lodger contract</div>
+      <div class="qp" onclick="quickPrompt('💰 Calculate my savings')">💰 Calculate savings</div>
+      <div class="qp" onclick="quickPrompt('🏘️ Best areas in London')">🏘️ Best areas</div>
+    </div>
+
+    <div class="chat-input-area">
+      <input
+        type="text"
+        class="chat-input"
+        id="userInput"
+        placeholder="Ask anything about renting in London..."
+        onkeydown="if(event.key==='Enter') sendMsg()"
+      >
+      <button class="send-btn" onclick="sendMsg()">→</button>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="section-title">What NestMate AI Does</div>
+  <p class="section-sub">Every step of the process — explained in plain English</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🧠</div>
+      <div class="feature-title">Budget & Area Calculator</div>
+      <div class="feature-desc">Enter your budget. AI instantly shows which London zones match and your expected monthly savings.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📄</div>
+      <div class="feature-title">Landlord Permission Letter</div>
+      <div class="feature-desc">AI generates a professional letter to send to your landlord asking for subletting permission.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📋</div>
+      <div class="feature-title">Lodger Contract Generator</div>
+      <div class="feature-desc">Creates a legally compliant UK lodger agreement in 60 seconds. Protects you and your tenants.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">👥</div>
+      <div class="feature-title">Tenant Finder Listings</div>
+      <div class="feature-desc">AI writes your SpareRoom.com listing. Optimised to attract international graduates.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔍</div>
+      <div class="feature-title">Tenant Screening Guide</div>
+      <div class="feature-desc">Step-by-step checklist — what questions to ask, documents to check, red flags to avoid.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💬</div>
+      <div class="feature-title">24/7 AI Chat Support</div>
+      <div class="feature-desc">Any question, any time. Answered instantly. Works in multiple languages.</div>
+    </div>
+  </div>
+
+  <footer>
+    NestMate AI — Helping international graduates live smarter in London
+  </footer>
+</div>
+
+<script src="src/responses.js"></script>
+<script src="src/chat.js"></script>
+</body>
+</html>
