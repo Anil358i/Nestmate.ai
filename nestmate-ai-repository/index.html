@@ -3,11 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NestMate AI — Live Almost Free in London</title>
+  <title>NestMate AI - Live Almost Free in London</title>
   <link rel="stylesheet" href="src/style.css">
 </head>
 <body>
   <div class="page-shell">
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
     <header class="site-header">
       <div class="nav-inner">
         <div class="logo">NestMate AI</div>
@@ -16,7 +19,14 @@
           <a href="#features">Features</a>
           <a href="#demo">Demo</a>
         </nav>
-        <div class="nav-cta">Beta</div>
+        <button
+          class="nav-cta option-trigger"
+          type="button"
+          data-popup-title="NestMate Beta"
+          data-popup-body="NestMate helps renters budget smarter, approach landlords clearly, and fill rooms faster with guided tools."
+        >
+          Beta
+        </button>
       </div>
     </header>
 
@@ -32,23 +42,59 @@
         </p>
         <div class="hero-actions">
           <a href="#demo" class="btn btn-dark">Try NestMate</a>
-          <a href="#features" class="btn btn-light">Explore features</a>
+          <button
+            class="btn btn-light option-trigger"
+            type="button"
+            data-popup-title="Explore NestMate"
+            data-popup-body="NestMate guides you through budgeting, landlord approval, room listing creation, tenant screening, and move-in preparation."
+          >
+            Explore features
+          </button>
         </div>
 
         <div class="hero-panel">
+          <div class="floating-card floating-top option-trigger" data-popup-title="Savings insight" data-popup-body="Estimate how much your real monthly rent can drop when you fill spare rooms in the right property.">
+            <span class="floating-tag">Savings</span>
+            <strong>Cut your monthly cost</strong>
+            <p>See the numbers before you commit.</p>
+          </div>
+
           <div class="hero-device">
             <div class="device-topbar">
               <span></span>
               <span></span>
               <span></span>
             </div>
-            <div class="device-content">
-              <div class="device-badge">AI Housing Assistant</div>
-              <h2>Save up to £1,800 a month</h2>
-              <p>
-                Rent a 3-bed house, fill the spare rooms, and get step-by-step help with letters, listings, contracts and screening.
-              </p>
+            <div class="device-layout">
+              <div class="device-content">
+                <div class="device-badge">AI Housing Assistant</div>
+                <h2>Save up to £1,800 a month</h2>
+                <p>
+                  Rent a 3-bed house, fill the spare rooms, and get step-by-step help with letters, listings, contracts and screening.
+                </p>
+              </div>
+
+              <div class="device-stack">
+                <button class="mini-card option-trigger" type="button" data-popup-title="Budget calculator" data-popup-body="See which London areas match your budget and how much you could save each month.">
+                  <span>Budget</span>
+                  <strong>Area and savings calculator</strong>
+                </button>
+                <button class="mini-card option-trigger" type="button" data-popup-title="Landlord letter" data-popup-body="Generate a cleaner, more professional landlord request letter in seconds.">
+                  <span>Letter</span>
+                  <strong>Landlord approval support</strong>
+                </button>
+                <button class="mini-card option-trigger" type="button" data-popup-title="Tenant finder" data-popup-body="Write stronger listings and screen applicants faster with NestMate guidance.">
+                  <span>Rooms</span>
+                  <strong>Fill spare rooms faster</strong>
+                </button>
+              </div>
             </div>
+          </div>
+
+          <div class="floating-card floating-bottom option-trigger" data-popup-title="Workflow" data-popup-body="Move from planning to approval to tenant matching with one calm guided workflow.">
+            <span class="floating-tag">Workflow</span>
+            <strong>Step-by-step setup</strong>
+            <p>From planning to approved tenants.</p>
           </div>
         </div>
       </section>
@@ -78,23 +124,23 @@
         </div>
 
         <div class="story-grid">
-          <article class="story-card large">
+          <button class="story-card large option-trigger" type="button" data-popup-title="Find the right 3-bed setup" data-popup-body="Use your budget to understand which areas work, what rent range makes sense, and where your savings can come from.">
             <div class="story-label">Step 1</div>
             <h3>Find the right 3-bed setup</h3>
             <p>Use your budget to understand which areas work, what rent range makes sense, and where your savings can come from.</p>
-          </article>
+          </button>
 
-          <article class="story-card">
+          <button class="story-card option-trigger" type="button" data-popup-title="Get landlord approval" data-popup-body="Generate a professional permission letter and approach the conversation with clarity and confidence.">
             <div class="story-label">Step 2</div>
             <h3>Get landlord approval</h3>
             <p>Generate a professional permission letter and approach the conversation with clarity and confidence.</p>
-          </article>
+          </button>
 
-          <article class="story-card">
+          <button class="story-card option-trigger" type="button" data-popup-title="Fill spare rooms fast" data-popup-body="Create better listings, screen applicants, and reduce the time it takes to find suitable housemates.">
             <div class="story-label">Step 3</div>
             <h3>Fill spare rooms fast</h3>
             <p>Create better listings, screen applicants, and reduce the time it takes to find suitable housemates.</p>
-          </article>
+          </button>
         </div>
       </section>
 
@@ -108,12 +154,13 @@
         </div>
         <div class="feature-visual">
           <div class="glass-card">
-            <div class="glass-line strong">Budget and area calculator</div>
-            <div class="glass-line">Landlord permission letter</div>
-            <div class="glass-line">Lodger contract generator</div>
-            <div class="glass-line">Tenant finder listing assistant</div>
-            <div class="glass-line">Screening checklist</div>
-            <div class="glass-line">24/7 AI guidance</div>
+            <div class="glass-orb"></div>
+            <button class="glass-line strong option-trigger" type="button" data-popup-title="Budget and area calculator" data-popup-body="See where your budget works in London and how much you could save each month.">Budget and area calculator</button>
+            <button class="glass-line option-trigger" type="button" data-popup-title="Landlord permission letter" data-popup-body="Create a cleaner, more professional way to ask for permission.">Landlord permission letter</button>
+            <button class="glass-line option-trigger" type="button" data-popup-title="Lodger contract generator" data-popup-body="Get a clearer starting point for agreements with the people living in your home.">Lodger contract generator</button>
+            <button class="glass-line option-trigger" type="button" data-popup-title="Tenant finder listing assistant" data-popup-body="Write stronger room listings that attract better-fit tenants faster.">Tenant finder listing assistant</button>
+            <button class="glass-line option-trigger" type="button" data-popup-title="Screening checklist" data-popup-body="Know what to ask, what to check, and how to reduce avoidable problems.">Screening checklist</button>
+            <button class="glass-line option-trigger" type="button" data-popup-title="24/7 AI guidance" data-popup-body="Get immediate guidance whenever you need help with the next step.">24/7 AI guidance</button>
           </div>
         </div>
       </section>
@@ -178,30 +225,30 @@
         </div>
 
         <div class="features-grid">
-          <div class="feature-card">
+          <button class="feature-card option-trigger" type="button" data-popup-title="Budget and area calculator" data-popup-body="See where your budget works in London and how much you could save each month.">
             <div class="feature-title">Budget and area calculator</div>
             <div class="feature-desc">See where your budget works in London and how much you could save each month.</div>
-          </div>
-          <div class="feature-card">
+          </button>
+          <button class="feature-card option-trigger" type="button" data-popup-title="Landlord permission letter" data-popup-body="Create a cleaner, more professional way to ask for permission.">
             <div class="feature-title">Landlord permission letter</div>
             <div class="feature-desc">Create a cleaner, more professional way to ask for permission.</div>
-          </div>
-          <div class="feature-card">
+          </button>
+          <button class="feature-card option-trigger" type="button" data-popup-title="Lodger contract generator" data-popup-body="Get a clearer starting point for agreements with the people living in your home.">
             <div class="feature-title">Lodger contract generator</div>
             <div class="feature-desc">Get a clearer starting point for agreements with the people living in your home.</div>
-          </div>
-          <div class="feature-card">
+          </button>
+          <button class="feature-card option-trigger" type="button" data-popup-title="Tenant finder listings" data-popup-body="Write stronger room listings that attract better-fit tenants faster.">
             <div class="feature-title">Tenant finder listings</div>
             <div class="feature-desc">Write stronger room listings that attract better-fit tenants faster.</div>
-          </div>
-          <div class="feature-card">
+          </button>
+          <button class="feature-card option-trigger" type="button" data-popup-title="Tenant screening guide" data-popup-body="Know what to ask, what to check, and how to reduce avoidable problems.">
             <div class="feature-title">Tenant screening guide</div>
             <div class="feature-desc">Know what to ask, what to check, and how to reduce avoidable problems.</div>
-          </div>
-          <div class="feature-card">
+          </button>
+          <button class="feature-card option-trigger" type="button" data-popup-title="Always-on AI support" data-popup-body="Get immediate guidance whenever you need help with the next step.">
             <div class="feature-title">Always-on AI support</div>
             <div class="feature-desc">Get immediate guidance whenever you need help with the next step.</div>
-          </div>
+          </button>
         </div>
       </section>
     </main>
@@ -210,6 +257,15 @@
       <p>NestMate AI</p>
       <p>Helping international graduates live smarter in London.</p>
     </footer>
+  </div>
+
+  <div class="popup-backdrop" id="popupBackdrop" hidden>
+    <div class="popup-card">
+      <button class="popup-close" id="popupClose" type="button">Close</button>
+      <div class="popup-kicker">NestMate Detail</div>
+      <h3 id="popupTitle">Title</h3>
+      <p id="popupBody">Description</p>
+    </div>
   </div>
 
   <script src="src/responses.js"></script>
