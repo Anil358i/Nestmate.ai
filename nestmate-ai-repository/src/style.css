@@ -704,6 +704,9 @@ main {
   background: rgba(17, 17, 17, 0.28);
   backdrop-filter: blur(14px);
 }
+.popup-backdrop[hidden] {
+  display: none !important;
+}
 
 .popup-card {
   width: min(540px, 100%);
