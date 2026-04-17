@@ -80,6 +80,17 @@ document.addEventListener('DOMContentLoaded', () => {
   backdrop.addEventListener('click', (e) => {
     if (e.target === backdrop) closePopup();
   });
+  // Fade-in animation trigger
+const fadeElements = document.querySelectorAll(".fade-in");
+
+window.addEventListener("scroll", () => {
+  fadeElements.forEach((el) => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight - 50) {
+      el.classList.add("visible");
+    }
+  });
+});
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !backdrop.hidden) closePopup();
