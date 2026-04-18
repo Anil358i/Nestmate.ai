@@ -964,7 +964,15 @@ main {
   transform: translateY(40px);
   transition: all 0.8s ease;
 }
+/* other styles above */
 
+.cinema-image {
+  transition: transform 0.5s ease;
+}
+
+.cinema-image:hover {
+  transform: scale(1.05);
+}
 .fade-in.visible {
   opacity: 1;
   transform: translateY(0);
