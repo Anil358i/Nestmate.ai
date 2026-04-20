@@ -977,37 +977,38 @@ main {
   opacity: 1;
   transform: translateY(0);
 }
-/* --- BIG SCROLL-SYNC SLIDER --- */
-.scroll-section {
-  height: 300vh; /* Increase this to make the scroll feel longer/slower */
-  position: relative;
-  background: transparent;
+/* --- NATURAL TOUCH SLIDER --- */
+.touch-slider-container {
+  width: 100%;
+  overflow-x: auto; /* Allows natural finger/mouse swiping */
+  overflow-y: hidden;
+  padding: 20px 0;
+  cursor: grab;
+  /* Hides scrollbar for a clean look */
+  scrollbar-width: none; 
 }
 
-.sticky-wrapper {
-  position: sticky;
-  top: 0;
-  height: 100vh;
+.touch-slider-container::-webkit-scrollbar {
+  display: none;
+}
+
+.touch-track {
   display: flex;
-  align-items: center;
-  overflow: hidden;
+  gap: 20px;
+  padding: 0 5vw;
+  width: max-content;
 }
 
-.scroll-track {
-  display: flex;
-  gap: 40px;
-  padding: 0 10vw;
-  /* This is controlled by the JS below */
-  will-change: transform;
-}
-
-.scroll-track img {
-  /* This makes images occupy 70% of the screen height */
-  height: 70vh; 
+.touch-track img {
+  height: 65vh; /* Big size, occupies most of the screen */
   width: auto;
-  min-width: 60vw; 
+  min-width: 80vw; /* Each image fills most of the width */
   object-fit: cover;
-  border-radius: 40px;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.12);
-  transition: transform 0.3s ease-out;
+  border-radius: 32px;
+  box-shadow: var(--shadow);
+  pointer-events: none; /* Prevents dragging the actual image file */
+}
+
+.touch-slider-container:active {
+  cursor: grabbing;
 }
