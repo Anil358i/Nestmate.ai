@@ -977,27 +977,35 @@ main {
   opacity: 1;
   transform: translateY(0);
 }
-/* --- SIMPLE SLIDER STYLES --- */
+/* --- UPDATED LARGE SCREEN SLIDER --- */
 .top-motion-slider {
   width: 100%;
   overflow: hidden;
-  padding: 20px 0;
-  background: white; /* Ensures visibility */
+  padding: 40px 0;
+  background: white; 
 }
 
 .slider-track {
   display: flex;
-  width: 1860px; /* (310px total width per image * 6 images) */
-  animation: scrollMotion 15s linear infinite;
+  /* width: max-content allows the track to be as wide as the large images */
+  width: max-content; 
+  animation: scrollMotion 30s linear infinite;
 }
 
 .slider-track img {
-  width: 300px;
-  height: 200px;
-  margin-right: 10px;
-  border-radius: 12px;
+  /* This makes the image height exactly 50% of the screen height */
+  height: 50vh; 
+  /* width: auto ensures the room photos don't look squashed or stretched */
+  width: auto; 
+  margin-right: 20px;
+  border-radius: 24px;
   object-fit: cover;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+/* Pause on hover so people can look at the rooms */
+.slider-track:hover {
+  animation-play-state: paused;
 }
 
 @keyframes scrollMotion {
@@ -1005,7 +1013,7 @@ main {
     transform: translateX(0); 
   }
   100% { 
-    /* This moves the track left by exactly 3 images (930px) */
-    transform: translateX(-930px); 
+    /* This moves exactly half the track (the first 3 images) */
+    transform: translateX(-50%); 
   }
 }
