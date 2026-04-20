@@ -91,24 +91,29 @@ window.addEventListener("scroll", () => {
     }
   });
 });
-window.addEventListener('scroll', () => {
-  const track = document.querySelector('.scroll-track');
-  const section = document.querySelector('.scroll-section');
-  
-  if (track && section) {
-    const sectionTop = section.offsetTop;
-    const sectionHeight = section.offsetHeight;
-    const scrollY = window.scrollY;
-    
-    // Calculate how far we have scrolled through the 300vh section
-    let percentage = (scrollY - sectionTop) / (sectionHeight - window.innerHeight);
-    percentage = Math.max(0, Math.min(1, percentage)); // Keep between 0 and 1
-    
-    // Move the track left by up to 70% of its width
-    track.style.transform = `translateX(-${percentage * 70}%)`;
-  }
-});
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !backdrop.hidden) closePopup();
+const slider = document.querySelector('.touch-slider-container');
+let isDown = false;
+let startX;
+let scrollLeft;
+
+if (slider) {
+  slider.addEventListener('mousedown', (e) => {
+    isDown = true;
+    slider.classList.add('active');
+    startX = e.pageX - slider.offsetLeft;
+    scrollLeft = slider.scrollLeft;
   });
-});
+  slider.addEventListener('mouseleave', () => {
+    isDown = false;
+  });
+  slider.addEventListener('mouseup', () => {
+    isDown = false;
+  });
+  slider.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - slider.offsetLeft;
+    const walk = (x - startX) * 2; // Scroll speed
+    slider.scrollLeft = scrollLeft - walk;
+  });
+}
