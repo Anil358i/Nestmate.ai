@@ -91,7 +91,23 @@ window.addEventListener("scroll", () => {
     }
   });
 });
-
+window.addEventListener('scroll', () => {
+  const track = document.querySelector('.scroll-track');
+  const section = document.querySelector('.scroll-section');
+  
+  if (track && section) {
+    const sectionTop = section.offsetTop;
+    const sectionHeight = section.offsetHeight;
+    const scrollY = window.scrollY;
+    
+    // Calculate how far we have scrolled through the 300vh section
+    let percentage = (scrollY - sectionTop) / (sectionHeight - window.innerHeight);
+    percentage = Math.max(0, Math.min(1, percentage)); // Keep between 0 and 1
+    
+    // Move the track left by up to 70% of its width
+    track.style.transform = `translateX(-${percentage * 70}%)`;
+  }
+});
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !backdrop.hidden) closePopup();
   });
