@@ -977,3 +977,31 @@ main {
   opacity: 1;
   transform: translateY(0);
 }
+/* --- SIMPLE SLIDER STYLES --- */
+.top-motion-slider {
+  width: 100%;
+  overflow: hidden;
+  padding: 20px 0;
+  background: white; /* Ensures visibility */
+}
+
+.slider-track {
+  display: flex;
+  width: 1860px; /* (310px total width per image * 6 images) */
+  animation: scrollMotion 15s linear infinite;
+}
+
+.slider-track img {
+  width: 300px;
+  height: 200px;
+  margin-right: 10px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+@keyframes scrollMotion {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-930px); } /* Moves exactly 3 images (310 * 3) */
+}
+
