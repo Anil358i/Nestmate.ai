@@ -977,43 +977,37 @@ main {
   opacity: 1;
   transform: translateY(0);
 }
-/* --- NATURAL FLOATING SLIDER --- */
-.top-motion-slider {
-  width: 100%;
-  overflow: hidden;
-  /* Removed white background and changed padding to 0 */
-  background: transparent; 
-  padding: 0;
-  margin-top: 10px; /* Slight gap from header */
+/* --- BIG SCROLL-SYNC SLIDER --- */
+.scroll-section {
+  height: 300vh; /* Increase this to make the scroll feel longer/slower */
+  position: relative;
+  background: transparent;
 }
 
-.slider-track {
+.sticky-wrapper {
+  position: sticky;
+  top: 0;
+  height: 100vh;
   display: flex;
-  width: max-content; 
-  animation: scrollMotion 30s linear infinite;
+  align-items: center;
+  overflow: hidden;
 }
 
-.slider-track img {
-  height: 50vh; 
-  width: auto; 
-  margin-right: 15px; /* Tighter gap for a more natural look */
-  border-radius: 24px;
+.scroll-track {
+  display: flex;
+  gap: 40px;
+  padding: 0 10vw;
+  /* This is controlled by the JS below */
+  will-change: transform;
+}
+
+.scroll-track img {
+  /* This makes images occupy 70% of the screen height */
+  height: 70vh; 
+  width: auto;
+  min-width: 60vw; 
   object-fit: cover;
-  /* Softer shadow so it doesn't look "pasted" */
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08); 
-}
-
-/* Pause on hover so users can see the details */
-.slider-track:hover {
-  animation-play-state: paused;
-}
-
-@keyframes scrollMotion {
-  0% { 
-    transform: translateX(0); 
-  }
-  100% { 
-    /* Loops perfectly by moving exactly half the track */
-    transform: translateX(-50%); 
-  }
+  border-radius: 40px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+  transition: transform 0.3s ease-out;
 }
