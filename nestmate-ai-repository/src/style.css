@@ -1001,7 +1001,11 @@ main {
 }
 
 @keyframes scrollMotion {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-930px); } /* Moves exactly 3 images (310 * 3) */
+  0% { 
+    transform: translateX(0); 
+  }
+  100% { 
+    /* This moves the track left by exactly 3 images (930px) */
+    transform: translateX(-930px); 
+  }
 }
-
