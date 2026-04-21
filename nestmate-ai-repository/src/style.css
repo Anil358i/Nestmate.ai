@@ -80,6 +80,7 @@ main,
   z-index: 1;
 }
 
+/* ---- HEADER ---- */
 .site-header {
   position: sticky;
   top: 0;
@@ -127,15 +128,53 @@ main,
   box-shadow: 0 12px 26px rgba(0, 0, 0, 0.14);
 }
 
+/* ---- SLIDER (SMALLER) ---- */
+.touch-slider-container {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin: 0;
+  padding: 16px 0 8px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  position: relative;
+  z-index: 1;
+}
+
+.touch-slider-container::-webkit-scrollbar {
+  display: none;
+}
+
+.touch-track {
+  display: flex;
+  gap: 12px;
+  padding: 0 20px;
+  width: max-content;
+}
+
+/* KEY FIX: much smaller images so content below is visible */
+.touch-track img {
+  height: 220px;
+  width: auto;
+  min-width: 320px;
+  max-width: 420px;
+  object-fit: cover;
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  flex-shrink: 0;
+}
+
+/* ---- MAIN ---- */
 main {
   max-width: var(--max-width);
   margin: 0 auto;
   padding: 0 24px 80px;
 }
 
+/* ---- HERO ---- */
 .hero-section {
   text-align: center;
-  padding: 88px 0 48px;
+  padding: 48px 0 40px; /* reduced from 88px */
 }
 
 .eyebrow,
@@ -209,6 +248,7 @@ main {
   border: 1px solid rgba(17, 17, 17, 0.08);
 }
 
+/* ---- HERO PANEL ---- */
 .hero-panel {
   margin-top: 56px;
   display: flex;
@@ -223,8 +263,7 @@ main {
   min-height: 460px;
   border-radius: 40px;
   padding: 22px;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(239, 239, 243, 0.92));
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(239, 239, 243, 0.92));
   box-shadow: var(--shadow);
   border: 1px solid rgba(255, 255, 255, 0.6);
   position: relative;
@@ -375,6 +414,7 @@ main {
   50% { transform: translateY(-12px); }
 }
 
+/* ---- STATS ---- */
 .stats-section {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -403,6 +443,7 @@ main {
   line-height: 1.5;
 }
 
+/* ---- SECTIONS ---- */
 .story-section,
 .demo-section,
 .features-section {
@@ -429,6 +470,7 @@ main {
   line-height: 1.7;
 }
 
+/* ---- STORY GRID ---- */
 .story-grid {
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr;
@@ -470,6 +512,7 @@ main {
   line-height: 1.7;
 }
 
+/* ---- FEATURE SPOTLIGHT ---- */
 .feature-spotlight {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -539,6 +582,7 @@ main {
   font-weight: 600;
 }
 
+/* ---- CHAT ---- */
 .chat-wrapper {
   max-width: 860px;
   margin: 0 auto;
@@ -656,6 +700,7 @@ main {
   cursor: pointer;
 }
 
+/* ---- CINEMA ---- */
 .feature-cinema {
   display: grid;
   grid-template-columns: 0.82fr 1.18fr;
@@ -732,6 +777,11 @@ main {
   transform-origin: center;
   animation: cinemaDrift 14s ease-in-out infinite alternate;
   will-change: transform;
+  transition: transform 0.5s ease;
+}
+
+.cinema-image:hover {
+  transform: scale(1.05);
 }
 
 .cinema-float {
@@ -773,17 +823,12 @@ main {
 }
 
 @keyframes cinemaDrift {
-  0% {
-    transform: scale(1.06) translate3d(0, 0, 0);
-  }
-  50% {
-    transform: scale(1.1) translate3d(-10px, -8px, 0);
-  }
-  100% {
-    transform: scale(1.08) translate3d(8px, 6px, 0);
-  }
+  0% { transform: scale(1.06) translate3d(0, 0, 0); }
+  50% { transform: scale(1.1) translate3d(-10px, -8px, 0); }
+  100% { transform: scale(1.08) translate3d(8px, 6px, 0); }
 }
 
+/* ---- FEATURES GRID ---- */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -812,6 +857,7 @@ main {
   line-height: 1.7;
 }
 
+/* ---- FOOTER ---- */
 .site-footer {
   padding: 40px 24px 56px;
   text-align: center;
@@ -823,6 +869,7 @@ main {
   margin: 6px 0;
 }
 
+/* ---- POPUP ---- */
 .popup-backdrop {
   position: fixed;
   inset: 0;
@@ -870,16 +917,23 @@ main {
 }
 
 @keyframes popupIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+/* ---- FADE IN ---- */
+.fade-in {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---- RESPONSIVE ---- */
 @media (max-width: 980px) {
   .stats-section,
   .story-grid,
@@ -902,7 +956,7 @@ main {
   }
 
   .hero-section {
-    padding-top: 56px;
+    padding-top: 40px;
   }
 
   .hero-device {
@@ -929,6 +983,11 @@ main {
 
   .hero-title {
     font-size: 3rem;
+  }
+
+  .touch-track img {
+    height: 160px;
+    min-width: 240px;
   }
 
   .hero-copy,
@@ -958,52 +1017,4 @@ main {
   .popup-card {
     border-radius: 24px;
   }
-}
-.fade-in {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: all 0.8s ease;
-}
-/* other styles above */
-
-.cinema-image {
-  transition: transform 0.5s ease;
-}
-
-.cinema-image:hover {
-  transform: scale(1.05);
-}
-.fade-in.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-/* --- RESET SLIDER --- */
-.touch-slider-container {
-  width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  margin: 10px 0; /* Tiny margin to keep it tight */
-  padding: 0;
-  scrollbar-width: none; 
-  -ms-overflow-style: none;
-}
-
-.touch-slider-container::-webkit-scrollbar {
-  display: none;
-}
-
-.touch-track {
-  display: flex;
-  gap: 12px; /* Close the gaps between images */
-  padding: 0 20px;
-  width: max-content;
-}
-
-.touch-track img {
-  height: 60vh; /* Big, but leaves room for text below */
-  width: auto;
-  min-width: 85vw; /* Fills most of the screen width */
-  object-fit: cover;
-  border-radius: 24px;
-  box-shadow: var(--shadow);
 }
