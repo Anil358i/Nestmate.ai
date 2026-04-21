@@ -65,6 +65,7 @@ function closePopup() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Popup triggers
   const triggers = document.querySelectorAll('.option-trigger');
   const close = document.getElementById('popupClose');
   const backdrop = document.getElementById('popupBackdrop');
@@ -80,40 +81,40 @@ document.addEventListener('DOMContentLoaded', () => {
   backdrop.addEventListener('click', (e) => {
     if (e.target === backdrop) closePopup();
   });
-  // Fade-in animation trigger
-const fadeElements = document.querySelectorAll(".fade-in");
 
-window.addEventListener("scroll", () => {
-  fadeElements.forEach((el) => {
-    const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight - 50) {
-      el.classList.add("visible");
-    }
-  });
+  // Fade-in on scroll
+  const fadeElements = document.querySelectorAll('.fade-in');
+  const checkFade = () => {
+    fadeElements.forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight - 50) {
+        el.classList.add('visible');
+      }
+    });
+  };
+  window.addEventListener('scroll', checkFade);
+  checkFade(); // run on load too so above-fold elements show
+
+  // Drag-to-scroll slider
+  const slider = document.querySelector('.touch-slider-container');
+  let isDown = false;
+  let startX;
+  let scrollLeft;
+
+  if (slider) {
+    slider.addEventListener('mousedown', (e) => {
+      isDown = true;
+      startX = e.pageX - slider.offsetLeft;
+      scrollLeft = slider.scrollLeft;
+    });
+    slider.addEventListener('mouseleave', () => { isDown = false; });
+    slider.addEventListener('mouseup', () => { isDown = false; });
+    slider.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - slider.offsetLeft;
+      const walk = (x - startX) * 2;
+      slider.scrollLeft = scrollLeft - walk;
+    });
+  }
 });
-const slider = document.querySelector('.touch-slider-container');
-let isDown = false;
-let startX;
-let scrollLeft;
-
-if (slider) {
-  slider.addEventListener('mousedown', (e) => {
-    isDown = true;
-    slider.classList.add('active');
-    startX = e.pageX - slider.offsetLeft;
-    scrollLeft = slider.scrollLeft;
-  });
-  slider.addEventListener('mouseleave', () => {
-    isDown = false;
-  });
-  slider.addEventListener('mouseup', () => {
-    isDown = false;
-  });
-  slider.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - slider.offsetLeft;
-    const walk = (x - startX) * 2; // Scroll speed
-    slider.scrollLeft = scrollLeft - walk;
-  });
-}
