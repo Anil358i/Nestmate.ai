@@ -118,3 +118,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+/* ── PROPERTY CAROUSEL LOGIC ── */
+const perLabels = { day: '/ day', week: '/ week', month: '/ month' };
+
+function setDuration(duration, btn) {
+    // 1. Update Buttons
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // 2. Update Prices
+    document.querySelectorAll('.prop-price').forEach(el => {
+        const newPrice = el.dataset[duration];
+        el.querySelector('strong').textContent = newPrice;
+        el.querySelector('.per').textContent = perLabels[duration];
+    });
+}
+
+function scrollCarousel(direction) {
+    const track = document.getElementById('carouselTrack');
+    const scrollAmount = 320; // Card width + gap
+    track.scrollBy({
+        left: direction * scrollAmount,
+        behavior: 'smooth'
+    });
+}
