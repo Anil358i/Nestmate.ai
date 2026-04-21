@@ -1,50 +1,280 @@
-// =============================================
-// responses.js — AI Chat Responses
-// ADD NEW RESPONSES HERE when you want to
-// update what the bot says
-// =============================================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NestMate AI - Live Almost Free in London</title>
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+  <div class="page-shell">
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
 
-const RESPONSES = {
+    <header class="site-header">
+      <div class="nav-inner">
+        <div class="logo">NestMate AI</div>
+        <nav class="nav-links">
+          <a href="#how-it-works">How it works</a>
+          <a href="#features">Features</a>
+          <a href="#demo">Demo</a>
+        </nav>
+        <button
+          class="nav-cta option-trigger"
+          type="button"
+          data-popup-title="NestMate Beta"
+          data-popup-body="NestMate helps renters budget smarter, approach landlords clearly, and fill rooms faster with guided tools."
+        >
+          Beta
+        </button>
+      </div>
+    </header>
 
-  // --- Budget questions ---
-  "budget": `Great! Tell me your monthly budget and I'll calculate exactly how much you could save. 💰\n\nFor example, if your budget is £800/month:\n🏠 Rent 3-bed house: ~£2,300/mo\n🛏️ Rent 2 spare rooms at £900 each\n✅ <strong>Your actual cost: £500/mo</strong>`,
+    <!-- SLIDER -->
+    <div class="touch-slider-container">
+      <div class="touch-track">
+        <img src="./assets/London_Housing1.webp" alt="Room 1">
+        <img src="./assets/London_Housing2.jpeg" alt="Room 2">
+        <img src="./assets/London_Housing3.jpg" alt="Room 3">
+      </div>
+    </div>
 
-  // --- Landlord letter ---
-  "landlord letter": `Here's your landlord permission letter — copy and send it:\n\n📄 <strong>"Dear [Landlord Name],\n\nI am writing to formally request permission to sub-let the spare bedrooms at [your address] to lodgers.\n\nI will remain the primary tenant responsible for all rent, bills and property matters. I will provide full details of any prospective lodger upon your request.\n\nThank you for your consideration.\n\n[Your name]"</strong>\n\nWant me to fill in your specific details?`,
+    <main>
+      <section class="hero-section fade-in">
+        <div class="eyebrow">Built for international graduates in London</div>
+        <h1 class="hero-title fade-in">
+          Live in London
+          <span>for almost free.</span>
+        </h1>
+        <p class="hero-copy fade-in">
+          NestMate helps you rent smarter, fill spare rooms faster, and reduce your monthly housing cost with a guided AI assistant built for London renters.
+        </p>
+        <div class="hero-actions fade-in">
+          <a href="#demo" class="btn btn-dark">Try NestMate</a>
+          <button
+            class="btn btn-light option-trigger"
+            type="button"
+            data-popup-title="Explore NestMate"
+            data-popup-body="NestMate guides you through budgeting, landlord approval, room listing creation, tenant screening, and move-in preparation."
+          >
+            Explore features
+          </button>
+        </div>
 
-  // --- Find tenants ---
-  "find tenants": `I'll write your room listing now! 🏠\n\n<strong>SpareRoom listing title:</strong>\n"Bright double room in 3-bed house — Zone 3, bills included, international friendly"\n\n<strong>Best places to post:</strong>\n📱 SpareRoom.com\n👥 Facebook: "London Rooms for International Students"\n💬 Your university WhatsApp groups\n\nWant the full listing text written out?`,
+        <div class="hero-panel">
+          <div class="floating-card floating-top option-trigger" data-popup-title="Savings insight" data-popup-body="Estimate how much your real monthly rent can drop when you fill spare rooms in the right property.">
+            <span class="floating-tag">Savings</span>
+            <strong>Cut your monthly cost</strong>
+            <p>See the numbers before you commit.</p>
+          </div>
 
-  // --- Lodger contract ---
-  "lodger contract": `✅ <strong>UK Lodger Agreement — Key Points:</strong>\n\nYour contract should include:\n• Monthly rent amount and payment date\n• 28 days notice period (standard UK)\n• Shared spaces and house rules\n• Deposit amount (usually 1 month)\n• What happens if they want to leave early\n\nThis is legally compliant with UK 2026 housing law.\nFree template: <strong>gov.uk/private-renting</strong>\n\nWant me to walk you through filling it in?`,
+          <div class="hero-device">
+            <div class="device-topbar">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="device-layout">
+              <div class="device-content">
+                <div class="device-badge">AI Housing Assistant</div>
+                <h2>Save up to £1,800 a month</h2>
+                <p>Rent a 3-bed house, fill the spare rooms, and get step-by-step help with letters, listings, contracts and screening.</p>
+              </div>
+              <div class="device-stack">
+                <button class="mini-card option-trigger" type="button" data-popup-title="Budget calculator" data-popup-body="See which London areas match your budget and how much you could save each month.">
+                  <span>Budget</span>
+                  <strong>Area and savings calculator</strong>
+                </button>
+                <button class="mini-card option-trigger" type="button" data-popup-title="Landlord letter" data-popup-body="Generate a cleaner, more professional landlord request letter in seconds.">
+                  <span>Letter</span>
+                  <strong>Landlord approval support</strong>
+                </button>
+                <button class="mini-card option-trigger" type="button" data-popup-title="Tenant finder" data-popup-body="Write stronger listings and screen applicants faster with NestMate guidance.">
+                  <span>Rooms</span>
+                  <strong>Fill spare rooms faster</strong>
+                </button>
+              </div>
+            </div>
+          </div>
 
-  // --- Calculate savings ---
-  "savings": `Let's calculate! Tell me:\n1️⃣ Which area of London?\n2️⃣ Your monthly budget?\n\nI'll show you the exact numbers — how much rent, how much you collect from rooms, and your final cost. 📊`,
+          <div class="floating-card floating-bottom option-trigger" data-popup-title="Workflow" data-popup-body="Move from planning to approval to tenant matching with one calm guided workflow.">
+            <span class="floating-tag">Workflow</span>
+            <strong>Step-by-step setup</strong>
+            <p>From planning to approved tenants.</p>
+          </div>
+        </div>
+      </section>
 
-  // --- Best areas ---
-  "areas": `🏘️ <strong>Best Areas for Your Strategy:</strong>\n\n🥇 <span class="highlight">Stratford E15</span> — ~£2,100/mo, Jubilee + Elizabeth Line\n🥈 <span class="highlight">Walthamstow E17</span> — ~£2,000/mo, trendy & young crowd\n🥉 <span class="highlight">Lewisham SE13</span> — ~£1,900/mo, cheapest option\n🏅 <span class="highlight">Ilford IG1</span> — ~£1,800/mo, large Asian community\n🏅 <span class="highlight">Woolwich SE18</span> — ~£1,850/mo, Elizabeth Line\n\nAll have strong international graduate communities. Which area interests you?`,
+      <section class="stats-section">
+        <div class="stat-card">
+          <div class="stat-number">£1,800</div>
+          <div class="stat-label">Average monthly savings</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">48 hrs</div>
+          <div class="stat-label">To find room tenants</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Guidance designed for Graduate Visa users</div>
+        </div>
+      </section>
 
-  // --- Visa questions ---
-  "visa": `✅ <strong>100% legal on Graduate Visa!</strong>\n\nYou can:\n✅ Sign a rental contract as main tenant\n✅ Take in lodgers and charge them rent\n✅ Run this as a small business\n\nThe only things you cannot do:\n❌ Work as a professional sportsperson\n❌ Claim government housing benefits\n\nYou're completely fine. Want to know the next step?`,
+      <section class="story-section fade-in" id="how-it-works">
+        <div class="section-intro">
+          <div class="section-kicker">How it works</div>
+          <h2 class="section-title">A simpler path to affordable living in London.</h2>
+          <p class="section-copy">NestMate turns a complicated rental strategy into a clean, guided flow you can actually follow.</p>
+        </div>
+        <div class="story-grid">
+          <button class="story-card large option-trigger" type="button" data-popup-title="Find the right 3-bed setup" data-popup-body="Use your budget to understand which areas work, what rent range makes sense, and where your savings can come from.">
+            <div class="story-label">Step 1</div>
+            <h3>Find the right 3-bed setup</h3>
+            <p>Use your budget to understand which areas work, what rent range makes sense, and where your savings can come from.</p>
+          </button>
+          <button class="story-card option-trigger" type="button" data-popup-title="Get landlord approval" data-popup-body="Generate a professional permission letter and approach the conversation with clarity and confidence.">
+            <div class="story-label">Step 2</div>
+            <h3>Get landlord approval</h3>
+            <p>Generate a professional permission letter and approach the conversation with clarity and confidence.</p>
+          </button>
+          <button class="story-card option-trigger" type="button" data-popup-title="Fill spare rooms fast" data-popup-body="Create better listings, screen applicants, and reduce the time it takes to find suitable housemates.">
+            <div class="story-label">Step 3</div>
+            <h3>Fill spare rooms fast</h3>
+            <p>Create better listings, screen applicants, and reduce the time it takes to find suitable housemates.</p>
+          </button>
+        </div>
+      </section>
 
-  // --- Default fallback ---
-  "default": `That's a great question! To give you the best answer, could you tell me:\n\n1️⃣ What's your monthly rent budget?\n2️⃣ Which area of London are you looking at?\n\nWith those two details I can give you exact numbers and next steps. 🏠`
+      <section class="feature-spotlight">
+        <div class="feature-copy">
+          <div class="section-kicker">Designed around real renter problems</div>
+          <h2>Everything you need, in one calm workflow.</h2>
+          <p>From budgeting and landlord letters to lodger contracts and tenant screening, NestMate keeps each step simple and guided.</p>
+        </div>
+        <div class="feature-visual">
+          <div class="glass-card">
+            <div class="glass-orb"></div>
+            <button class="glass-line strong option-trigger" type="button" data-popup-title="Budget and area calculator" data-popup-body="See where your budget works in London and how much you could save each month.">Budget and area calculator</button>
+            <button class="glass-line option-trigger" type="button" data-popup-title="Landlord permission letter" data-popup-body="Create a cleaner, more professional way to ask for permission.">Landlord permission letter</button>
+            <button class="glass-line option-trigger" type="button" data-popup-title="Lodger contract generator" data-popup-body="Get a clearer starting point for agreements with the people living in your home.">Lodger contract generator</button>
+            <button class="glass-line option-trigger" type="button" data-popup-title="Tenant finder listing assistant" data-popup-body="Write stronger room listings that attract better-fit tenants faster.">Tenant finder listing assistant</button>
+            <button class="glass-line option-trigger" type="button" data-popup-title="Screening checklist" data-popup-body="Know what to ask, what to check, and how to reduce avoidable problems.">Screening checklist</button>
+            <button class="glass-line option-trigger" type="button" data-popup-title="24/7 AI guidance" data-popup-body="Get immediate guidance whenever you need help with the next step.">24/7 AI guidance</button>
+          </div>
+        </div>
+      </section>
 
-};
+      <section class="demo-section" id="demo">
+        <div class="section-intro">
+          <div class="section-kicker">Product demo</div>
+          <h2 class="section-title">Ask NestMate anything.</h2>
+          <p class="section-copy">Try the assistant for budgeting, listings, landlord communication and more.</p>
+        </div>
+        <div class="chat-wrapper">
+          <div class="chat-header">
+            <div class="chat-identity">
+              <div class="ai-avatar">N</div>
+              <div>
+                <div class="chat-header-text">NestMate AI</div>
+                <div class="chat-header-sub">Your London housing guide</div>
+              </div>
+            </div>
+            <div class="online-dot"></div>
+          </div>
+          <div class="chat-messages" id="chatBox">
+            <div class="msg ai">
+              <div class="msg-avatar ai">N</div>
+              <div class="msg-bubble">
+                Hey! I'm NestMate. I can help you rent a 3-bed house, fill spare rooms, and reduce your housing cost.<br><br>
+                What's your monthly rent budget?
+              </div>
+            </div>
+          </div>
+          <div class="quick-prompts">
+            <div class="qp" onclick="quickPrompt('Generate landlord letter')">Landlord letter</div>
+            <div class="qp" onclick="quickPrompt('Find tenants for my spare rooms')">Find tenants</div>
+            <div class="qp" onclick="quickPrompt('Give me a lodger contract')">Lodger contract</div>
+            <div class="qp" onclick="quickPrompt('Calculate my savings')">Calculate savings</div>
+            <div class="qp" onclick="quickPrompt('Best areas in London')">Best areas</div>
+          </div>
+          <div class="chat-input-area">
+            <input type="text" class="chat-input" id="userInput" placeholder="Ask anything about renting in London..." onkeydown="if(event.key==='Enter') sendMsg()">
+            <button class="send-btn" onclick="sendMsg()">Send</button>
+          </div>
+        </div>
+      </section>
 
-// =============================================
-// DO NOT EDIT BELOW THIS LINE
-// (unless you know JavaScript)
-// =============================================
+      <section class="features-section" id="features">
+        <div class="section-intro">
+          <div class="section-kicker">Features</div>
+          <h2 class="section-title">Tools that make the process easier.</h2>
+        </div>
 
-function getResponse(userText) {
-  const text = userText.toLowerCase();
-  if (text.includes("budget") || text.includes("money") || text.includes("afford")) return RESPONSES["budget"];
-  if (text.includes("landlord") || text.includes("letter") || text.includes("permission")) return RESPONSES["landlord letter"];
-  if (text.includes("tenant") || text.includes("find") || text.includes("spareroom")) return RESPONSES["find tenants"];
-  if (text.includes("contract") || text.includes("agreement") || text.includes("lodger")) return RESPONSES["lodger contract"];
-  if (text.includes("saving") || text.includes("calculat") || text.includes("how much")) return RESPONSES["savings"];
-  if (text.includes("area") || text.includes("zone") || text.includes("where") || text.includes("stratford") || text.includes("walthamstow")) return RESPONSES["areas"];
-  if (text.includes("visa") || text.includes("legal") || text.includes("graduate") || text.includes("allowed")) return RESPONSES["visa"];
-  return RESPONSES["default"];
-}
+        <div class="feature-cinema">
+          <div class="cinema-copy">
+            <div class="section-kicker">Visual story</div>
+            <h3 class="cinema-title">A sharper view of the NestMate lifestyle.</h3>
+            <p class="cinema-text">NestMate helps renters find better homes, reduce monthly costs, and manage the whole process with more clarity and confidence.</p>
+          </div>
+          <div class="cinema-stage">
+            <div class="cinema-glow"></div>
+            <div class="cinema-float cinema-float-top">
+              <span>London</span>
+              <strong>Premium housing visual</strong>
+            </div>
+            <div class="cinema-frame">
+              <img src="./assets/pexels-cmoon-5179531.jpg" alt="Modern London rental home interior for NestMate housing platform" class="cinema-image">
+            </div>
+            <div class="cinema-float cinema-float-bottom">
+              <span>NestMate</span>
+              <strong>Guided rental journey</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="features-grid">
+          <button class="feature-card option-trigger" type="button" data-popup-title="Budget and area calculator" data-popup-body="See where your budget works in London and how much you could save each month.">
+            <div class="feature-title">Budget and area calculator</div>
+            <div class="feature-desc">See where your budget works in London and how much you could save each month.</div>
+          </button>
+          <button class="feature-card option-trigger" type="button" data-popup-title="Landlord permission letter" data-popup-body="Create a cleaner, more professional way to ask for permission.">
+            <div class="feature-title">Landlord permission letter</div>
+            <div class="feature-desc">Create a cleaner, more professional way to ask for permission.</div>
+          </button>
+          <button class="feature-card option-trigger" type="button" data-popup-title="Lodger contract generator" data-popup-body="Get a clearer starting point for agreements with the people living in your home.">
+            <div class="feature-title">Lodger contract generator</div>
+            <div class="feature-desc">Get a clearer starting point for agreements with the people living in your home.</div>
+          </button>
+          <button class="feature-card option-trigger" type="button" data-popup-title="Tenant finder listings" data-popup-body="Write stronger room listings that attract better-fit tenants faster.">
+            <div class="feature-title">Tenant finder listings</div>
+            <div class="feature-desc">Write stronger room listings that attract better-fit tenants faster.</div>
+          </button>
+          <button class="feature-card option-trigger" type="button" data-popup-title="Tenant screening guide" data-popup-body="Know what to ask, what to check, and how to reduce avoidable problems.">
+            <div class="feature-title">Tenant screening guide</div>
+            <div class="feature-desc">Know what to ask, what to check, and how to reduce avoidable problems.</div>
+          </button>
+          <button class="feature-card option-trigger" type="button" data-popup-title="Always-on AI support" data-popup-body="Get immediate guidance whenever you need help with the next step.">
+            <div class="feature-title">Always-on AI support</div>
+            <div class="feature-desc">Get immediate guidance whenever you need help with the next step.</div>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>NestMate AI</p>
+      <p>Helping international graduates live smarter in London.</p>
+    </footer>
+  </div>
+
+  <div class="popup-backdrop" id="popupBackdrop" hidden>
+    <div class="popup-card">
+      <button class="popup-close" id="popupClose" type="button">Close</button>
+      <div class="popup-kicker">NestMate Detail</div>
+      <h3 id="popupTitle">Title</h3>
+      <p id="popupBody">Description</p>
+    </div>
+  </div>
+
+  <script src="./src/responses.js"></script>
+  <script src="./src/chat.js"></script>
+</body>
+</html>
