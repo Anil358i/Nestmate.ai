@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+  // The 'Guard' check
+  if (sessionStorage.getItem('access_granted') !== 'true') {
+    window.location.href = 'login.html'; // Send them away to the login page
+  }
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NestMate AI - Live Almost Free in London</title>
