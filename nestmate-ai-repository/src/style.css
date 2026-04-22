@@ -328,18 +328,6 @@ main {
   font-size: 1rem;
   line-height: 1.5;
 }
-
-.floating-top {
-  top: 0;
-  right: 30px;
-}
-
-.floating-bottom {
-  bottom: 0;
-  left: 30px;
-  animation-delay: -2s;
-}
-
 .floating-tag {
   display: inline-block;
   margin-bottom: 10px;
@@ -360,12 +348,6 @@ main {
   color: var(--muted);
   line-height: 1.5;
 }
-
-@keyframes floatY {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
-}
-
 /* ---- STATS ---- */
 .stats-section {
   display: grid;
