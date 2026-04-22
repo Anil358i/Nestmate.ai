@@ -1052,3 +1052,26 @@ main {
   background: #000;
   color: #fff;
 }
+/* This makes the carousel stretch to the screen edges */
+.full-bleed {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  overflow: hidden;
+}
+
+/* This lets the cards scroll from left to right without stopping in the center */
+.carousel-track {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  
+  /* This aligns the first card with your text, 
+     but lets the rest of the cards touch the edge */
+  padding: 0 calc((100vw - 1200px) / 2 + 24px) !important; 
+}
