@@ -44,7 +44,6 @@ function sendMsg() {
 
     setTimeout(() => {
         removeTyping();
-        // Fallback if responses.js isn't loaded
         const reply = (typeof getResponse === 'function') ? getResponse(text) : "I'm looking into that for you!";
         appendMsg('ai', reply);
     }, 900);
@@ -70,17 +69,6 @@ function closePopup() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Popup Listeners
-    const triggers = document.querySelectorAll('.option-trigger');
-    const close = document.getElementById('popupClose');
-    if (close) close.addEventListener('click', closePopup);
-
-    triggers.forEach((item) => {
-        item.addEventListener('click', () => {
-            openPopup(item.dataset.popupTitle || "NestMate Info", item.dataset.popupBody || "More details coming soon.");
-        });
-    });
-
     // Fade-in on scroll effect
     const fadeElements = document.querySelectorAll('.fade-in');
     const checkFade = () => {
@@ -141,10 +129,9 @@ function calculatePrices(weeklyRent) {
     };
 }
 
-// Handles Image Upload via Cloudinary then Data Save via Firebase
 async function uploadProperty() {
     if (!window.dbTools || !window.db) {
-        alert("Services are still initializing. Please wait 2 seconds.");
+        alert("Initializing... please wait.");
         return;
     }
 
@@ -153,27 +140,24 @@ async function uploadProperty() {
     const status = document.getElementById('uploadStatus');
 
     if(!name || !weeklyPrice) {
-        alert("Please enter both the property name and weekly rent.");
+        alert("Please enter Name and Price.");
         return;
     }
 
-    // Opens Cloudinary Widget
     cloudinary.openUploadWidget({
         cloudName: "dhmsg8euy", 
         uploadPreset: "nestmate_unsigned", 
         sources: ['local', 'url', 'camera'],
         multiple: false,
         cropping: true,
-        defaultSource: "local",
         styles: { palette: { window: "#FFFFFF", sourceBg: "#F4F4F5" } }
     }, async (error, result) => {
         if (!error && result && result.event === "success") {
             const imageUrl = result.info.secure_url;
-            status.textContent = "Photo secured! Finalizing listing...";
+            status.textContent = "Photo secured! Saving...";
 
             try {
                 const { collection, addDoc } = window.dbTools;
-
                 await addDoc(collection(window.db, "properties"), {
                     name: name,
                     priceWeek: parseInt(weeklyPrice),
@@ -182,26 +166,17 @@ async function uploadProperty() {
                 });
 
                 status.textContent = "Success! Listing is live.";
-                
-                // Reset inputs
                 document.getElementById('propName').value = '';
                 document.getElementById('propPriceWeek').value = '';
-                
-                // Auto-scroll to top of listings to see the new one
                 window.scrollTo({ top: document.getElementById('explore').offsetTop - 100, behavior: 'smooth' });
-
             } catch (firebaseError) {
                 console.error("Firebase Error:", firebaseError);
-                status.textContent = "Database error. Please check your connection.";
+                status.textContent = "Database error.";
             }
-        } else if (error) {
-            console.error("Cloudinary Error:", error);
-            status.textContent = "Upload cancelled or failed.";
         }
     });
 }
 
-// Global exposure for HTML buttons
 window.uploadProperty = uploadProperty;
 
 function loadProperties() {
@@ -211,18 +186,16 @@ function loadProperties() {
     const { query, collection, orderBy, onSnapshot } = window.dbTools;
     const q = query(collection(window.db, "properties"), orderBy("createdAt", "desc"));
 
-    // Real-time listener: Website updates automatically when data changes
     onSnapshot(q, (snapshot) => {
         track.innerHTML = ''; 
         snapshot.forEach((doc) => {
             const data = doc.data();
             const prices = calculatePrices(data.priceWeek);
-            
             const card = document.createElement('div');
             card.className = 'prop-card';
             card.innerHTML = `
                 <div class="prop-image-wrap">
-                    <img src="${data.imageUrl}" alt="Property Image" loading="lazy">
+                    <img src="${data.imageUrl}" alt="Property" loading="lazy">
                 </div>
                 <div class="prop-info">
                     <div class="prop-name">${data.name}</div>
@@ -240,34 +213,30 @@ function loadProperties() {
 }
 
 window.loadProperties = loadProperties;
+
 /* ── USER MENU LOGIC ── */
 
 function toggleUserMenu() {
     const menu = document.getElementById('userDropdown');
+    if (!menu) return;
     const isVisible = menu.style.display === 'block';
     menu.style.display = isVisible ? 'none' : 'block';
 }
 
-// Close the menu if user clicks anywhere else on the screen
 window.addEventListener('click', (e) => {
     const menu = document.getElementById('userDropdown');
     const trigger = document.querySelector('.profile-trigger');
-    if (menu && !trigger.contains(e.target) && !menu.contains(e.target)) {
+    if (menu && trigger && !trigger.contains(e.target) && !menu.contains(e.target)) {
         menu.style.display = 'none';
     }
 });
 
 async function handleLogout() {
-    try {
-        // We use Firebase Auth to sign out
-        const { getAuth, signOut } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
-        const auth = getAuth();
-        await signOut(auth);
-        
-        // This will automatically trigger the 'onAuthStateChanged' 
-        // in your HTML and redirect the user to login.html
-    } catch (error) {
-        console.error("Logout Error:", error);
-        alert("Could not log out. Try again.");
+    if (window.handleLogout) {
+        await window.handleLogout();
     }
 }
+
+// Global exposure for HTML
+window.toggleUserMenu = toggleUserMenu;
+window.handleLogout = handleLogout;
