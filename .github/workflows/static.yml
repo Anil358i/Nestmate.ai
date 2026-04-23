@@ -36,7 +36,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # This must be '.' if index.html is in your root folder
-          path: '.' 
+          path: './nestmate-ai-repository' 
 
       - name: Deploy to GitHub Pages
         id: deployment
