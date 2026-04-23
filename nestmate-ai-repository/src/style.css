@@ -197,6 +197,9 @@ main {
 }
 
 /* ---- FIX: FADE IN ANIMATION ---- */
+/* ---- UPDATED FADE-IN LOGIC ---- */
+
+/* 1. Base state: Hidden and slightly shifted down */
 .fade-in {
   opacity: 0;
   transform: translateY(30px);
@@ -204,17 +207,41 @@ main {
   will-change: opacity, transform;
 }
 
+/* 2. Active state: When the 'visible' class is added via JS */
 .fade-in.visible {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+/* 3. EMERGENCY BYPASS (The Fix for the Blank Screen):
+   If the Page Shell becomes visible, we force the content 
+   to show up even if the scroll-trigger hasn't fired yet. */
+.page-shell[style*="visibility: visible"] .fade-in {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* If JS fails, show items anyway after 2 seconds */
-@media (prefers-reduced-motion: no-preference) {
-  .page-shell:not(.js-loaded) .fade-in {
+/* 4. Accessibility fallback:
+   If the user has 'Reduce Motion' turned on in their OS, 
+   we show everything immediately to avoid animation errors. */
+@media (prefers-reduced-motion: reduce) {
+  .fade-in {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
     transition: none;
+  }
+}
+
+/* 5. Ambient Background Fix:
+   Ensures the blurry background circles don't cover your text. */
+.ambient {
+  z-index: -1; /* Moves them behind the content */
+}
+
+.page-shell {
+  position: relative;
+  z-index: 1;
+  background: var(--bg);
   }
 }
 
