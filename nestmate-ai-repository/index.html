@@ -1,96 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NestMate AI - Live Almost Free in London</title>
-  
-  <link rel="stylesheet" href="src/style.css">
-
-  <style>
-    /* Security Guard Styles */
-    #auth-overlay {
-      position: fixed;
-      inset: 0;
-      background: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 10000;
-      font-family: -apple-system, sans-serif;
-    }
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid #111;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 15px;
-    }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    
-    /* Initially hide content for the guard */
-    .page-shell { visibility: hidden; }
-
-    /* Ensure the carousel has a height and spacing */
-    .carousel-outer {
-      overflow-x: auto;
-      padding: 20px 0;
-      scrollbar-width: none;
-    }
-    .carousel-track {
-      display: flex;
-      gap: 24px;
-      padding: 0 5%;
-    }
-  </style>
-
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { 
-      getFirestore, collection, addDoc, onSnapshot, query, orderBy 
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { 
-      getStorage, ref, uploadBytes, getDownloadURL 
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  // ... (keep your other imports)
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDTxyr3zJGsyfmdztvfFz8aw9XSyPCNeQM",
-      authDomain: "nestmate-ai.firebaseapp.com",
-      projectId: "nestmate-ai",
-      storageBucket: "nestmate-ai.firebasestorage.app",
-      messagingSenderId: "7053398074",
-      appId: "1:7053398074:web:13dc18b49402d95107a503"
-    };
+  const firebaseConfig = { /* Your Config */ };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
+  console.log("Firebase initialized. Checking auth state...");
 
-    // BRIDGE: Share Firebase tools with chat.js
-    window.db = db;
-    window.storage = storage;
-    window.dbTools = { collection, addDoc, onSnapshot, query, orderBy, ref, uploadBytes, getDownloadURL };
+  onAuthStateChanged(auth, (user) => {
+    const overlay = document.getElementById('auth-overlay');
+    const shell = document.querySelector('.page-shell');
 
-    // GUARD: Check login status
-    onAuthStateChanged(auth, (user) => {
-      if (user && user.emailVerified) {
-        document.getElementById('auth-overlay').style.display = 'none';
-        document.querySelector('.page-shell').style.visibility = 'visible';
-        
-        // Trigger property loading from chat.js
-        if (typeof window.loadProperties === "function") {
-          window.loadProperties();
-        }
-      } else {
-        window.location.href = "login.html";
+    if (user && user.emailVerified) {
+      console.log("User verified! Unlocking site...");
+      
+      // 1. Remove the loading screen
+      if(overlay) overlay.style.display = 'none';
+      
+      // 2. Make the site visible
+      if(shell) {
+        shell.style.visibility = 'visible';
+        shell.style.opacity = '1';
       }
-    });
-  </script>
+
+      // 3. Load the data
+      if (typeof window.loadProperties === "function") {
+        window.loadProperties();
+      }
+    } else {
+      console.log("No verified user found. Redirecting to login...");
+      window.location.href = "login.html";
+    }
+  });
+</script>
 </head>
 <body>
 
