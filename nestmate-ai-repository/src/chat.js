@@ -49,27 +49,33 @@ function sendMsg() {
     }, 900);
 }
 
-/* ── POPUP & INTERACTION ── */
+/* ── POPUP & MODAL LOGIC (UPDATED FOR CENTERING) ── */
 
 function openPopup(title, body) {
     const backdrop = document.getElementById('popupBackdrop');
-    if (!backdrop) return;
-    document.getElementById('popupTitle').textContent = title;
-    document.getElementById('popupBody').textContent = body;
-    backdrop.hidden = false;
-    document.body.style.overflow = 'hidden';
+    const titleEl = document.getElementById('popupTitle');
+    const bodyEl = document.getElementById('popupBody');
+
+    if (!backdrop || !titleEl || !bodyEl) return;
+
+    titleEl.textContent = title;
+    bodyEl.textContent = body;
+    
+    // Using flex to ensure the CSS centering works perfectly
+    backdrop.style.display = 'flex';
+    document.body.style.overflow = 'hidden'; 
 }
 
 function closePopup() {
     const backdrop = document.getElementById('popupBackdrop');
     if (backdrop) {
-        backdrop.hidden = true;
-        document.body.style.overflow = '';
+        backdrop.style.display = 'none';
+        document.body.style.overflow = ''; 
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Fade-in on scroll effect
+    // Scroll animations
     const fadeElements = document.querySelectorAll('.fade-in');
     const checkFade = () => {
         fadeElements.forEach((el) => {
@@ -82,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', checkFade);
     checkFade();
 
-    // Mouse Drag Scrolling for Carousel
+    // Carousel dragging
     const slider = document.querySelector('.carousel-outer'); 
     let isDown = false, startX, scrollLeft;
     if (slider) {
@@ -131,7 +137,7 @@ function calculatePrices(weeklyRent) {
 
 async function uploadProperty() {
     if (!window.dbTools || !window.db) {
-        alert("Initializing... please wait.");
+        alert("Services are still initializing. Please wait.");
         return;
     }
 
@@ -165,7 +171,7 @@ async function uploadProperty() {
                     createdAt: new Date()
                 });
 
-                status.textContent = "Success! Listing is live.";
+                status.textContent = "Success! Your listing is live.";
                 document.getElementById('propName').value = '';
                 document.getElementById('propPriceWeek').value = '';
                 window.scrollTo({ top: document.getElementById('explore').offsetTop - 100, behavior: 'smooth' });
@@ -176,8 +182,6 @@ async function uploadProperty() {
         }
     });
 }
-
-window.uploadProperty = uploadProperty;
 
 function loadProperties() {
     const track = document.getElementById('carouselTrack');
@@ -212,9 +216,7 @@ function loadProperties() {
     });
 }
 
-window.loadProperties = loadProperties;
-
-/* ── USER MENU LOGIC ── */
+/* ── USER MENU & AUTH LOGIC ── */
 
 function toggleUserMenu() {
     const menu = document.getElementById('userDropdown');
@@ -237,6 +239,10 @@ async function handleLogout() {
     }
 }
 
-// Global exposure for HTML
+// Global exposure
+window.uploadProperty = uploadProperty;
+window.loadProperties = loadProperties;
 window.toggleUserMenu = toggleUserMenu;
 window.handleLogout = handleLogout;
+window.openPopup = openPopup;
+window.closePopup = closePopup;
