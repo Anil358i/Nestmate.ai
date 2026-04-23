@@ -5,41 +5,76 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NestMate AI - Live Almost Free in London</title>
   <link rel="stylesheet" href="src/style.css">
+  
   <style>
-    #auth-loading { position:fixed; inset:0; background:#fff; display:flex; align-items:center; justify-content:center; z-index:9999; font-family:-apple-system,sans-serif; font-size:1rem; color:#555; }
-  </style>
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDTxyr3zJGsyfmdztvfFz8aw9XSyPCNeQM",
-    authDomain: "nestmate-ai.firebaseapp.com",
-    projectId: "nestmate-ai",
-    storageBucket: "nestmate-ai.firebasestorage.app",
-    messagingSenderId: "7053398074",
-    appId: "1:7053398074:web:13dc18b49402d95107a503"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  onAuthStateChanged(auth, (user) => {
-    if (!user || !user.emailVerified) {
-      window.location.replace("login.html");
-    } else {
-      document.getElementById('auth-loading').remove();
-      document.body.style.visibility = 'visible';
+    /* Improved Loading Overlay */
+    #auth-loading { 
+      position: fixed; 
+      inset: 0; 
+      background: #ffffff; 
+      display: flex; 
+      flex-direction: column;
+      align-items: center; 
+      justify-content: center; 
+      z-index: 9999; 
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
     }
-  });
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #111;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    body { visibility: hidden; }
+  </style>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDTxyr3zJGsyfmdztvfFz8aw9XSyPCNeQM",
+      authDomain: "nestmate-ai.firebaseapp.com",
+      projectId: "nestmate-ai",
+      storageBucket: "nestmate-ai.firebasestorage.app",
+      messagingSenderId: "7053398074",
+      appId: "1:7053398074:web:13dc18b49402d95107a503"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // SAFETY TIMEOUT: If Firebase takes longer than 5 seconds, redirect to login
+    const failSafe = setTimeout(() => {
+        console.log("Auth taking too long, redirecting...");
+        window.location.href = "login.html";
+    }, 5000);
+
+    onAuthStateChanged(auth, (user) => {
+      clearTimeout(failSafe); // Cancel the timeout if Firebase answers
+      
+      if (user && user.emailVerified) {
+        // User is logged in and verified
+        document.getElementById('auth-loading').style.display = 'none';
+        document.body.style.visibility = 'visible';
+      } else {
+        // Not logged in or not verified - send to login
+        window.location.href = "login.html";
+      }
+    });
   </script>
 </head>
-<body style="visibility:hidden">
-  <div id="auth-loading">Checking your account…</div>
-  <div class="page-shell">
-    <div class="ambient ambient-one"></div>
-    <div class="ambient ambient-two"></div>
+<body>
+  <div id="auth-loading">
+    <div class="spinner"></div>
+    <div>Verifying Session...</div>
+  </div>
 
+  <div class="page-shell">
     <header class="site-header">
       <div class="nav-inner">
         <div class="logo">NestMate AI</div>
@@ -48,368 +83,35 @@
           <a href="#features">Features</a>
           <a href="#demo">Demo</a>
         </nav>
-        <button
-          class="nav-cta option-trigger"
-          type="button"
-          data-popup-title="NestMate Beta"
-          data-popup-body="NestMate helps renters budget smarter, approach landlords clearly, and fill rooms faster with guided tools."
-        >
-          Beta
-        </button>
+        <button class="nav-cta option-trigger" type="button">Beta</button>
       </div>
     </header>
-<div class="hero-banner">
-  <img src="./assets/London_Housing1.webp.jpg" alt="London Housing">
-</div>
+
+    <div class="hero-banner">
+      <img src="./assets/London_Housing1.webp.jpg" alt="London Housing">
+    </div>
 
     <main>
       <section class="hero-section fade-in">
         <div class="eyebrow">Built for international graduates in London</div>
-        <h1 class="hero-title fade-in">
-          Live in London
-          <span>for almost free.</span>
-        </h1>
+        <h1 class="hero-title fade-in">Live in London <span>for almost free.</span></h1>
         <p class="hero-copy fade-in">
-          NestMate helps you rent smarter, fill spare rooms faster, and reduce your monthly housing cost with a guided AI assistant built for London renters.
+          NestMate helps you rent smarter, fill spare rooms faster, and reduce your monthly housing cost.
         </p>
         <div class="hero-actions fade-in">
           <a href="#demo" class="btn btn-dark">Try NestMate</a>
-          <button
-            class="btn btn-light option-trigger"
-            type="button"
-            data-popup-title="Explore NestMate"
-            data-popup-body="NestMate guides you through budgeting, landlord approval, room listing creation, tenant screening, and move-in preparation."
-          >
-            Explore features
-          </button>
-        </div>
-
-        <div class="hero-panel">
-          <div class="hero-device">
-            <div class="device-topbar">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-            <div class="device-layout">
-              <div class="device-content">
-                <div class="device-badge">AI Housing Assistant</div>
-                <h2>Save up to £1,800 a month</h2>
-                <p>
-                  Rent a 3-bed house, fill the spare rooms, and get step-by-step help with letters, listings, contracts and screening.
-                </p>
-              </div>
-
-              <div class="device-stack">
-                <button class="mini-card option-trigger" type="button" data-popup-title="Budget calculator" data-popup-body="See which London areas match your budget and how much you could save each month.">
-                  <span>Budget</span>
-                  <strong>Area and savings calculator</strong>
-                </button>
-                <button class="mini-card option-trigger" type="button" data-popup-title="Landlord letter" data-popup-body="Generate a cleaner, more professional landlord request letter in seconds.">
-                  <span>Letter</span>
-                  <strong>Landlord approval support</strong>
-                </button>
-                <button class="mini-card option-trigger" type="button" data-popup-title="Tenant finder" data-popup-body="Write stronger listings and screen applicants faster with NestMate guidance.">
-                  <span>Rooms</span>
-                  <strong>Fill spare rooms faster</strong>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="stats-section">
-        <div class="stat-card">
-          <div class="stat-number">£1,800</div>
-          <div class="stat-label">Average monthly savings</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">48 hrs</div>
-          <div class="stat-label">To find room tenants</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">100%</div>
-          <div class="stat-label">Guidance designed for Graduate Visa users</div>
-        </div>
-      </section>
-
-      <section class="story-section fade-in" id="how-it-works">
-        <div class="section-intro">
-          <div class="section-kicker">How it works</div>
-          <h2 class="section-title">A simpler path to affordable living in London.</h2>
-          <p class="section-copy">
-<div class="duration-toggle">
-        <div class="toggle-pill">
-          <button class="toggle-btn active" onclick="setDuration('day', this)">Per Day</button>
-          <button class="toggle-btn" onclick="setDuration('week', this)">Per Week</button>
-          <button class="toggle-btn" onclick="setDuration('month', this)">Per Month</button>
-        </div>
-      </div>
-
-      <div class="carousel-outer full-bleed">
-        <div class="carousel-track" id="carouselTrack">
-          <div class="prop-card">
-            <div class="prop-image-wrap">
-              <img src="assets/pexels-joaquin-carfagna-3131171-18111485.jpg" alt="Shoreditch">
-              <span class="prop-badge popular">Popular</span>
-            </div>
-            <div class="prop-info">
-              <div class="prop-name">Shoreditch Studio</div>
-              <div class="prop-location">East London</div>
-              <div class="prop-price" data-day="£85" data-week="£490" data-month="£1,650"><strong>£85</strong> <span class="per">/ day</span></div>
-              <div class="prop-actions">
-                <button class="prop-btn prop-btn-primary">Book now</button>
-                <button class="prop-btn prop-btn-secondary option-trigger" data-popup-title="Shoreditch" data-popup-body="High-spec studio.">Learn more</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="prop-card">
-            <div class="prop-image-wrap">
-              <img src="assets/London_Housing2.jpeg" alt="Brixton">
-              <span class="prop-badge available">Available</span>
-            </div>
-            <div class="prop-info">
-              <div class="prop-name">Brixton 3-Bed</div>
-              <div class="prop-location">South London</div>
-              <div class="prop-price" data-day="£120" data-week="£720" data-month="£2,400"><strong>£120</strong> <span class="per">/ day</span></div>
-              <div class="prop-actions">
-                <button class="prop-btn prop-btn-primary">Book now</button>
-                <button class="prop-btn prop-btn-secondary option-trigger" data-popup-title="Brixton" data-popup-body="Spacious group home.">Learn more</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="prop-card">
-            <div class="prop-image-wrap">
-              <img src="assets/London_Housing3.jpg" alt="Canary Wharf">
-              <span class="prop-badge popular">Popular</span>
-            </div>
-            <div class="prop-info">
-              <div class="prop-name">Canary Wharf Flat</div>
-              <div class="prop-location">East London</div>
-              <div class="prop-price" data-day="£105" data-week="£630" data-month="£2,100"><strong>£105</strong> <span class="per">/ day</span></div>
-              <div class="prop-actions">
-                <button class="prop-btn prop-btn-primary">Book now</button>
-                <button class="prop-btn prop-btn-secondary option-trigger" data-popup-title="Canary Wharf" data-popup-body="Modern views.">Learn more</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="prop-card">
-            <div class="prop-image-wrap">
-              <img src="assets/pexels-cmoon-5179531.jpg" alt="Notting Hill">
-              <span class="prop-badge available">Available</span>
-            </div>
-            <div class="prop-info">
-              <div class="prop-name">Notting Hill Home</div>
-              <div class="prop-location">West London</div>
-              <div class="prop-price" data-day="£160" data-week="£960" data-month="£3,200"><strong>£160</strong> <span class="per">/ day</span></div>
-              <div class="prop-actions">
-                <button class="prop-btn prop-btn-primary">Book now</button>
-                <button class="prop-btn prop-btn-secondary option-trigger" data-popup-title="Notting Hill" data-popup-body="Classic terrace.">Learn more</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="prop-card">
-            <div class="prop-image-wrap">
-              <img src="assets/London_Housing2.jpeg" alt="Greenwich">
-              <span class="prop-badge popular">Popular</span>
-            </div>
-            <div class="prop-info">
-              <div class="prop-name">Greenwich Riverside</div>
-              <div class="prop-location">South London</div>
-              <div class="prop-price" data-day="£115" data-week="£690" data-month="£2,300"><strong>£115</strong> <span class="per">/ day</span></div>
-              <div class="prop-actions">
-                <button class="prop-btn prop-btn-primary">Book now</button>
-                <button class="prop-btn prop-btn-secondary option-trigger" data-popup-title="Greenwich" data-popup-body="Near the park.">Learn more</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="carousel-nav">
-        <button class="nav-arrow" onclick="scrollCarousel(-1)">←</button>
-        <button class="nav-arrow" onclick="scrollCarousel(1)">→</button>
-      </div>
-        <div class="story-grid">
-          <button class="story-card large option-trigger" type="button" data-popup-title="Find the right 3-bed setup" data-popup-body="Use your budget to understand which areas work, what rent range makes sense, and where your savings can come from.">
-            <div class="story-label">Step 1</div>
-            <h3>Find the right 3-bed setup</h3>
-            <p>Use your budget to understand which areas work, what rent range makes sense, and where your savings can come from.</p>
-          </button>
-
-          <button class="story-card option-trigger" type="button" data-popup-title="Get landlord approval" data-popup-body="Generate a professional permission letter and approach the conversation with clarity and confidence.">
-            <div class="story-label">Step 2</div>
-            <h3>Get landlord approval</h3>
-            <p>Generate a professional permission letter and approach the conversation with clarity and confidence.</p>
-          </button>
-
-          <button class="story-card option-trigger" type="button" data-popup-title="Fill spare rooms fast" data-popup-body="Create better listings, screen applicants, and reduce the time it takes to find suitable housemates.">
-            <div class="story-label">Step 3</div>
-            <h3>Fill spare rooms fast</h3>
-            <p>Create better listings, screen applicants, and reduce the time it takes to find suitable housemates.</p>
-          </button>
-        </div>
-      </section>
-
-      <section class="feature-spotlight">
-        <div class="feature-copy">
-          <div class="section-kicker">Designed around real renter problems</div>
-          <h2>Everything you need, in one calm workflow.</h2>
-          <p>
-            From budgeting and landlord letters to lodger contracts and tenant screening, NestMate keeps each step simple and guided.
-          </p>
-        </div>
-        <div class="feature-visual">
-          <div class="glass-card">
-            <div class="glass-orb"></div>
-            <button class="glass-line strong option-trigger" type="button" data-popup-title="Budget and area calculator" data-popup-body="See where your budget works in London and how much you could save each month.">Budget and area calculator</button>
-            <button class="glass-line option-trigger" type="button" data-popup-title="Landlord permission letter" data-popup-body="Create a cleaner, more professional way to ask for permission.">Landlord permission letter</button>
-            <button class="glass-line option-trigger" type="button" data-popup-title="Lodger contract generator" data-popup-body="Get a clearer starting point for agreements with the people living in your home.">Lodger contract generator</button>
-            <button class="glass-line option-trigger" type="button" data-popup-title="Tenant finder listing assistant" data-popup-body="Write stronger room listings that attract better-fit tenants faster.">Tenant finder listing assistant</button>
-            <button class="glass-line option-trigger" type="button" data-popup-title="Screening checklist" data-popup-body="Know what to ask, what to check, and how to reduce avoidable problems.">Screening checklist</button>
-            <button class="glass-line option-trigger" type="button" data-popup-title="24/7 AI guidance" data-popup-body="Get immediate guidance whenever you need help with the next step.">24/7 AI guidance</button>
-          </div>
         </div>
       </section>
 
       <section class="demo-section" id="demo">
-        <div class="section-intro">
-          <div class="section-kicker">Product demo</div>
-          <h2 class="section-title">Ask NestMate anything.</h2>
-          <p class="section-copy">
-            Try the assistant for budgeting, listings, landlord communication and more.
-          </p>
-        </div>
-
         <div class="chat-wrapper">
-          <div class="chat-header">
-            <div class="chat-identity">
-              <div class="ai-avatar">N</div>
-              <div>
-                <div class="chat-header-text">NestMate AI</div>
-                <div class="chat-header-sub">Your London housing guide</div>
-              </div>
-            </div>
-            <div class="online-dot"></div>
           </div>
-
-          <div class="chat-messages" id="chatBox">
-            <div class="msg ai">
-              <div class="msg-avatar ai">N</div>
-              <div class="msg-bubble">
-                Hey! I'm NestMate. I can help you rent a 3-bed house, fill spare rooms, and reduce your housing cost.
-                <br><br>
-                What's your monthly rent budget?
-              </div>
-            </div>
-          </div>
-
-          <div class="quick-prompts">
-            <div class="qp" onclick="quickPrompt('Generate landlord letter')">Landlord letter</div>
-            <div class="qp" onclick="quickPrompt('Find tenants for my spare rooms')">Find tenants</div>
-            <div class="qp" onclick="quickPrompt('Give me a lodger contract')">Lodger contract</div>
-            <div class="qp" onclick="quickPrompt('Calculate my savings')">Calculate savings</div>
-            <div class="qp" onclick="quickPrompt('Best areas in London')">Best areas</div>
-          </div>
-
-          <div class="chat-input-area">
-            <input
-              type="text"
-              class="chat-input"
-              id="userInput"
-              placeholder="Ask anything about renting in London..."
-              onkeydown="if(event.key==='Enter') sendMsg()"
-            >
-            <button class="send-btn" onclick="sendMsg()">Send</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="features-section" id="features">
-        <div class="section-intro">
-          <div class="section-kicker">Features</div>
-          <h2 class="section-title">Tools that make the process easier.</h2>
-        </div>
-        <div class="feature-cinema">
-  <div class="cinema-copy">
-    <div class="section-kicker">Visual story</div>
-    <h3 class="cinema-title">A sharper view of the NestMate lifestyle.</h3>
-    <p class="cinema-text">
-      NestMate helps renters find better homes, reduce monthly costs, and manage the whole process with more clarity and confidence.
-    </p>
-  </div>
-
-  <div class="cinema-stage">
-    <div class="cinema-glow"></div>
-
-    <div class="cinema-float cinema-float-top">
-      <span>London</span>
-      <strong>Premium housing visual</strong>
-    </div>
-
-    <div class="cinema-frame">
-      <img
-        src="assets/pexels-cmoon-5179531.jpg"
-        alt="Modern London rental home interior for NestMate housing platform"
-        class="cinema-image"
-      >
-    </div>
-
-    <div class="cinema-float cinema-float-bottom">
-      <span>NestMate</span>
-      <strong>Guided rental journey</strong>
-    </div>
-  </div>
-</div>
-
-
-        <div class="features-grid">
-          <button class="feature-card option-trigger" type="button" data-popup-title="Budget and area calculator" data-popup-body="See where your budget works in London and how much you could save each month.">
-            <div class="feature-title">Budget and area calculator</div>
-            <div class="feature-desc">See where your budget works in London and how much you could save each month.</div>
-          </button>
-          <button class="feature-card option-trigger" type="button" data-popup-title="Landlord permission letter" data-popup-body="Create a cleaner, more professional way to ask for permission.">
-            <div class="feature-title">Landlord permission letter</div>
-            <div class="feature-desc">Create a cleaner, more professional way to ask for permission.</div>
-          </button>
-          <button class="feature-card option-trigger" type="button" data-popup-title="Lodger contract generator" data-popup-body="Get a clearer starting point for agreements with the people living in your home.">
-            <div class="feature-title">Lodger contract generator</div>
-            <div class="feature-desc">Get a clearer starting point for agreements with the people living in your home.</div>
-          </button>
-          <button class="feature-card option-trigger" type="button" data-popup-title="Tenant finder listings" data-popup-body="Write stronger room listings that attract better-fit tenants faster.">
-            <div class="feature-title">Tenant finder listings</div>
-            <div class="feature-desc">Write stronger room listings that attract better-fit tenants faster.</div>
-          </button>
-          <button class="feature-card option-trigger" type="button" data-popup-title="Tenant screening guide" data-popup-body="Know what to ask, what to check, and how to reduce avoidable problems.">
-            <div class="feature-title">Tenant screening guide</div>
-            <div class="feature-desc">Know what to ask, what to check, and how to reduce avoidable problems.</div>
-          </button>
-          <button class="feature-card option-trigger" type="button" data-popup-title="Always-on AI support" data-popup-body="Get immediate guidance whenever you need help with the next step.">
-            <div class="feature-title">Always-on AI support</div>
-            <div class="feature-desc">Get immediate guidance whenever you need help with the next step.</div>
-          </button>
-        </div>
       </section>
     </main>
 
     <footer class="site-footer">
-      <p>NestMate AI</p>
-      <p>Helping international graduates live smarter in London.</p>
+      <p>NestMate AI - Helping international graduates live smarter in London.</p>
     </footer>
-  </div>
-
-  <div class="popup-backdrop" id="popupBackdrop" hidden>
-    <div class="popup-card">
-      <button class="popup-close" id="popupClose" type="button">Close</button>
-      <div class="popup-kicker">NestMate Detail</div>
-      <h3 id="popupTitle">Title</h3>
-      <p id="popupBody">Description</p>
-    </div>
   </div>
 
   <script src="src/responses.js"></script>
