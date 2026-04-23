@@ -28,44 +28,68 @@
     </div>
 
     <script type="module">
-        // 1. Connect to Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // PASTE YOUR FIREBASE KEYS HERE
         const firebaseConfig = {
-  apiKey: "AIzaSyDTxyr3zJGsyfmdztvfFz8aw9XSyPCNeQM",
-  authDomain: "nestmate-ai.firebaseapp.com",
-  projectId: "nestmate-ai",
-  storageBucket: "nestmate-ai.firebasestorage.app",
-  messagingSenderId: "7053398074",
-  appId: "1:7053398074:web:13dc18b49402d95107a503"
+          apiKey: "AIzaSyDTxyr3zJGsyfmdztvfFz8aw9XSyPCNeQM",
+          authDomain: "nestmate-ai.firebaseapp.com",
+          projectId: "nestmate-ai",
+          storageBucket: "nestmate-ai.firebasestorage.app",
+          messagingSenderId: "7053398074",
+          appId: "1:7053398074:web:13dc18b49402d95107a503"
         };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // 2. Handle the Login button click
+        // If already logged in and verified, skip login page
+        onAuthStateChanged(auth, (user) => {
+          if (user && user.emailVerified) {
+            window.location.replace("index.html");
+          }
+        });
+
         document.getElementById('loginBtn').addEventListener('click', async () => {
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('password').value;
             const errorDiv = document.getElementById('error-msg');
+            const btn = document.getElementById('loginBtn');
+
+            if (!email || !pass) {
+              errorDiv.innerText = "Please enter your email and password.";
+              errorDiv.style.display = 'block';
+              return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = 'Logging in…';
+            errorDiv.style.display = 'none';
 
             try {
                 const userCredential = await signInWithEmailAndPassword(auth, email, pass);
                 const user = userCredential.user;
 
-                // 3. Check if they verified their email!
                 if (user.emailVerified) {
-                    sessionStorage.setItem('access_granted', 'true');
-                    window.location.href = 'index.html';
+                    window.location.replace('index.html');
                 } else {
-                    errorDiv.innerText = "Please verify your email first! Check your inbox.";
+                    errorDiv.innerText = "Please verify your email first. Check your inbox.";
                     errorDiv.style.display = 'block';
+                    btn.disabled = false;
+                    btn.innerText = 'Login';
                 }
             } catch (error) {
-                errorDiv.innerText = "Error: " + error.message;
+                const messages = {
+                  'auth/user-not-found': 'No account found with that email.',
+                  'auth/wrong-password': 'Incorrect password. Try again.',
+                  'auth/invalid-email': 'Please enter a valid email address.',
+                  'auth/too-many-requests': 'Too many attempts. Please wait a moment.',
+                  'auth/invalid-credential': 'Email or password is incorrect.'
+                };
+                errorDiv.innerText = messages[error.code] || error.message;
                 errorDiv.style.display = 'block';
+                btn.disabled = false;
+                btn.innerText = 'Login';
             }
         });
     </script>
