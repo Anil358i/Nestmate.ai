@@ -246,3 +246,76 @@ window.toggleUserMenu = toggleUserMenu;
 window.handleLogout = handleLogout;
 window.openPopup = openPopup;
 window.closePopup = closePopup;
+/* ── VIDEO MODAL LOGIC ── */
+
+function openVideoModal() {
+  const modal = document.getElementById('videoModal');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeVideoModal(e) {
+  if (e && e.target !== document.getElementById('videoModal') && 
+      !e.target.classList.contains('video-close-btn')) return;
+  const modal = document.getElementById('videoModal');
+  const video = document.getElementById('nestVideo');
+  modal.style.display = 'none';
+  video.pause();
+  document.body.style.overflow = '';
+}
+
+function togglePlay() {
+  const video = document.getElementById('nestVideo');
+  const icon = document.getElementById('playIcon');
+  if (video.paused) {
+    video.play();
+    icon.setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'); // pause icon
+  } else {
+    video.pause();
+    icon.setAttribute('d', 'M8 5v14l11-7z'); // play icon
+  }
+}
+
+function toggleFullscreen() {
+  const card = document.querySelector('.video-modal-card');
+  if (!document.fullscreenElement) {
+    card.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+// Sync progress bar with video
+document.addEventListener('DOMContentLoaded', () => {
+  const video = document.getElementById('nestVideo');
+  const progress = document.getElementById('progressBar');
+  const volume = document.getElementById('volumeBar');
+  const icon = document.getElementById('playIcon');
+
+  if (!video) return;
+
+  video.addEventListener('timeupdate', () => {
+    if (video.duration) {
+      progress.max = video.duration;
+      progress.value = video.currentTime;
+    }
+  });
+
+  video.addEventListener('ended', () => {
+    icon.setAttribute('d', 'M8 5v14l11-7z');
+    progress.value = 0;
+  });
+
+  progress.addEventListener('input', () => {
+    video.currentTime = progress.value;
+  });
+
+  volume.addEventListener('input', () => {
+    video.volume = volume.value / 100;
+  });
+});
+
+window.openVideoModal = openVideoModal;
+window.closeVideoModal = closeVideoModal;
+window.togglePlay = togglePlay;
+window.toggleFullscreen = toggleFullscreen;
