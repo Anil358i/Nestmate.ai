@@ -1,43 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  // ... (keep your other imports)
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NestMate AI - London Housing</title>
+  
+  <link rel="stylesheet" href="src/style.css">
 
-  const firebaseConfig = { /* Your Config */ };
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  console.log("Firebase initialized. Checking auth state...");
-
-  onAuthStateChanged(auth, (user) => {
-    const overlay = document.getElementById('auth-overlay');
-    const shell = document.querySelector('.page-shell');
-
-    if (user && user.emailVerified) {
-      console.log("User verified! Unlocking site...");
-      
-      // 1. Remove the loading screen
-      if(overlay) overlay.style.display = 'none';
-      
-      // 2. Make the site visible
-      if(shell) {
-        shell.style.visibility = 'visible';
-        shell.style.opacity = '1';
-      }
-
-      // 3. Load the data
-      if (typeof window.loadProperties === "function") {
-        window.loadProperties();
-      }
-    } else {
-      console.log("No verified user found. Redirecting to login...");
-      window.location.href = "login.html";
+  <style>
+    /* Security Guard Styles */
+    #auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
     }
-  });
-</script>
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #111;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    /* Hidden by default, unlocked by Firebase */
+    .page-shell { visibility: hidden; opacity: 0; transition: opacity 0.5s ease; }
+  </style>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDTxyr3zJGsyfmdztvfFz8aw9XSyPCNeQM",
+      authDomain: "nestmate-ai.firebaseapp.com",
+      projectId: "nestmate-ai",
+      storageBucket: "nestmate-ai.firebasestorage.app",
+      messagingSenderId: "7053398074",
+      appId: "1:7053398074:web:13dc18b49402d95107a503"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    window.db = getFirestore(app);
+    window.storage = getStorage(app);
+    window.dbTools = { collection, addDoc, onSnapshot, query, orderBy, ref, uploadBytes, getDownloadURL };
+
+    onAuthStateChanged(auth, (user) => {
+      const overlay = document.getElementById('auth-overlay');
+      const shell = document.querySelector('.page-shell');
+
+      if (user && user.emailVerified) {
+        // Unlock site
+        if(overlay) overlay.style.display = 'none';
+        if(shell) {
+          shell.style.visibility = 'visible';
+          shell.style.opacity = '1';
+        }
+        
+        // Trigger animations immediately for first view
+        document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
+
+        if (typeof window.loadProperties === "function") window.loadProperties();
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+  </script>
 </head>
 <body>
 
@@ -55,76 +93,37 @@
           <a href="#list-property">Host</a>
           <a href="#demo">AI Chat</a>
         </nav>
-        <button class="nav-cta option-trigger" data-popup-title="Beta Access" data-popup-body="You are currently using the NestMate Beta version for London graduates.">Beta</button>
+        <button class="nav-cta">Beta</button>
       </div>
     </header>
 
     <main>
       <section class="hero-section fade-in">
-        <div class="eyebrow">Built for international graduates in London</div>
         <h1 class="hero-title">Live in London <span>for almost free.</span></h1>
-        <p class="hero-copy">Rent a 3-bed house, fill the spare rooms, and save up to £1,800 monthly.</p>
+        <p class="hero-copy">Rent a 3-bed house, fill spare rooms, and save up to £1,800.</p>
       </section>
 
-      <section class="story-section fade-in" id="how-it-works">
-        <div class="duration-toggle">
-          <div class="toggle-pill">
-            <button class="toggle-btn active" onclick="setDuration('day', this)">Per Day</button>
-            <button class="toggle-btn" onclick="setDuration('week', this)">Per Week</button>
-            <button class="toggle-btn" onclick="setDuration('month', this)">Per Month</button>
-          </div>
-        </div>
-
-        <div class="carousel-outer">
-          <div class="carousel-track" id="carouselTrack">
-            </div>
-        </div>
-
-        <div class="carousel-nav" style="text-align: center; margin-top: 20px;">
-          <button class="nav-arrow" onclick="scrollCarousel(-1)">←</button>
-          <button class="nav-arrow" onclick="scrollCarousel(1)">→</button>
-        </div>
-      </section>
-
-      <section class="upload-section fade-in" id="list-property" style="padding: 80px 20px;">
-        <div class="glass-card" style="max-width: 500px; margin: 0 auto; padding: 40px;">
-          <h2 style="margin-bottom: 20px;">List your property</h2>
-          <div style="display: flex; flex-direction: column; gap: 20px;">
-            <input type="text" id="propName" placeholder="e.g. Camden 3-Bed" style="padding: 14px; border-radius: 12px; border: 1px solid #ddd;">
-            <input type="number" id="propPriceWeek" placeholder="Weekly Rent (£)" style="padding: 14px; border-radius: 12px; border: 1px solid #ddd;">
-            <input type="file" id="propImage" accept="image/*">
-            <button onclick="uploadProperty()" class="btn btn-dark" style="padding: 16px; cursor: pointer;">Publish Listing</button>
-            <p id="uploadStatus" style="text-align: center; font-size: 0.9rem; color: #666;"></p>
-          </div>
+      <section class="upload-section fade-in" id="list-property">
+        <div class="glass-card">
+          <h2>List your property</h2>
+          <input type="text" id="propName" placeholder="Property Name">
+          <input type="number" id="propPriceWeek" placeholder="Weekly Rent (£)">
+          <input type="file" id="propImage">
+          <button onclick="uploadProperty()" class="btn btn-dark">Publish</button>
+          <p id="uploadStatus"></p>
         </div>
       </section>
 
       <section class="demo-section fade-in" id="demo">
         <div class="chat-wrapper">
-          <div class="chat-header">
-            <div class="ai-avatar">N</div>
-            <div>NestMate Assistant</div>
-          </div>
           <div class="chat-messages" id="chatBox"></div>
           <div class="chat-input-area">
-            <input type="text" id="userInput" placeholder="Ask about landlord letters or area advice..." onkeydown="if(event.key==='Enter') sendMsg()">
-            <button class="send-btn" onclick="sendMsg()">Send</button>
+            <input type="text" id="userInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter') sendMsg()">
+            <button onclick="sendMsg()" class="send-btn">Send</button>
           </div>
         </div>
       </section>
     </main>
-
-    <footer class="site-footer" style="padding: 40px; text-align: center; opacity: 0.6;">
-      <p>NestMate AI - Helping you live smarter in London.</p>
-    </footer>
-  </div>
-
-  <div class="popup-backdrop" id="popupBackdrop" hidden>
-    <div class="popup-card">
-      <button class="popup-close" id="popupClose">×</button>
-      <h3 id="popupTitle"></h3>
-      <p id="popupBody"></p>
-    </div>
   </div>
 
   <script src="src/responses.js"></script>
