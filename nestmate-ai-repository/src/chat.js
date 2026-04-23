@@ -1,9 +1,4 @@
 /* ── UI & CHAT LOGIC ── */
-import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
-
-// Put your actual API Key inside the quotes below
-const API_KEY = "PASTE_YOUR_KEY_HERE"; 
-const genAI = new GoogleGenerativeAI(API_KEY);
 
 function appendMsg(type, html) {
     const box = document.getElementById('chatBox');
@@ -37,14 +32,7 @@ function removeTyping() {
     if (el) el.remove();
 }
 
-import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
-
-const API_KEY = "PASTE_YOUR_KEY_HERE"; // Put your key from AI Studio here
-const genAI = new GoogleGenerativeAI(API_KEY);
-
-// ... (keep any other helper functions like appendMsg, showTyping, etc.)
-
-async function sendMsg() {
+function sendMsg() {
     const input = document.getElementById('userInput');
     if (!input) return;
     const text = input.value.trim();
@@ -54,23 +42,13 @@ async function sendMsg() {
     input.value = '';
     showTyping();
 
-    try {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const prompt = "You are NestMate AI, a London housing expert. " + text;
-
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const aiReply = response.text();
-
+    setTimeout(() => {
         removeTyping();
-        appendMsg('ai', aiReply);
-
-    } catch (error) {
-        console.error("AI Error:", error);
-        removeTyping();
-        appendMsg('ai', "Sorry, I hit a snag. Try again?");
-    }
+        const reply = (typeof getResponse === 'function') ? getResponse(text) : "I'm looking into that for you!";
+        appendMsg('ai', reply);
+    }, 900);
 }
+
 /* ── POPUP & MODAL LOGIC (UPDATED FOR CENTERING) ── */
 
 function openPopup(title, body) {
