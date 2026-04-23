@@ -34,10 +34,13 @@
     /* Hides content until login is confirmed */
     .page-shell { visibility: hidden; }
   </style>
-
-  <script type="module">
+<script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    
+    // NEW: Imports for Database and Image Storage
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDTxyr3zJGsyfmdztvfFz8aw9XSyPCNeQM",
@@ -50,31 +53,39 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    
+    // NEW: Initialize Database and Storage
+    const db = getFirestore(app);
+    const storage = getStorage(app);
 
-    // If Firebase doesn't respond in 5 seconds, send to login
     const safetyTimeout = setTimeout(() => {
         window.location.href = "login.html";
     }, 5000);
-onAuthStateChanged(auth, (user) => {
+
+    onAuthStateChanged(auth, (user) => {
       if (user && user.emailVerified) {
         clearTimeout(safetyTimeout);
         
-        // 1. Hide the "Verifying Access" screen
         document.getElementById('auth-overlay').style.display = 'none';
-        
-        // 2. Make the website container visible
         const shell = document.querySelector('.page-shell');
         shell.style.visibility = 'visible';
         
-        // 3. FIX: This triggers your "Fade-in" JS logic immediately 
-        // so the site doesn't look empty when you first enter.
+        // NEW: Tell the site to load the dynamic properties from the database
+        if (typeof loadProperties === "function") {
+            loadProperties(); 
+        }
+        
         window.scrollTo(0, 1); 
         window.scrollTo(0, 0);
       } else {
-        // Redirect to login if not authenticated or verified
         window.location.href = "login.html";
       }
     });
+
+    // NEW: Make these tools accessible to your chat.js file
+    window.db = db;
+    window.storage = storage;
+    window.dbTools = { collection, addDoc, onSnapshot, query, orderBy, ref, uploadBytes, getDownloadURL };
   </script>
 </head>
 <body>
