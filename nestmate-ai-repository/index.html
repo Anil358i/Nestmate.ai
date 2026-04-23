@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="src/style.css">
 
   <style>
+    /* Security Loading Screen */
     #auth-overlay {
       position: fixed;
       inset: 0;
@@ -29,6 +30,8 @@
       margin-bottom: 15px;
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    /* Hides content until login is confirmed */
     .page-shell { visibility: hidden; }
   </style>
 
@@ -48,13 +51,15 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    const safetyRedirect = setTimeout(() => {
+    // If Firebase doesn't respond in 5 seconds, send to login
+    const safetyTimeout = setTimeout(() => {
         window.location.href = "login.html";
-    }, 4000);
+    }, 5000);
 
     onAuthStateChanged(auth, (user) => {
       if (user && user.emailVerified) {
-        clearTimeout(safetyRedirect);
+        clearTimeout(safetyTimeout);
+        // Show the site!
         document.getElementById('auth-overlay').style.display = 'none';
         document.querySelector('.page-shell').style.visibility = 'visible';
       } else {
@@ -94,25 +99,36 @@
       <section class="hero-section fade-in">
         <div class="eyebrow">Built for international graduates in London</div>
         <h1 class="hero-title">Live in London <span>for almost free.</span></h1>
-        <p class="hero-copy">NestMate helps you rent smarter, fill spare rooms faster, and reduce your monthly housing cost with a guided AI assistant built for London renters.</p>
+        <p class="hero-copy">NestMate helps you rent smarter, fill spare rooms faster, and reduce your monthly housing cost.</p>
         <div class="hero-actions">
           <a href="#demo" class="btn btn-dark">Try NestMate</a>
         </div>
       </section>
 
+      <section class="stats-section">
+        <div class="stat-card"><div class="stat-number">£1,800</div><div class="stat-label">Monthly savings</div></div>
+        <div class="stat-card"><div class="stat-number">48 hrs</div><div class="stat-label">To find tenants</div></div>
+        <div class="stat-card"><div class="stat-number">100%</div><div class="stat-label">Graduate Friendly</div></div>
+      </section>
+
       <section class="story-section fade-in" id="how-it-works">
+        <div class="duration-toggle">
+          <div class="toggle-pill">
+            <button class="toggle-btn active" onclick="setDuration('day', this)">Per Day</button>
+            <button class="toggle-btn" onclick="setDuration('week', this)">Per Week</button>
+            <button class="toggle-btn" onclick="setDuration('month', this)">Per Month</button>
+          </div>
+        </div>
         <div class="carousel-outer full-bleed">
           <div class="carousel-track" id="carouselTrack">
             <div class="prop-card">
-              <div class="prop-image-wrap">
-                <img src="assets/London_Housing2.jpeg" alt="Brixton">
-              </div>
+              <div class="prop-image-wrap"><img src="assets/London_Housing2.jpeg" alt="Brixton"></div>
               <div class="prop-info">
                 <div class="prop-name">Brixton 3-Bed</div>
-                <div class="prop-price"><strong>£120</strong> / day</div>
+                <div class="prop-price" data-day="£120" data-week="£720" data-month="£2,400"><strong>£120</strong> <span class="per">/ day</span></div>
               </div>
             </div>
-          </div>
+            </div>
         </div>
       </section>
 
@@ -124,12 +140,24 @@
           </div>
           <div class="chat-messages" id="chatBox"></div>
           <div class="chat-input-area">
-            <input type="text" id="userInput" placeholder="Ask anything...">
+            <input type="text" id="userInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter') sendMsg()">
             <button class="send-btn" onclick="sendMsg()">Send</button>
           </div>
         </div>
       </section>
     </main>
+
+    <footer class="site-footer">
+      <p>NestMate AI - Helping international graduates live smarter in London.</p>
+    </footer>
+  </div>
+
+  <div class="popup-backdrop" id="popupBackdrop" hidden>
+    <div class="popup-card">
+      <button class="popup-close" id="popupClose" type="button">Close</button>
+      <h3 id="popupTitle">Title</h3>
+      <p id="popupBody">Description</p>
+    </div>
   </div>
 
   <script src="src/responses.js"></script>
