@@ -251,3 +251,50 @@ main {
   .hero-title { font-size: 3rem; }
   .nav-links { display: none; }
 }
+/* Carousel & Card Styling */
+.carousel-track {
+    display: flex;
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.prop-card {
+    min-width: 300px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+}
+
+.prop-card:hover {
+    transform: translateY(-5px);
+}
+
+.prop-image-wrap {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.prop-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* This makes sure the photo fills the space without stretching */
+}
+
+.prop-info {
+    padding: 20px;
+}
+
+.prop-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.prop-price strong {
+    font-size: 1.2rem;
+    color: #111;
+}
