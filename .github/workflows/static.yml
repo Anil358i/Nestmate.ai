@@ -42,7 +42,7 @@ jobs:
         with:
           # If your index.html is in the main folder of the repo, use '.'
           # This ensures GitHub finds your website files.
-          path: '.' 
+          path: './nestmate-ai-repository' 
 
       - name: Deploy to GitHub Pages
         id: deployment
