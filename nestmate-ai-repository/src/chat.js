@@ -44,7 +44,8 @@ function sendMsg() {
 
     setTimeout(() => {
         removeTyping();
-        const reply = (typeof getResponse === 'function') ? getResponse(text) : "I'm processing that...";
+        // Fallback if responses.js isn't loaded
+        const reply = (typeof getResponse === 'function') ? getResponse(text) : "I'm looking into that for you!";
         appendMsg('ai', reply);
     }, 900);
 }
@@ -69,6 +70,7 @@ function closePopup() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Popup Listeners
     const triggers = document.querySelectorAll('.option-trigger');
     const close = document.getElementById('popupClose');
     if (close) close.addEventListener('click', closePopup);
@@ -79,6 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Fade-in on scroll effect
     const fadeElements = document.querySelectorAll('.fade-in');
     const checkFade = () => {
         fadeElements.forEach((el) => {
@@ -91,16 +94,18 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', checkFade);
     checkFade();
 
+    // Mouse Drag Scrolling for Carousel
     const slider = document.querySelector('.carousel-outer'); 
     let isDown = false, startX, scrollLeft;
     if (slider) {
         slider.addEventListener('mousedown', (e) => {
             isDown = true;
+            slider.classList.add('active');
             startX = e.pageX - slider.offsetLeft;
             scrollLeft = slider.scrollLeft;
         });
-        slider.addEventListener('mouseleave', () => isDown = false);
-        slider.addEventListener('mouseup', () => isDown = false);
+        slider.addEventListener('mouseleave', () => { isDown = false; slider.classList.remove('active'); });
+        slider.addEventListener('mouseup', () => { isDown = false; slider.classList.remove('active'); });
         slider.addEventListener('mousemove', (e) => {
             if (!isDown) return;
             e.preventDefault();
@@ -128,13 +133,6 @@ function setDuration(duration, btn) {
     });
 }
 
-function scrollCarousel(direction) {
-    const track = document.getElementById('carouselTrack');
-    if (track) {
-        track.scrollBy({ left: direction * 344, behavior: 'smooth' });
-    }
-}
-
 function calculatePrices(weeklyRent) {
     return {
         day: Math.round(weeklyRent / 7),
@@ -143,10 +141,10 @@ function calculatePrices(weeklyRent) {
     };
 }
 
-// REWRITTEN: Now uses Cloudinary for images and Firestore for data
+// Handles Image Upload via Cloudinary then Data Save via Firebase
 async function uploadProperty() {
-    if (!window.dbTools) {
-        alert("System is still loading. Please wait.");
+    if (!window.dbTools || !window.db) {
+        alert("Services are still initializing. Please wait 2 seconds.");
         return;
     }
 
@@ -155,14 +153,14 @@ async function uploadProperty() {
     const status = document.getElementById('uploadStatus');
 
     if(!name || !weeklyPrice) {
-        alert("Please fill in the Name and Price.");
+        alert("Please enter both the property name and weekly rent.");
         return;
     }
 
-    // Opens the Cloudinary widget first
+    // Opens Cloudinary Widget
     cloudinary.openUploadWidget({
-        cloudName: "dhmsg8euy", // Your Cloudinary ID
-        uploadPreset: "nestmate_unsigned", // Your Unsigned Preset Name
+        cloudName: "dhmsg8euy", 
+        uploadPreset: "nestmate_unsigned", 
         sources: ['local', 'url', 'camera'],
         multiple: false,
         cropping: true,
@@ -171,12 +169,11 @@ async function uploadProperty() {
     }, async (error, result) => {
         if (!error && result && result.event === "success") {
             const imageUrl = result.info.secure_url;
-            status.textContent = "Photo uploaded! Saving listing...";
+            status.textContent = "Photo secured! Finalizing listing...";
 
             try {
                 const { collection, addDoc } = window.dbTools;
 
-                // Save only the TEXT and the LINK to Firebase
                 await addDoc(collection(window.db, "properties"), {
                     name: name,
                     priceWeek: parseInt(weeklyPrice),
@@ -185,42 +182,55 @@ async function uploadProperty() {
                 });
 
                 status.textContent = "Success! Listing is live.";
+                
+                // Reset inputs
                 document.getElementById('propName').value = '';
                 document.getElementById('propPriceWeek').value = '';
-                if(document.getElementById('propImage')) document.getElementById('propImage').value = '';
+                
+                // Auto-scroll to top of listings to see the new one
+                window.scrollTo({ top: document.getElementById('explore').offsetTop - 100, behavior: 'smooth' });
+
             } catch (firebaseError) {
                 console.error("Firebase Error:", firebaseError);
-                status.textContent = "Database error. Check Firestore rules.";
+                status.textContent = "Database error. Please check your connection.";
             }
         } else if (error) {
             console.error("Cloudinary Error:", error);
-            status.textContent = "Upload failed. Try again.";
+            status.textContent = "Upload cancelled or failed.";
         }
     });
 }
 
+// Global exposure for HTML buttons
 window.uploadProperty = uploadProperty;
 
 function loadProperties() {
     const track = document.getElementById('carouselTrack');
-    if (!track || !window.dbTools) return;
+    if (!track || !window.dbTools || !window.db) return;
 
     const { query, collection, orderBy, onSnapshot } = window.dbTools;
     const q = query(collection(window.db, "properties"), orderBy("createdAt", "desc"));
 
+    // Real-time listener: Website updates automatically when data changes
     onSnapshot(q, (snapshot) => {
         track.innerHTML = ''; 
         snapshot.forEach((doc) => {
             const data = doc.data();
             const prices = calculatePrices(data.priceWeek);
+            
             const card = document.createElement('div');
             card.className = 'prop-card';
             card.innerHTML = `
-                <div class="prop-image-wrap"><img src="${data.imageUrl}"></div>
+                <div class="prop-image-wrap">
+                    <img src="${data.imageUrl}" alt="Property Image" loading="lazy">
+                </div>
                 <div class="prop-info">
                     <div class="prop-name">${data.name}</div>
-                    <div class="prop-price" data-day="£${prices.day}" data-week="£${prices.week}" data-month="£${prices.month}">
-                        <strong>£${prices.day}</strong> <span class="per">/ day</span>
+                    <div class="prop-price" 
+                         data-day="£${prices.day.toLocaleString()}" 
+                         data-week="£${prices.week.toLocaleString()}" 
+                         data-month="£${prices.month.toLocaleString()}">
+                        <strong>£${prices.day.toLocaleString()}</strong> <span class="per">/ day</span>
                     </div>
                 </div>
             `;
