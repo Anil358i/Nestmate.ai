@@ -28,16 +28,23 @@
     window.handleLogout = () => signOut(auth);
 
     onAuthStateChanged(auth, (user) => {
-      const shell = document.querySelector('.page-shell');
-      if (user && user.emailVerified) {
-        document.getElementById('auth-overlay').style.display = 'none';
-        shell.style.visibility = 'visible'; shell.style.opacity = '1';
-        if (typeof window.loadProperties === "function") window.loadProperties();
-        setTimeout(() => document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible')), 150);
-      } else {
-        window.location.href = "login.html";
-      }
-    });
+  const shell = document.querySelector('.page-shell');
+  const overlay = document.getElementById('auth-overlay');
+
+  if (user) {
+    // REMOVED emailVerified check - this was likely blocking you
+    overlay.style.display = 'none';
+    shell.style.visibility = 'visible';
+    shell.style.opacity = '1';
+    shell.style.transition = 'opacity 0.3s ease';
+    if (typeof window.loadProperties === "function") window.loadProperties();
+    setTimeout(() => {
+      document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
+    }, 150);
+  } else {
+    window.location.href = "login.html";
+  }
+});
   </script>
   <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
 </head>
