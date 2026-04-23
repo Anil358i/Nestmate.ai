@@ -119,24 +119,33 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 /* ── PROPERTY CAROUSEL LOGIC ── */
-const perLabels = { day: '/ day', week: '/ week', month: '/ month' };
+const perLabels = { 
+    day: '/ day', 
+    week: '/ week', 
+    month: '/ month' 
+};
 
 function setDuration(duration, btn) {
-    // 1. Update Buttons
+    // 1. Update Button Styles
     document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 
-    // 2. Update Prices
+    // 2. Update ALL Prices simultaneously
     document.querySelectorAll('.prop-price').forEach(el => {
-        const newPrice = el.dataset[duration];
-        el.querySelector('strong').textContent = newPrice;
-        el.querySelector('.per').textContent = perLabels[duration];
+        const newPrice = el.dataset[duration]; // Pulls data-day, data-week, or data-month
+        const strongTag = el.querySelector('strong');
+        const perTag = el.querySelector('.per');
+        
+        if (strongTag) strongTag.textContent = newPrice;
+        if (perTag) perTag.textContent = perLabels[duration];
     });
 }
 
 function scrollCarousel(direction) {
     const track = document.getElementById('carouselTrack');
-    const scrollAmount = 320; // Card width + gap
+    // FIXED: 320px (card width) + 24px (gap from CSS) = 344px
+    const scrollAmount = 344; 
+    
     track.scrollBy({
         left: direction * scrollAmount,
         behavior: 'smooth'
