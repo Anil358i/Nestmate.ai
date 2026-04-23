@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="src/style.css">
 
   <style>
-    /* Security Guard Styles - Apple Aesthetic */
+    /* Security Guard Styles */
     #auth-overlay {
       position: fixed;
       inset: 0;
@@ -30,7 +30,6 @@
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     
-    /* Global visibility control */
     .page-shell { visibility: hidden; opacity: 0; transition: opacity 0.6s ease; }
   </style>
 
@@ -51,8 +50,6 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     window.db = getFirestore(app);
-    
-    // Tools shared with chat.js
     window.dbTools = { collection, addDoc, onSnapshot, query, orderBy };
 
     onAuthStateChanged(auth, (user) => {
@@ -65,15 +62,10 @@
           shell.style.visibility = 'visible';
           shell.style.opacity = '1';
         }
-        
-        // Initialize real-time property engine
         if (typeof window.loadProperties === "function") window.loadProperties();
-        
-        // Manual trigger for scroll animations
         setTimeout(() => {
           document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
         }, 100);
-
       } else {
         window.location.href = "login.html";
       }
@@ -86,7 +78,7 @@
 
   <div id="auth-overlay">
     <div class="spinner"></div>
-    <p style="font-weight: 500; letter-spacing: -0.01em;">Securely connecting...</p>
+    <p style="font-weight: 500;">Securely connecting...</p>
   </div>
 
   <div class="page-shell">
@@ -104,8 +96,8 @@
 
     <main>
       <section class="hero-section fade-in">
-        <h1 class="hero-title">Live in London for almost free.</h1>
-        <p class="hero-copy">Master your rent. <span>Fill spare rooms. Save £1,800. Effortlessly.</span></p>
+        <h1 class="hero-title">Live in London <span>for almost free.</span></h1>
+        <p class="hero-copy">Rent a 3-bed house, fill spare rooms, and save up to £1,800.</p>
       </section>
 
       <section class="explore-section fade-in" id="explore">
@@ -119,8 +111,7 @@
         </div>
 
         <div class="carousel-outer">
-          <div id="carouselTrack" class="carousel-track">
-            </div>
+          <div id="carouselTrack" class="carousel-track"></div>
         </div>
       </section>
 
