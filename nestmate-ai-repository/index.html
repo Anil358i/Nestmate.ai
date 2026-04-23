@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="src/style.css">
 
   <style>
-    /* This hides the page content until we know the user is logged in */
     #auth-overlay {
       position: fixed;
       inset: 0;
@@ -30,8 +29,6 @@
       margin-bottom: 15px;
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    
-    /* Initially hide the main content */
     .page-shell { visibility: hidden; }
   </style>
 
@@ -51,7 +48,6 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Safety Timeout: if it takes more than 4 seconds, force redirect to login
     const safetyRedirect = setTimeout(() => {
         window.location.href = "login.html";
     }, 4000);
@@ -59,12 +55,9 @@
     onAuthStateChanged(auth, (user) => {
       if (user && user.emailVerified) {
         clearTimeout(safetyRedirect);
-        // Success: Hide the loading screen and show the design
         document.getElementById('auth-overlay').style.display = 'none';
         document.querySelector('.page-shell').style.visibility = 'visible';
-        console.log("Welcome back, Anil!");
       } else {
-        // Fail: Send to login page
         window.location.href = "login.html";
       }
     });
@@ -94,36 +87,49 @@
     </header>
 
     <div class="hero-banner">
-      <img src="./assets/London_Housing1.webp.jpg" alt="London Housing">
+      <img src="assets/London_Housing1.webp.jpg" alt="London Housing">
     </div>
 
     <main>
       <section class="hero-section fade-in">
         <div class="eyebrow">Built for international graduates in London</div>
         <h1 class="hero-title">Live in London <span>for almost free.</span></h1>
-        <p class="hero-copy">NestMate helps you rent smarter, fill spare rooms faster, and reduce your monthly housing cost.</p>
+        <p class="hero-copy">NestMate helps you rent smarter, fill spare rooms faster, and reduce your monthly housing cost with a guided AI assistant built for London renters.</p>
         <div class="hero-actions">
           <a href="#demo" class="btn btn-dark">Try NestMate</a>
         </div>
       </section>
 
-      <section class="stats-section">
-        <div class="stat-card">
-          <div class="stat-number">£1,800</div>
-          <div class="stat-label">Average monthly savings</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">48 hrs</div>
-          <div class="stat-label">To find room tenants</div>
+      <section class="story-section fade-in" id="how-it-works">
+        <div class="carousel-outer full-bleed">
+          <div class="carousel-track" id="carouselTrack">
+            <div class="prop-card">
+              <div class="prop-image-wrap">
+                <img src="assets/London_Housing2.jpeg" alt="Brixton">
+              </div>
+              <div class="prop-info">
+                <div class="prop-name">Brixton 3-Bed</div>
+                <div class="prop-price"><strong>£120</strong> / day</div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      </main>
-
-    <footer class="site-footer">
-      <p>NestMate AI</p>
-      <p>Helping international graduates live smarter in London.</p>
-    </footer>
+      <section class="demo-section" id="demo">
+        <div class="chat-wrapper">
+          <div class="chat-header">
+            <div class="ai-avatar">N</div>
+            <div>NestMate AI</div>
+          </div>
+          <div class="chat-messages" id="chatBox"></div>
+          <div class="chat-input-area">
+            <input type="text" id="userInput" placeholder="Ask anything...">
+            <button class="send-btn" onclick="sendMsg()">Send</button>
+          </div>
+        </div>
+      </section>
+    </main>
   </div>
 
   <script src="src/responses.js"></script>
