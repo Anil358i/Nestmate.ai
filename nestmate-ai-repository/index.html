@@ -55,14 +55,23 @@
     const safetyTimeout = setTimeout(() => {
         window.location.href = "login.html";
     }, 5000);
-
-    onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, (user) => {
       if (user && user.emailVerified) {
         clearTimeout(safetyTimeout);
-        // Show the site!
+        
+        // 1. Hide the "Verifying Access" screen
         document.getElementById('auth-overlay').style.display = 'none';
-        document.querySelector('.page-shell').style.visibility = 'visible';
+        
+        // 2. Make the website container visible
+        const shell = document.querySelector('.page-shell');
+        shell.style.visibility = 'visible';
+        
+        // 3. FIX: This triggers your "Fade-in" JS logic immediately 
+        // so the site doesn't look empty when you first enter.
+        window.scrollTo(0, 1); 
+        window.scrollTo(0, 0);
       } else {
+        // Redirect to login if not authenticated or verified
         window.location.href = "login.html";
       }
     });
