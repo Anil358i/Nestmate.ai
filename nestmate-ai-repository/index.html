@@ -52,7 +52,7 @@
     window.db = getFirestore(app);
     window.dbTools = { collection, addDoc, onSnapshot, query, orderBy };
 
-    // Make handleLogout available globally
+    // Global Logout Tool
     window.handleLogout = async () => {
       try {
         await signOut(auth);
@@ -72,9 +72,11 @@
           shell.style.opacity = '1';
         }
         if (typeof window.loadProperties === "function") window.loadProperties();
+        
+        // Slight delay to ensure smooth CSS animations
         setTimeout(() => {
           document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
-        }, 100);
+        }, 150);
       } else {
         window.location.href = "login.html";
       }
@@ -87,7 +89,15 @@
 
   <div id="auth-overlay">
     <div class="spinner"></div>
-    <p style="font-weight: 500;">Securely connecting...</p>
+    <p style="font-weight: 500;">Connecting to NestMate...</p>
+  </div>
+
+  <div id="popupBackdrop" class="popup-backdrop" hidden onclick="closePopup()">
+    <div class="popup-card" onclick="event.stopPropagation()">
+      <h2 id="popupTitle"></h2>
+      <p id="popupBody"></p>
+      <button class="apple-btn-black" onclick="closePopup()">Close</button>
+    </div>
   </div>
 
   <div class="page-shell">
@@ -106,8 +116,8 @@
           </div>
           
           <div id="userDropdown" class="user-dropdown">
-            <div class="dropdown-item" onclick="openPopup('Settings', 'Account settings coming soon.')">Settings</div>
-            <div class="dropdown-item" onclick="openPopup('Contact', 'Reach us at support@nestmate.ai')">Contact</div>
+            <div class="dropdown-item" onclick="openPopup('Settings', 'Account and preference settings are coming in the next update.')">Settings</div>
+            <div class="dropdown-item" onclick="openPopup('Contact', 'Questions? Reach us at support@nestmate.ai')">Contact</div>
             <hr class="dropdown-divider">
             <div class="dropdown-item logout-btn" onclick="handleLogout()">Logout</div>
           </div>
