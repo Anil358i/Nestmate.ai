@@ -151,3 +151,90 @@ function scrollCarousel(direction) {
         behavior: 'smooth'
     });
 }
+
+/* ── PHASE 3: DYNAMIC ENGINE ── */
+
+function calculatePrices(weeklyRent) {
+    return {
+        day: Math.round(weeklyRent / 7),
+        week: weeklyRent,
+        month: Math.round(weeklyRent * 4.33)
+    };
+}
+
+async function uploadProperty() {
+    const name = document.getElementById('propName').value;
+    const weeklyPrice = document.getElementById('propPriceWeek').value;
+    const imageFile = document.getElementById('propImage').files[0];
+    const status = document.getElementById('uploadStatus');
+
+    if(!name || !weeklyPrice || !imageFile) {
+        alert("Please fill all fields and select an image.");
+        return;
+    }
+
+    status.textContent = "Uploading to NestMate Cloud...";
+
+    try {
+        // 1. Upload Image to Firebase Storage
+        const storageRef = window.dbTools.ref(window.storage, 'properties/' + Date.now() + "_" + imageFile.name);
+        await window.dbTools.uploadBytes(storageRef, imageFile);
+        const imageUrl = await window.dbTools.getDownloadURL(storageRef);
+
+        // 2. Save Data to Firestore Database
+        await window.dbTools.addDoc(window.dbTools.collection(window.db, "properties"), {
+            name: name,
+            priceWeek: parseInt(weeklyPrice),
+            imageUrl: imageUrl,
+            createdAt: new Date()
+        });
+
+        status.textContent = "Success! Your property is live.";
+        
+        // Clear the form for the next upload
+        document.getElementById('propName').value = '';
+        document.getElementById('propPriceWeek').value = '';
+        document.getElementById('propImage').value = '';
+        
+    } catch (error) {
+        console.error("Upload failed:", error);
+        status.textContent = "Error: Check your Firebase Storage permissions.";
+    }
+}
+
+function loadProperties() {
+    const track = document.getElementById('carouselTrack');
+    // We query the "properties" collection and order by newest first
+    const q = window.dbTools.query(
+        window.dbTools.collection(window.db, "properties"), 
+        window.dbTools.orderBy("createdAt", "desc")
+    );
+
+    // This "onSnapshot" listener makes the site update in real-time
+    window.dbTools.onSnapshot(q, (snapshot) => {
+        track.innerHTML = ''; // Clear out the hard-coded placeholder cards
+        
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            const prices = calculatePrices(data.priceWeek);
+            
+            const card = document.createElement('div');
+            card.className = 'prop-card';
+            card.innerHTML = `
+                <div class="prop-image-wrap">
+                    <img src="${data.imageUrl}" alt="${data.name}">
+                </div>
+                <div class="prop-info">
+                    <div class="prop-name">${data.name}</div>
+                    <div class="prop-price" 
+                         data-day="£${prices.day}" 
+                         data-week="£${prices.week}" 
+                         data-month="£${prices.month}">
+                        <strong>£${prices.day}</strong> <span class="per">/ day</span>
+                    </div>
+                </div>
+            `;
+            track.appendChild(card);
+        });
+    });
+}
