@@ -1,63 +1,60 @@
+/* ── APPLE DESIGN SYSTEM VARIABLES ── */
 :root {
   --bg: #f5f5f7;
-  --surface: rgba(255, 255, 255, 0.7);
+  --surface: rgba(255, 255, 255, 0.75);
   --surface-solid: #ffffff;
-  --text: #111111;
-  --muted: #6e6e73;
-  --line: rgba(17, 17, 17, 0.08);
-  --shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-  --radius-xl: 32px;
-  --radius-lg: 24px;
-  --radius-md: 18px;
-  --max-width: 1200px;
-  --accent: #ff8a3d;
+  --text: #1d1d1f; /* Apple's specific black */
+  --muted: #86868b; /* Apple's specific gray */
+  --line: rgba(0, 0, 0, 0.05);
+  --shadow: 0 12px 40px rgba(0, 0, 0, 0.04);
+  --radius-apple: 20px;
+  --radius-pill: 99px;
+  --max-width: 1100px;
+  --accent: #0071e3; /* Apple Blue */
 }
 
-* { box-sizing: border-box; }
+/* ── BASE RESET ── */
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
 
 html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
   color: var(--text);
-  background: #f5f5f7; /* Solid fallback */
-  background: 
-    radial-gradient(circle at top left, rgba(255, 205, 170, 0.3), transparent 30%),
-    radial-gradient(circle at top right, rgba(190, 215, 255, 0.2), transparent 30%),
-    #f5f5f7;
+  background: var(--bg);
   overflow-x: hidden;
+  line-height: 1.47;
 }
 
-/* ---- FIX: PAGE VISIBILITY ---- */
+/* ── PAGE SHELL & BACKGROUND ── */
 .page-shell {
   min-height: 100vh;
   position: relative;
   z-index: 1;
-  /* We remove 'visibility: hidden' from here to prevent the blank screen. 
-     The JS will handle the loading overlay instead. */
 }
 
-/* ---- AMBIENT BACKGROUND CLOUDS ---- */
 .ambient {
   position: fixed;
-  width: 40vw;
-  height: 40vw;
+  width: 50vw;
+  height: 50vw;
   border-radius: 50%;
-  filter: blur(80px);
+  filter: blur(100px);
   pointer-events: none;
-  z-index: 0;
-  opacity: 0.4;
+  z-index: -1;
+  opacity: 0.3;
 }
+.ambient-one { top: -10%; left: -10%; background: #ffccbc; }
+.ambient-two { bottom: -10%; right: -10%; background: #d1e3ff; }
 
-.ambient-one { top: -10%; left: -10%; background: var(--accent); }
-.ambient-two { bottom: 10%; right: -10%; background: #75a4ff; }
-
-/* ---- HEADER ---- */
+/* ── APPLE HEADER ── */
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   background: rgba(245, 245, 247, 0.7);
@@ -67,70 +64,106 @@ body {
 .nav-inner {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 16px 24px;
+  padding: 12px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.logo { font-weight: 700; font-size: 1.1rem; letter-spacing: -0.02em; }
+.logo { 
+  font-weight: 600; 
+  font-size: 1.2rem; 
+  letter-spacing: -0.02em; 
+}
 
-.nav-links { display: flex; gap: 32px; }
-.nav-links a { color: var(--muted); font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
-.nav-links a:hover { color: var(--text); }
+.nav-links { display: flex; gap: 30px; }
+.nav-links a { 
+  color: var(--text); 
+  text-decoration: none;
+  font-size: 0.85rem; 
+  font-weight: 400; 
+  opacity: 0.8;
+  transition: opacity 0.2s; 
+}
+.nav-links a:hover { opacity: 1; }
 
 .nav-cta {
-  padding: 8px 18px;
-  background: #111;
+  padding: 6px 14px;
+  background: var(--text);
   color: #fff;
-  border-radius: 99px;
-  font-weight: 600;
-  font-size: 0.85rem;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-weight: 500;
+  font-size: 0.75rem;
+  cursor: pointer;
 }
 
-/* ---- LAYOUT BLOCKS ---- */
-main {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 40px 24px;
-  position: relative;
-  z-index: 10;
+/* ── HERO SECTION (Requirement 1) ── */
+.hero-section { 
+  text-align: center; 
+  padding: 100px 24px; 
 }
 
-.hero-section { text-align: center; padding: 80px 0; }
 .hero-title {
-  font-size: clamp(3rem, 7vw, 5.5rem);
-  font-weight: 800;
-  letter-spacing: -0.05em;
-  line-height: 1.05;
-  margin: 0;
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 20px;
 }
-.hero-title span { color: var(--muted); display: block; }
 
-/* ---- STATS ---- */
-.stats-section {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.hero-copy {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--muted);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.hero-copy span {
+  color: var(--text);
+  display: block;
+}
+
+/* ── DURATION TOGGLE (Requirement 2) ── */
+.section-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 20px;
-  margin: 40px 0;
+  margin-bottom: 40px;
 }
 
-.stat-card {
-  background: var(--surface);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--line);
-  padding: 32px;
-  border-radius: var(--radius-lg);
-  text-align: center;
+.toggle-group {
+  background: rgba(0, 0, 0, 0.05); /* Gray track */
+  padding: 3px;
+  border-radius: var(--radius-pill);
+  display: inline-flex;
 }
 
-.stat-number { font-size: 2.5rem; font-weight: 700; letter-spacing: -0.03em; }
-.stat-label { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
+.toggle-btn {
+  background: transparent;
+  border: none;
+  padding: 8px 24px;
+  border-radius: var(--radius-pill);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-/* ---- PROPERTY CAROUSEL ---- */
+.toggle-btn.active {
+  background: #ffffff;
+  color: #000000;
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* ── PROPERTY CAROUSEL ── */
 .carousel-outer {
-  margin: 40px -24px;
-  padding: 20px 24px;
+  margin-bottom: 80px;
+  padding: 20px 0;
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -139,162 +172,128 @@ main {
 .carousel-track {
   display: flex;
   gap: 24px;
+  padding: 0 5%;
 }
 
 .prop-card {
-  flex: 0 0 300px;
-  background: #fff;
-  border-radius: var(--radius-lg);
+  flex: 0 0 320px;
+  background: var(--surface-solid);
+  border-radius: var(--radius-apple);
   overflow: hidden;
-  border: 1px solid var(--line);
   box-shadow: var(--shadow);
-  transition: transform 0.3s ease;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.prop-card:hover { transform: translateY(-8px); }
+.prop-card:hover { transform: scale(1.02); }
 
-.prop-image-wrap img { width: 100%; height: 200px; object-fit: cover; }
-.prop-info { padding: 20px; }
-.prop-name { font-weight: 700; margin-bottom: 8px; }
-.prop-price strong { font-size: 1.2rem; }
+.prop-image-wrap img { width: 100%; height: 220px; object-fit: cover; }
+.prop-info { padding: 24px; }
+.prop-name { font-weight: 600; font-size: 1.1rem; margin-bottom: 4px; }
+.prop-price strong { font-size: 1.3rem; letter-spacing: -0.02em; }
+.prop-price .per { color: var(--muted); font-size: 0.9rem; }
 
-/* ---- CHAT WRAPPER ---- */
-.chat-wrapper {
-  background: var(--surface);
-  backdrop-filter: blur(20px);
+/* ── HOST CARD (Requirement 3) ── */
+.upload-section {
+  padding: 100px 24px;
+  background: #ffffff;
+}
+
+.glass-card {
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.glass-card h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 10px;
+}
+
+.glass-card input {
+  width: 100%;
+  padding: 18px;
+  margin-bottom: 12px;
+  border-radius: 12px;
   border: 1px solid var(--line);
-  border-radius: var(--radius-xl);
-  padding: 24px;
+  background: #fbfbfd;
+  font-size: 1rem;
+  outline: none;
+}
+
+.instruction-text {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 10px 0 24px 0;
+}
+
+.apple-btn-black {
+  width: 100%;
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.apple-btn-black:hover {
+  opacity: 0.85;
+}
+
+/* ── CHAT ENGINE ── */
+.chat-wrapper {
+  background: #fff;
+  border-radius: 24px;
+  padding: 30px;
   box-shadow: var(--shadow);
   max-width: 800px;
-  margin: 40px auto;
+  margin: 60px auto;
 }
-
-.chat-messages { min-height: 300px; max-height: 500px; overflow-y: auto; margin-bottom: 20px; }
 
 .chat-input-area {
   display: flex;
-  gap: 12px;
-  background: #fff;
-  padding: 8px;
-  border-radius: 99px;
-  border: 1px solid var(--line);
+  gap: 10px;
+  background: #f5f5f7;
+  padding: 6px;
+  border-radius: var(--radius-pill);
 }
 
 .chat-input-area input {
   flex: 1;
+  background: transparent;
   border: none;
   padding: 0 20px;
   outline: none;
-  font-size: 1rem;
 }
 
 .send-btn {
-  background: #111;
+  background: #0071e3; /* Apple Blue */
   color: #fff;
-  padding: 12px 24px;
-  border-radius: 99px;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-pill);
   font-weight: 600;
+  cursor: pointer;
 }
 
-/* ---- FIX: FADE IN ANIMATION ---- */
-/* ---- UPDATED FADE-IN LOGIC ---- */
-
-/* 1. Base state: Hidden and slightly shifted down */
+/* ── FADE IN ── */
 .fade-in {
   opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-  will-change: opacity, transform;
+  transform: translateY(20px);
+  transition: all 0.8s ease-out;
 }
-
-/* 2. Active state: When the 'visible' class is added via JS */
 .fade-in.visible {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-}
-
-/* 3. EMERGENCY BYPASS (The Fix for the Blank Screen):
-   If the Page Shell becomes visible, we force the content 
-   to show up even if the scroll-trigger hasn't fired yet. */
-.page-shell[style*="visibility: visible"] .fade-in {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* 4. Accessibility fallback:
-   If the user has 'Reduce Motion' turned on in their OS, 
-   we show everything immediately to avoid animation errors. */
-@media (prefers-reduced-motion: reduce) {
-  .fade-in {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-}
-
-/* 5. Ambient Background Fix:
-   Ensures the blurry background circles don't cover your text. */
-.ambient {
-  z-index: -1; /* Moves them behind the content */
-}
-
-.page-shell {
-  position: relative;
-  z-index: 1;
-  background: var(--bg);
-  }
-}
-
-/* ---- RESPONSIVE ---- */
+/* ── RESPONSIVE ── */
 @media (max-width: 768px) {
-  .stats-section { grid-template-columns: 1fr; }
   .hero-title { font-size: 3rem; }
-  .nav-links { display: none; }
-}
-/* Carousel & Card Styling */
-.carousel-track {
-    display: flex;
-    gap: 20px;
-    padding: 20px 0;
-}
-
-.prop-card {
-    min-width: 300px;
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    transition: transform 0.3s ease;
-}
-
-.prop-card:hover {
-    transform: translateY(-5px);
-}
-
-.prop-image-wrap {
-    width: 100%;
-    height: 200px;
-    overflow: hidden;
-}
-
-.prop-image-wrap img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* This makes sure the photo fills the space without stretching */
-}
-
-.prop-info {
-    padding: 20px;
-}
-
-.prop-name {
-    font-weight: 600;
-    font-size: 1.1rem;
-    margin-bottom: 5px;
-}
-
-.prop-price strong {
-    font-size: 1.2rem;
-    color: #111;
+  .hero-copy { font-size: 1.2rem; }
+  .carousel-track { padding: 0 20px; }
 }
