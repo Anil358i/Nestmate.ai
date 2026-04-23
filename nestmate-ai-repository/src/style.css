@@ -3,11 +3,11 @@
   --bg: #f5f5f7;
   --surface: rgba(255, 255, 255, 0.75);
   --surface-solid: #ffffff;
-  --text: #1d1d1f; /* Apple's specific black */
-  --muted: #86868b; /* Apple's specific gray */
+  --text: #1d1d1f; /* Apple Black */
+  --muted: #86868b; /* Apple Gray */
   --line: rgba(0, 0, 0, 0.05);
   --shadow: 0 12px 40px rgba(0, 0, 0, 0.04);
-  --radius-apple: 20px;
+  --radius-apple: 22px;
   --radius-pill: 99px;
   --max-width: 1100px;
   --accent: #0071e3; /* Apple Blue */
@@ -30,7 +30,7 @@ body {
   line-height: 1.47;
 }
 
-/* ── PAGE SHELL & BACKGROUND ── */
+/* ── AMBIENT BACKGROUND ── */
 .page-shell {
   min-height: 100vh;
   position: relative;
@@ -70,11 +70,7 @@ body {
   justify-content: space-between;
 }
 
-.logo { 
-  font-weight: 600; 
-  font-size: 1.2rem; 
-  letter-spacing: -0.02em; 
-}
+.logo { font-weight: 600; font-size: 1.2rem; letter-spacing: -0.02em; }
 
 .nav-links { display: flex; gap: 30px; }
 .nav-links a { 
@@ -98,34 +94,37 @@ body {
   cursor: pointer;
 }
 
-/* ── HERO SECTION (Requirement 1) ── */
+/* ── RESTORED BOLD HERO HEADING ── */
 .hero-section { 
   text-align: center; 
-  padding: 100px 24px; 
+  padding: 120px 24px 80px 24px; 
 }
 
 .hero-title {
-  font-size: clamp(2.5rem, 8vw, 5rem);
+  /* Ultra-bold and very large letters */
+  font-size: clamp(3.5rem, 10vw, 6.5rem); 
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1.02;
+  margin: 0 auto 24px auto;
+  color: var(--text);
+}
+
+.hero-title span {
+  display: block; /* Forces the second part to a new line */
+  color: var(--muted);
   font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
-  margin-bottom: 20px;
 }
 
 .hero-copy {
-  font-size: 1.5rem;
-  font-weight: 500;
+  font-size: 1.3rem;
+  font-weight: 400;
   color: var(--muted);
-  max-width: 700px;
+  max-width: 600px;
   margin: 0 auto;
 }
 
-.hero-copy span {
-  color: var(--text);
-  display: block;
-}
-
-/* ── DURATION TOGGLE (Requirement 2) ── */
+/* ── DURATION TOGGLE (PILL STYLE) ── */
 .section-header {
   display: flex;
   flex-direction: column;
@@ -134,9 +133,15 @@ body {
   margin-bottom: 40px;
 }
 
+.section-header h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
 .toggle-group {
-  background: rgba(0, 0, 0, 0.05); /* Gray track */
-  padding: 3px;
+  background: rgba(0, 0, 0, 0.05); /* The gray track */
+  padding: 4px;
   border-radius: var(--radius-pill);
   display: inline-flex;
 }
@@ -154,9 +159,9 @@ body {
 }
 
 .toggle-btn.active {
-  background: #ffffff;
+  background: #ffffff; /* The sliding white pill */
   color: #000000;
-  font-weight: 600;
+  font-weight: 700;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
@@ -188,10 +193,10 @@ body {
 .prop-image-wrap img { width: 100%; height: 220px; object-fit: cover; }
 .prop-info { padding: 24px; }
 .prop-name { font-weight: 600; font-size: 1.1rem; margin-bottom: 4px; }
-.prop-price strong { font-size: 1.3rem; letter-spacing: -0.02em; }
+.prop-price strong { font-size: 1.3rem; letter-spacing: -0.02em; color: #000; }
 .prop-price .per { color: var(--muted); font-size: 0.9rem; }
 
-/* ── HOST CARD (Requirement 3) ── */
+/* ── HOST CARD (APPLE STYLE) ── */
 .upload-section {
   padding: 100px 24px;
   background: #ffffff;
@@ -204,7 +209,7 @@ body {
 }
 
 .glass-card h2 {
-  font-size: 2.5rem;
+  font-size: 2.8rem;
   font-weight: 700;
   letter-spacing: -0.03em;
   margin-bottom: 10px;
@@ -214,12 +219,14 @@ body {
   width: 100%;
   padding: 18px;
   margin-bottom: 12px;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1px solid var(--line);
   background: #fbfbfd;
   font-size: 1rem;
   outline: none;
+  transition: border-color 0.3s;
 }
+.glass-card input:focus { border-color: var(--accent); }
 
 .instruction-text {
   font-size: 0.85rem;
@@ -233,26 +240,27 @@ body {
   color: #fff;
   border: none;
   padding: 18px;
-  border-radius: 12px;
+  border-radius: 14px;
   font-weight: 600;
   font-size: 1.1rem;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, transform 0.1s ease;
 }
 
-.apple-btn-black:hover {
-  opacity: 0.85;
-}
+.apple-btn-black:active { transform: scale(0.98); }
+.apple-btn-black:hover { opacity: 0.85; }
 
 /* ── CHAT ENGINE ── */
 .chat-wrapper {
   background: #fff;
-  border-radius: 24px;
+  border-radius: 28px;
   padding: 30px;
   box-shadow: var(--shadow);
   max-width: 800px;
   margin: 60px auto;
 }
+
+.chat-messages { min-height: 300px; max-height: 500px; overflow-y: auto; }
 
 .chat-input-area {
   display: flex;
@@ -260,6 +268,7 @@ body {
   background: #f5f5f7;
   padding: 6px;
   border-radius: var(--radius-pill);
+  margin-top: 20px;
 }
 
 .chat-input-area input {
@@ -268,13 +277,14 @@ body {
   border: none;
   padding: 0 20px;
   outline: none;
+  font-size: 1rem;
 }
 
 .send-btn {
-  background: #0071e3; /* Apple Blue */
+  background: var(--accent);
   color: #fff;
   border: none;
-  padding: 10px 20px;
+  padding: 10px 24px;
   border-radius: var(--radius-pill);
   font-weight: 600;
   cursor: pointer;
@@ -293,7 +303,7 @@ body {
 
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
-  .hero-title { font-size: 3rem; }
-  .hero-copy { font-size: 1.2rem; }
-  .carousel-track { padding: 0 20px; }
+  .hero-title { font-size: 3.2rem; }
+  .hero-copy { font-size: 1.1rem; }
+  .glass-card h2 { font-size: 2.2rem; }
 }
