@@ -8,11 +8,11 @@
   <link rel="stylesheet" href="src/style.css">
 
   <style>
-    /* Security Guard Styles */
+    /* Security Guard Styles - Apple Aesthetic */
     #auth-overlay {
       position: fixed;
       inset: 0;
-      background: white;
+      background: #ffffff;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -20,24 +20,18 @@
       z-index: 10000;
     }
     .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid #111;
+      width: 30px;
+      height: 30px;
+      border: 2px solid rgba(0,0,0,0.05);
+      border-top: 2px solid #000;
       border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 15px;
+      animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      margin-bottom: 20px;
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     
-    /* Hidden by default, unlocked by Firebase */
-    .page-shell { visibility: hidden; opacity: 0; transition: opacity 0.5s ease; }
-
-    /* Layout spacing for the new section */
-    .explore-section { padding: 60px 5%; max-width: 1200px; margin: 0 auto; }
-    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-    .carousel-outer { overflow-x: auto; padding-bottom: 20px; -webkit-overflow-scrolling: touch; }
-    .carousel-track { display: flex; gap: 20px; }
+    /* Global visibility control */
+    .page-shell { visibility: hidden; opacity: 0; transition: opacity 0.6s ease; }
   </style>
 
   <script type="module">
@@ -58,7 +52,7 @@
     const auth = getAuth(app);
     window.db = getFirestore(app);
     
-    // Tools needed by chat.js
+    // Tools shared with chat.js
     window.dbTools = { collection, addDoc, onSnapshot, query, orderBy };
 
     onAuthStateChanged(auth, (user) => {
@@ -72,11 +66,14 @@
           shell.style.opacity = '1';
         }
         
-        // Trigger animations
-        document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
-
-        // Load properties from Firestore
+        // Initialize real-time property engine
         if (typeof window.loadProperties === "function") window.loadProperties();
+        
+        // Manual trigger for scroll animations
+        setTimeout(() => {
+          document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
+        }, 100);
+
       } else {
         window.location.href = "login.html";
       }
@@ -89,7 +86,7 @@
 
   <div id="auth-overlay">
     <div class="spinner"></div>
-    <p>Verifying Access...</p>
+    <p style="font-weight: 500; letter-spacing: -0.01em;">Securely connecting...</p>
   </div>
 
   <div class="page-shell">
@@ -101,14 +98,14 @@
           <a href="#list-property">Host</a>
           <a href="#demo">AI Chat</a>
         </nav>
-        <button class="nav-cta">Beta</button>
+        <button class="nav-cta">Beta 1.0</button>
       </div>
     </header>
 
     <main>
       <section class="hero-section fade-in">
-        <h1 class="hero-title">Live in London <span>for almost free.</span></h1>
-        <p class="hero-copy">Rent a 3-bed house, fill spare rooms, and save up to £1,800.</p>
+        <h1 class="hero-title">Live in London for almost free.</h1>
+        <p class="hero-copy">Master your rent. <span>Fill spare rooms. Save £1,800. Effortlessly.</span></p>
       </section>
 
       <section class="explore-section fade-in" id="explore">
@@ -129,12 +126,13 @@
 
       <section class="upload-section fade-in" id="list-property">
         <div class="glass-card">
-          <h2>List your property</h2>
+          <p style="color: #0071e3; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">For Hosts</p>
+          <h2>Share your space.</h2>
           <input type="text" id="propName" placeholder="Property Name (e.g. Camden Studio)">
           <input type="number" id="propPriceWeek" placeholder="Weekly Rent (£)">
-          <p style="font-size: 11px; color: #666; margin: 10px 0;">Photo selection opens after clicking Publish</p>
-          <button onclick="uploadProperty()" class="btn btn-dark">Publish</button>
-          <p id="uploadStatus"></p>
+          <p class="instruction-text">Photo selection opens after you tap Publish.</p>
+          <button onclick="uploadProperty()" class="apple-btn-black">Publish</button>
+          <p id="uploadStatus" style="margin-top: 15px; font-size: 0.9rem; font-weight: 500;"></p>
         </div>
       </section>
 
@@ -142,7 +140,7 @@
         <div class="chat-wrapper">
           <div class="chat-messages" id="chatBox"></div>
           <div class="chat-input-area">
-            <input type="text" id="userInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter') sendMsg()">
+            <input type="text" id="userInput" placeholder="Ask NestMate AI..." onkeydown="if(event.key==='Enter') sendMsg()">
             <button onclick="sendMsg()" class="send-btn">Send</button>
           </div>
         </div>
