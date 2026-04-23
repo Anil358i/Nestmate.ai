@@ -31,13 +31,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true # <--- This fixes the "Not Found" Error
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: './nestmate-ai-repository'
+          # If your index.html is in the main folder of the repo, use '.'
+          # This ensures GitHub finds your website files.
+          path: '.' 
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
