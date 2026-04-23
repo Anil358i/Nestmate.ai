@@ -63,7 +63,7 @@
     try {
       await createUserWithEmailAndPassword(auth, email, pass);
       await sendEmailVerification(auth.currentUser);
-      status.innerText = "✅ Check your email for a verification link, then login!";
+      status.innerText = "Check your email for a verification link, then login!";
       status.style.color = "green";
       btn.innerText = 'Done! Check your email';
     } catch (error) {
