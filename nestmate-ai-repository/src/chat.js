@@ -1,5 +1,3 @@
-CHAT.JS 
-
 /* ── UI & CHAT LOGIC ── */
 
 function appendMsg(type, html) {
@@ -34,7 +32,6 @@ function removeTyping() {
     if (el) el.remove();
 }
 
-// Fixed: Added safety check for getResponse
 function sendMsg() {
     const input = document.getElementById('userInput');
     if (!input) return;
@@ -47,7 +44,6 @@ function sendMsg() {
 
     setTimeout(() => {
         removeTyping();
-        // Uses the function from responses.js
         const reply = (typeof getResponse === 'function') ? getResponse(text) : "I'm processing that...";
         appendMsg('ai', reply);
     }, 900);
@@ -73,7 +69,6 @@ function closePopup() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Popup Listeners
     const triggers = document.querySelectorAll('.option-trigger');
     const close = document.getElementById('popupClose');
     if (close) close.addEventListener('click', closePopup);
@@ -84,7 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Fade-in on scroll
     const fadeElements = document.querySelectorAll('.fade-in');
     const checkFade = () => {
         fadeElements.forEach((el) => {
@@ -97,8 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', checkFade);
     checkFade();
 
-    // Carousel Slider Safety
-    const slider = document.querySelector('.carousel-outer'); // Updated class to match your HTML
+    const slider = document.querySelector('.carousel-outer'); 
     let isDown = false, startX, scrollLeft;
     if (slider) {
         slider.addEventListener('mousedown', (e) => {
@@ -118,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-/* ── PROPERTY ENGINE (FIREBASE) ── */
+/* ── PROPERTY ENGINE (CLOUDINARY + FIREBASE) ── */
 
 const perLabels = { day: '/ day', week: '/ week', month: '/ month' };
 
@@ -150,50 +143,62 @@ function calculatePrices(weeklyRent) {
     };
 }
 
-// Fixed: Bridged with window.dbTools from your HTML
+// REWRITTEN: Now uses Cloudinary for images and Firestore for data
 async function uploadProperty() {
     if (!window.dbTools) {
-        alert("Firebase is still loading. Please wait.");
+        alert("System is still loading. Please wait.");
         return;
     }
 
     const name = document.getElementById('propName').value;
     const weeklyPrice = document.getElementById('propPriceWeek').value;
-    const imageFile = document.getElementById('propImage').files[0];
     const status = document.getElementById('uploadStatus');
 
-    if(!name || !weeklyPrice || !imageFile) {
-        alert("Please fill all fields.");
+    if(!name || !weeklyPrice) {
+        alert("Please fill in the Name and Price.");
         return;
     }
 
-    status.textContent = "Uploading...";
+    // Opens the Cloudinary widget first
+    cloudinary.openUploadWidget({
+        cloudName: "dhmsg8euy", // Your Cloudinary ID
+        uploadPreset: "nestmate_unsigned", // Your Unsigned Preset Name
+        sources: ['local', 'url', 'camera'],
+        multiple: false,
+        cropping: true,
+        defaultSource: "local",
+        styles: { palette: { window: "#FFFFFF", sourceBg: "#F4F4F5" } }
+    }, async (error, result) => {
+        if (!error && result && result.event === "success") {
+            const imageUrl = result.info.secure_url;
+            status.textContent = "Photo uploaded! Saving listing...";
 
-    try {
-        const { ref, uploadBytes, getDownloadURL, collection, addDoc } = window.dbTools;
-        
-        const storageRef = ref(window.storage, `properties/${Date.now()}_${imageFile.name}`);
-        await uploadBytes(storageRef, imageFile);
-        const imageUrl = await getDownloadURL(storageRef);
+            try {
+                const { collection, addDoc } = window.dbTools;
 
-        await addDoc(collection(window.db, "properties"), {
-            name: name,
-            priceWeek: parseInt(weeklyPrice),
-            imageUrl: imageUrl,
-            createdAt: new Date()
-        });
+                // Save only the TEXT and the LINK to Firebase
+                await addDoc(collection(window.db, "properties"), {
+                    name: name,
+                    priceWeek: parseInt(weeklyPrice),
+                    imageUrl: imageUrl,
+                    createdAt: new Date()
+                });
 
-        status.textContent = "Success! Listing is live.";
-        document.getElementById('propName').value = '';
-        document.getElementById('propPriceWeek').value = '';
-        document.getElementById('propImage').value = '';
-    } catch (error) {
-        console.error(error);
-        status.textContent = "Upload failed. Check permissions.";
-    }
+                status.textContent = "Success! Listing is live.";
+                document.getElementById('propName').value = '';
+                document.getElementById('propPriceWeek').value = '';
+                if(document.getElementById('propImage')) document.getElementById('propImage').value = '';
+            } catch (firebaseError) {
+                console.error("Firebase Error:", firebaseError);
+                status.textContent = "Database error. Check Firestore rules.";
+            }
+        } else if (error) {
+            console.error("Cloudinary Error:", error);
+            status.textContent = "Upload failed. Try again.";
+        }
+    });
 }
 
-// Fixed: Global assignment for the HTML button
 window.uploadProperty = uploadProperty;
 
 function loadProperties() {
@@ -224,5 +229,4 @@ function loadProperties() {
     });
 }
 
-// Fixed: Global assignment so HTML script can call it
 window.loadProperties = loadProperties;
