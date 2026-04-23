@@ -24,19 +24,17 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  // Wait for Firebase to finish checking auth state before doing anything
   onAuthStateChanged(auth, (user) => {
-    const loader = document.getElementById('auth-loading');
     if (!user || !user.emailVerified) {
+      window.location.replace("login.html");
     } else {
-      // User is verified — hide loader and show the page
-      if (loader) loader.remove();
+      document.getElementById('auth-loading').remove();
       document.body.style.visibility = 'visible';
     }
   });
-</script>
-  </head>
-<body style="visibility:visible">
+  </script>
+</head>
+<body style="visibility:hidden">
   <div id="auth-loading">Checking your account…</div>
   <div class="page-shell">
     <div class="ambient ambient-one"></div>
@@ -140,9 +138,7 @@
         <div class="section-intro">
           <div class="section-kicker">How it works</div>
           <h2 class="section-title">A simpler path to affordable living in London.</h2>
-          <p class="section-copy">NestMate turns a complicated rental strategy into a clean, guided flow you can actually follow.</p>
-        </div>
-
+          <p class="section-copy">
 <div class="duration-toggle">
         <div class="toggle-pill">
           <button class="toggle-btn active" onclick="setDuration('day', this)">Per Day</button>
