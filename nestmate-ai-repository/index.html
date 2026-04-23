@@ -32,13 +32,18 @@
     
     /* Hidden by default, unlocked by Firebase */
     .page-shell { visibility: hidden; opacity: 0; transition: opacity 0.5s ease; }
+
+    /* Layout spacing for the new section */
+    .explore-section { padding: 60px 5%; max-width: 1200px; margin: 0 auto; }
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+    .carousel-outer { overflow-x: auto; padding-bottom: 20px; -webkit-overflow-scrolling: touch; }
+    .carousel-track { display: flex; gap: 20px; }
   </style>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDTxyr3zJGsyfmdztvfFz8aw9XSyPCNeQM",
@@ -52,31 +57,33 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     window.db = getFirestore(app);
-    window.storage = getStorage(app);
-    window.dbTools = { collection, addDoc, onSnapshot, query, orderBy, ref, uploadBytes, getDownloadURL };
+    
+    // Tools needed by chat.js
+    window.dbTools = { collection, addDoc, onSnapshot, query, orderBy };
 
     onAuthStateChanged(auth, (user) => {
       const overlay = document.getElementById('auth-overlay');
       const shell = document.querySelector('.page-shell');
 
       if (user && user.emailVerified) {
-        // Unlock site
         if(overlay) overlay.style.display = 'none';
         if(shell) {
           shell.style.visibility = 'visible';
           shell.style.opacity = '1';
         }
         
-        // Trigger animations immediately for first view
+        // Trigger animations
         document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
 
+        // Load properties from Firestore
         if (typeof window.loadProperties === "function") window.loadProperties();
       } else {
         window.location.href = "login.html";
       }
     });
   </script>
-<script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+
+  <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
 </head>
 <body>
 
@@ -90,7 +97,7 @@
       <div class="nav-inner">
         <div class="logo">NestMate AI</div>
         <nav class="nav-links">
-          <a href="#how-it-works">How it works</a>
+          <a href="#explore">Explore</a>
           <a href="#list-property">Host</a>
           <a href="#demo">AI Chat</a>
         </nav>
@@ -104,12 +111,28 @@
         <p class="hero-copy">Rent a 3-bed house, fill spare rooms, and save up to £1,800.</p>
       </section>
 
+      <section class="explore-section fade-in" id="explore">
+        <div class="section-header">
+          <h2>Available Listings</h2>
+          <div class="toggle-group">
+            <button class="toggle-btn active" onclick="setDuration('day', this)">Day</button>
+            <button class="toggle-btn" onclick="setDuration('week', this)">Week</button>
+            <button class="toggle-btn" onclick="setDuration('month', this)">Month</button>
+          </div>
+        </div>
+
+        <div class="carousel-outer">
+          <div id="carouselTrack" class="carousel-track">
+            </div>
+        </div>
+      </section>
+
       <section class="upload-section fade-in" id="list-property">
         <div class="glass-card">
           <h2>List your property</h2>
-          <input type="text" id="propName" placeholder="Property Name">
+          <input type="text" id="propName" placeholder="Property Name (e.g. Camden Studio)">
           <input type="number" id="propPriceWeek" placeholder="Weekly Rent (£)">
-          <input type="file" id="propImage">
+          <p style="font-size: 11px; color: #666; margin: 10px 0;">Photo selection opens after clicking Publish</p>
           <button onclick="uploadProperty()" class="btn btn-dark">Publish</button>
           <p id="uploadStatus"></p>
         </div>
