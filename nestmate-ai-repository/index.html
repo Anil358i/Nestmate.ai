@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="src/style.css">
 
   <style>
-    /* Security Loading Screen */
+    /* Security Guard Styles */
     #auth-overlay {
       position: fixed;
       inset: 0;
@@ -31,16 +31,31 @@
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     
-    /* Hides content until login is confirmed */
+    /* Initially hide content for the guard */
     .page-shell { visibility: hidden; }
+
+    /* Ensure the carousel has a height and spacing */
+    .carousel-outer {
+      overflow-x: auto;
+      padding: 20px 0;
+      scrollbar-width: none;
+    }
+    .carousel-track {
+      display: flex;
+      gap: 24px;
+      padding: 0 5%;
+    }
   </style>
-<script type="module">
+
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    
-    // NEW: Imports for Database and Image Storage
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+    import { 
+      getFirestore, collection, addDoc, onSnapshot, query, orderBy 
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { 
+      getStorage, ref, uploadBytes, getDownloadURL 
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDTxyr3zJGsyfmdztvfFz8aw9XSyPCNeQM",
@@ -53,39 +68,28 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    
-    // NEW: Initialize Database and Storage
     const db = getFirestore(app);
     const storage = getStorage(app);
 
-    const safetyTimeout = setTimeout(() => {
-        window.location.href = "login.html";
-    }, 5000);
+    // BRIDGE: Share Firebase tools with chat.js
+    window.db = db;
+    window.storage = storage;
+    window.dbTools = { collection, addDoc, onSnapshot, query, orderBy, ref, uploadBytes, getDownloadURL };
 
+    // GUARD: Check login status
     onAuthStateChanged(auth, (user) => {
       if (user && user.emailVerified) {
-        clearTimeout(safetyTimeout);
-        
         document.getElementById('auth-overlay').style.display = 'none';
-        const shell = document.querySelector('.page-shell');
-        shell.style.visibility = 'visible';
+        document.querySelector('.page-shell').style.visibility = 'visible';
         
-        // NEW: Tell the site to load the dynamic properties from the database
-        if (typeof loadProperties === "function") {
-            loadProperties(); 
+        // Trigger property loading from chat.js
+        if (typeof window.loadProperties === "function") {
+          window.loadProperties();
         }
-        
-        window.scrollTo(0, 1); 
-        window.scrollTo(0, 0);
       } else {
         window.location.href = "login.html";
       }
     });
-
-    // NEW: Make these tools accessible to your chat.js file
-    window.db = db;
-    window.storage = storage;
-    window.dbTools = { collection, addDoc, onSnapshot, query, orderBy, ref, uploadBytes, getDownloadURL };
   </script>
 </head>
 <body>
@@ -96,98 +100,25 @@
   </div>
 
   <div class="page-shell">
-    <div class="ambient ambient-one"></div>
-    <div class="ambient ambient-two"></div>
-
     <header class="site-header">
       <div class="nav-inner">
         <div class="logo">NestMate AI</div>
         <nav class="nav-links">
           <a href="#how-it-works">How it works</a>
-          <a href="#features">Features</a>
-          <a href="#demo">Demo</a>
+          <a href="#list-property">Host</a>
+          <a href="#demo">AI Chat</a>
         </nav>
-        <button class="nav-cta option-trigger" type="button">Beta</button>
+        <button class="nav-cta option-trigger" data-popup-title="Beta Access" data-popup-body="You are currently using the NestMate Beta version for London graduates.">Beta</button>
       </div>
     </header>
-
-    <div class="hero-banner">
-      <img src="assets/London_Housing1.webp.jpg" alt="London Housing">
-    </div>
 
     <main>
       <section class="hero-section fade-in">
         <div class="eyebrow">Built for international graduates in London</div>
         <h1 class="hero-title">Live in London <span>for almost free.</span></h1>
-        <p class="hero-copy">NestMate helps you rent smarter, fill spare rooms faster, and reduce your monthly housing cost.</p>
-        <div class="hero-actions">
-          <a href="#demo" class="btn btn-dark">Try NestMate</a>
-        </div>
+        <p class="hero-copy">Rent a 3-bed house, fill the spare rooms, and save up to £1,800 monthly.</p>
       </section>
 
-      <section class="stats-section">
-        <div class="stat-card"><div class="stat-number">£1,800</div><div class="stat-label">Monthly savings</div></div>
-        <div class="stat-card"><div class="stat-number">48 hrs</div><div class="stat-label">To find tenants</div></div>
-        <div class="stat-card"><div class="stat-number">100%</div><div class="stat-label">Graduate Friendly</div></div>
-      </section>
-      <section class="feature-spotlight fade-in">
-        <div class="feature-copy">
-          <div class="eyebrow">AI Housing Assistant</div>
-          <h2>Save up to £1,800 a month</h2>
-          <p>Rent a 3-bed house, fill the spare rooms, and get step-by-step help with letters, listings, and contracts.</p>
-          <div class="glass-card">
-              <div class="glass-line strong">✓ Landlord approval support</div>
-              <div class="glass-line">✓ Area and savings calculator</div>
-              <div class="glass-line">✓ Lodger contract generator</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="story-grid fade-in">
-        <div class="story-card">
-          <div class="story-label">Step 1</div>
-          <h3>Find the right 3-bed</h3>
-          <p>Use your budget to understand which areas work and where your savings come from.</p>
-        </div>
-        <div class="story-card">
-          <div class="story-label">Step 2</div>
-          <h3>Get landlord approval</h3>
-          <p>Generate a professional permission letter and approach the conversation with clarity.</p>
-        </div>
-        <div class="story-card">
-          <div class="story-label">Step 3</div>
-          <h3>Fill spare rooms fast</h3>
-          <p>Create better listings and screen applicants to reduce the time it takes to find housemates.</p>
-        </div>
-      </section>
-      <section class="upload-section fade-in" id="list-property" style="padding: 60px 0;">
-        <div class="section-intro" style="text-align: center; margin-bottom: 40px;">
-          <div class="section-kicker">Host on NestMate</div>
-          <h2 class="section-title">List your property</h2>
-          <p class="section-copy" style="max-width: 600px; margin: 10px auto;">Help a fellow graduate and reduce your own rent. Just enter the weekly price, and we'll calculate the rest.</p>
-        </div>
-
-        <div class="glass-card" style="max-width: 500px; margin: 0 auto; padding: 40px; background: rgba(255, 255, 255, 0.6); border-radius: 32px; border: 1px solid rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px);">
-          <div style="display: flex; flex-direction: column; gap: 20px;">
-            <div class="input-group">
-              <label style="display: block; margin-bottom: 8px; font-weight: 600;">Property Name</label>
-              <input type="text" id="propName" placeholder="e.g. Camden 3-Bed House" style="width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: white;">
-            </div>
-            <div class="input-group">
-              <label style="display: block; margin-bottom: 8px; font-weight: 600;">Weekly Rent (£)</label>
-              <input type="number" id="propPriceWeek" placeholder="700" style="width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: white;">
-            </div>
-            <div class="input-group">
-              <label style="display: block; margin-bottom: 8px; font-weight: 600;">Property Image</label>
-              <input type="file" id="propImage" accept="image/*" style="padding: 10px 0;">
-            </div>
-            <button onclick="uploadProperty()" class="btn btn-dark" style="width: 100%; margin-top: 10px; cursor: pointer;">
-              Publish Listing
-            </button>
-            <p id="uploadStatus" style="font-size: 0.9rem; text-align: center; color: var(--muted); margin-top: 10px;"></p>
-          </div>
-        </div>
-      </section>
       <section class="story-section fade-in" id="how-it-works">
         <div class="duration-toggle">
           <div class="toggle-pill">
@@ -196,56 +127,56 @@
             <button class="toggle-btn" onclick="setDuration('month', this)">Per Month</button>
           </div>
         </div>
-        <section class="story-section fade-in" id="how-it-works">
-  <div class="duration-toggle">
-    <div class="toggle-pill">
-      <button class="toggle-btn active" onclick="setDuration('day', this)">Per Day</button>
-      <button class="toggle-btn" onclick="setDuration('week', this)">Per Week</button>
-      <button class="toggle-btn" onclick="setDuration('month', this)">Per Month</button>
-    </div>
-  </div>
 
-  <div class="carousel-outer full-bleed">
-    <div class="carousel-track" id="carouselTrack"></div>
-  </div>
+        <div class="carousel-outer">
+          <div class="carousel-track" id="carouselTrack">
+            </div>
+        </div>
 
-  <div class="carousel-nav">
-    <button class="nav-arrow" onclick="scrollCarousel(-1)">←</button>
-    <button class="nav-arrow" onclick="scrollCarousel(1)">→</button>
-  </div>
-</section>
-<div class="carousel-nav">
-  <button class="nav-arrow" onclick="scrollCarousel(-1)">←</button>
-  <button class="nav-arrow" onclick="scrollCarousel(1)">→</button>
-</div>
+        <div class="carousel-nav" style="text-align: center; margin-top: 20px;">
+          <button class="nav-arrow" onclick="scrollCarousel(-1)">←</button>
+          <button class="nav-arrow" onclick="scrollCarousel(1)">→</button>
         </div>
       </section>
 
-      <section class="demo-section" id="demo">
+      <section class="upload-section fade-in" id="list-property" style="padding: 80px 20px;">
+        <div class="glass-card" style="max-width: 500px; margin: 0 auto; padding: 40px;">
+          <h2 style="margin-bottom: 20px;">List your property</h2>
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <input type="text" id="propName" placeholder="e.g. Camden 3-Bed" style="padding: 14px; border-radius: 12px; border: 1px solid #ddd;">
+            <input type="number" id="propPriceWeek" placeholder="Weekly Rent (£)" style="padding: 14px; border-radius: 12px; border: 1px solid #ddd;">
+            <input type="file" id="propImage" accept="image/*">
+            <button onclick="uploadProperty()" class="btn btn-dark" style="padding: 16px; cursor: pointer;">Publish Listing</button>
+            <p id="uploadStatus" style="text-align: center; font-size: 0.9rem; color: #666;"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="demo-section fade-in" id="demo">
         <div class="chat-wrapper">
           <div class="chat-header">
             <div class="ai-avatar">N</div>
-            <div>NestMate AI</div>
+            <div>NestMate Assistant</div>
           </div>
           <div class="chat-messages" id="chatBox"></div>
           <div class="chat-input-area">
-            <input type="text" id="userInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter') sendMsg()">
+            <input type="text" id="userInput" placeholder="Ask about landlord letters or area advice..." onkeydown="if(event.key==='Enter') sendMsg()">
             <button class="send-btn" onclick="sendMsg()">Send</button>
           </div>
         </div>
       </section>
     </main>
 
-    <footer class="site-footer">
-      <p>NestMate AI - Helping international graduates live smarter in London.</p>
+    <footer class="site-footer" style="padding: 40px; text-align: center; opacity: 0.6;">
+      <p>NestMate AI - Helping you live smarter in London.</p>
     </footer>
   </div>
 
   <div class="popup-backdrop" id="popupBackdrop" hidden>
     <div class="popup-card">
-      <button class="popup-close" id="popupClose" type="button">Close</button>
-      <h3 id="popupTitle">Title</h3>
-      <p id="popupBody">Description</p>
+      <button class="popup-close" id="popupClose">×</button>
+      <h3 id="popupTitle"></h3>
+      <p id="popupBody"></p>
     </div>
   </div>
 
