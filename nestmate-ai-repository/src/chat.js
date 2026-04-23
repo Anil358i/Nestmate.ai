@@ -240,3 +240,34 @@ function loadProperties() {
 }
 
 window.loadProperties = loadProperties;
+/* ── USER MENU LOGIC ── */
+
+function toggleUserMenu() {
+    const menu = document.getElementById('userDropdown');
+    const isVisible = menu.style.display === 'block';
+    menu.style.display = isVisible ? 'none' : 'block';
+}
+
+// Close the menu if user clicks anywhere else on the screen
+window.addEventListener('click', (e) => {
+    const menu = document.getElementById('userDropdown');
+    const trigger = document.querySelector('.profile-trigger');
+    if (menu && !trigger.contains(e.target) && !menu.contains(e.target)) {
+        menu.style.display = 'none';
+    }
+});
+
+async function handleLogout() {
+    try {
+        // We use Firebase Auth to sign out
+        const { getAuth, signOut } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
+        const auth = getAuth();
+        await signOut(auth);
+        
+        // This will automatically trigger the 'onAuthStateChanged' 
+        // in your HTML and redirect the user to login.html
+    } catch (error) {
+        console.error("Logout Error:", error);
+        alert("Could not log out. Try again.");
+    }
+}
