@@ -160,6 +160,34 @@
           <p>Create better listings and screen applicants to reduce the time it takes to find housemates.</p>
         </div>
       </section>
+      <section class="upload-section fade-in" id="list-property" style="padding: 60px 0;">
+        <div class="section-intro" style="text-align: center; margin-bottom: 40px;">
+          <div class="section-kicker">Host on NestMate</div>
+          <h2 class="section-title">List your property</h2>
+          <p class="section-copy" style="max-width: 600px; margin: 10px auto;">Help a fellow graduate and reduce your own rent. Just enter the weekly price, and we'll calculate the rest.</p>
+        </div>
+
+        <div class="glass-card" style="max-width: 500px; margin: 0 auto; padding: 40px; background: rgba(255, 255, 255, 0.6); border-radius: 32px; border: 1px solid rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px);">
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <div class="input-group">
+              <label style="display: block; margin-bottom: 8px; font-weight: 600;">Property Name</label>
+              <input type="text" id="propName" placeholder="e.g. Camden 3-Bed House" style="width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: white;">
+            </div>
+            <div class="input-group">
+              <label style="display: block; margin-bottom: 8px; font-weight: 600;">Weekly Rent (£)</label>
+              <input type="number" id="propPriceWeek" placeholder="700" style="width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: white;">
+            </div>
+            <div class="input-group">
+              <label style="display: block; margin-bottom: 8px; font-weight: 600;">Property Image</label>
+              <input type="file" id="propImage" accept="image/*" style="padding: 10px 0;">
+            </div>
+            <button onclick="uploadProperty()" class="btn btn-dark" style="width: 100%; margin-top: 10px; cursor: pointer;">
+              Publish Listing
+            </button>
+            <p id="uploadStatus" style="font-size: 0.9rem; text-align: center; color: var(--muted); margin-top: 10px;"></p>
+          </div>
+        </div>
+      </section>
       <section class="story-section fade-in" id="how-it-works">
         <div class="duration-toggle">
           <div class="toggle-pill">
