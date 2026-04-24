@@ -144,7 +144,7 @@ body {
 .prop-image-wrap img {
   width: 100%;
   height: 100%;
-  object-fit: cover;         /* Crop to fit without distortion */
+  object-fit: contain;         /* Crop to fit without distortion */
   display: block;
   max-width: 320px;          /* Match card width — prevents blowout */
   flex-shrink: 0;
