@@ -319,3 +319,16 @@ window.openVideoModal = openVideoModal;
 window.closeVideoModal = closeVideoModal;
 window.togglePlay = togglePlay;
 window.toggleFullscreen = toggleFullscreen;
+/* ── MOBILE MENU ── */
+function toggleMobileMenu() {
+  document.querySelector('.site-header').classList.toggle('mobile-nav-open');
+}
+
+// Close menu when a nav link is clicked
+document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', () => {
+    document.querySelector('.site-header').classList.remove('mobile-nav-open');
+  });
+});
+
+window.toggleMobileMenu = toggleMobileMenu;
