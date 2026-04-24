@@ -465,3 +465,8 @@ body {
   z-index: 999;
   border-bottom: 1px solid var(--line);
 }
+/* ── DELETE BUTTON HOVER STATE ── */
+.dropdown-item[onclick="deleteUserListings()"]:hover {
+    background-color: rgba(255, 59, 48, 0.1); /* Subtle Apple Red tint */
+    color: #d70015 !important; /* Slightly darker red on hover */
+}
