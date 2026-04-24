@@ -140,7 +140,11 @@ async function uploadProperty() {
         alert("Services are still initializing. Please wait.");
         return;
     }
-
+    const user = auth.currentUser; 
+    if (!user) {
+        alert("You must be logged in to post a property.");
+        return;
+    }
     const name = document.getElementById('propName').value;
     const weeklyPrice = document.getElementById('propPriceWeek').value;
     const status = document.getElementById('uploadStatus');
@@ -168,6 +172,8 @@ async function uploadProperty() {
                     name: name,
                     priceWeek: parseInt(weeklyPrice),
                     imageUrl: imageUrl,
+                    userId: user.uid,
+                    userEmail: user.email,
                     createdAt: new Date()
                 });
 
