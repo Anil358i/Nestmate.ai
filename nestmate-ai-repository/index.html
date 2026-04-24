@@ -26,8 +26,7 @@
     window.dbTools = { collection, addDoc, onSnapshot, query, orderBy };
 
     window.handleLogout = () => signOut(auth);
-    import { deleteDoc, doc, getDocs, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
+    import { deleteDoc, doc, getDocs, where, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 window.deleteUserListings = async () => {
     const user = auth.currentUser;
     if (!user) return alert("Please log in first");
