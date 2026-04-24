@@ -26,7 +26,42 @@
     window.dbTools = { collection, addDoc, onSnapshot, query, orderBy };
 
     window.handleLogout = () => signOut(auth);
+    import { deleteDoc, doc, getDocs, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+window.deleteUserListings = async () => {
+    const user = auth.currentUser;
+    if (!user) return alert("Please log in first");
+
+    if (confirm("Are you sure? This will remove all your property listings from the site.")) {
+        try {
+            // This searches for properties where the "userId" matches the logged-in user
+            const q = query(
+                window.dbTools.collection(window.db, "properties"), 
+                where("userId", "==", user.uid)
+            );
+            
+            const querySnapshot = await getDocs(q);
+            
+            if (querySnapshot.empty) {
+                alert("You don't have any listings to delete.");
+                return;
+            }
+
+            // Deletes them one by one
+            const deletePromises = querySnapshot.docs.map(item => 
+                deleteDoc(doc(window.db, "properties", item.id))
+            );
+
+            await Promise.all(deletePromises);
+            alert("Success! Your listings have been removed.");
+            location.reload(); 
+            
+        } catch (error) {
+            console.error("Delete Error:", error);
+            alert("Could not delete. Check the console for details.");
+        }
+    }
+};
     onAuthStateChanged(auth, (user) => {
       const shell = document.querySelector('.page-shell');
       const overlay = document.getElementById('auth-overlay');
