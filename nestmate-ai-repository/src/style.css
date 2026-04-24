@@ -352,3 +352,107 @@ body {
   background: white;
   cursor: pointer;
 }
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+
+  /* FIX 1: Nav overlap — hide center links, keep logo and profile */
+  .nav-links {
+    display: none;
+  }
+
+  .nav-inner {
+    padding: 12px 20px;
+  }
+
+  /* FIX 2: Hero text smaller on mobile */
+  .hero-section {
+    padding: 80px 20px 50px;
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 12vw, 4rem);
+  }
+
+  .hero-copy {
+    font-size: 1rem;
+  }
+
+  /* FIX 3: Video banner padding */
+  .video-banner-section {
+    padding: 20px 16px 40px;
+  }
+
+  .video-banner-heading {
+    font-size: 1.6rem;
+  }
+
+  /* FIX 4: Carousel side padding */
+  .carousel-outer {
+    padding: 20px 16px;
+  }
+
+  /* FIX 5: Host section */
+  .upload-section {
+    padding: 40px 16px;
+  }
+
+  /* FIX 6: Chat section */
+  .demo-section {
+    padding: 0 16px 60px;
+  }
+
+  .chat-wrapper {
+    padding: 20px;
+    margin: 30px auto;
+  }
+
+  /* FIX 7: Volume bar hidden on mobile — too small */
+  .volume-group {
+    display: none;
+  }
+
+  /* FIX 8: Property cards slightly smaller on mobile */
+  .prop-card {
+    flex: 0 0 260px;
+    width: 260px;
+  }
+}
+
+/* ── HAMBURGER MENU FOR MOBILE ── */
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .mobile-menu-btn span {
+    width: 22px;
+    height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    display: block;
+  }
+}
+
+.mobile-menu-btn {
+  display: none;
+}
+/* ── MOBILE NAV DROPDOWN ── */
+.mobile-nav-open .nav-links {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  background: rgba(245, 245, 247, 0.97);
+  backdrop-filter: blur(20px);
+  padding: 20px;
+  gap: 20px;
+  text-align: center;
+  z-index: 999;
+  border-bottom: 1px solid var(--line);
+}
