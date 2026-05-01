@@ -120,7 +120,14 @@
       <button class="apple-btn-black" onclick="closePopup()">Done</button>
     </div>
   </div>
-
+  <!-- MY LISTINGS MODAL -->
+<div id="myListingsModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(10px); z-index:3000; align-items:center; justify-content:center; padding:20px;">
+  <div style="background:white; width:100%; max-width:600px; border-radius:28px; padding:30px; max-height:80vh; overflow-y:auto; position:relative;">
+    <h2 style="margin-top:0;">My Listings</h2>
+    <span onclick="closeMyListings()" style="position:absolute; top:20px; right:24px; font-size:24px; cursor:pointer; color:#86868b;">&times;</span>
+    <div id="myListingsGrid" style="display:flex; flex-direction:column; gap:16px; margin-top:20px;"></div>
+  </div>
+</div>
   <div class="page-shell" style="visibility:hidden; opacity:0;">
     <header class="site-header">
       <div class="nav-inner">
