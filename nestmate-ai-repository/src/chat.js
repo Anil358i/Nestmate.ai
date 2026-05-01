@@ -338,3 +338,74 @@ document.querySelectorAll('.nav-links a').forEach(link => {
 });
 
 window.toggleMobileMenu = toggleMobileMenu;
+/* ── MY LISTINGS MODAL ── */
+window.myListings = async () => {
+    const user = window.auth.currentUser;
+    if (!user) return alert("Not logged in");
+
+    const modal = document.getElementById('myListingsModal');
+    const grid = document.getElementById('myListingsGrid');
+    grid.innerHTML = '<p style="color:#86868b;">Loading...</p>';
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    try {
+        const { collection, query, where, getDocs } = window.dbTools;
+        const q = query(
+            collection(window.db, "properties"),
+            where("userId", "==", user.uid)
+        );
+        const snap = await getDocs(q);
+
+        if (snap.empty) {
+            grid.innerHTML = '<p style="color:#86868b; text-align:center;">You have no listings yet.</p>';
+            return;
+        }
+
+        grid.innerHTML = '';
+        snap.forEach((item) => {
+            const data = item.data();
+            const prices = calculatePrices(data.priceWeek);
+            const card = document.createElement('div');
+            card.style.cssText = `
+                display:flex; align-items:center; gap:16px;
+                background:#f5f5f7; border-radius:18px; padding:16px;
+            `;
+            card.innerHTML = `
+                <img src="${data.imageUrl}" style="width:80px; height:80px; border-radius:12px; object-fit:cover;">
+                <div style="flex:1;">
+                    <div style="font-weight:700; font-size:1rem;">${data.name}</div>
+                    <div style="color:#86868b; font-size:0.9rem;">£${prices.week} / week</div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <button onclick="deleteSingleListing('${item.id}')" 
+                        style="padding:8px 16px; background:#ff3b30; color:white; 
+                        border:none; border-radius:10px; cursor:pointer; font-weight:600;">
+                        Delete
+                    </button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+    } catch (error) {
+        grid.innerHTML = '<p style="color:red;">Error loading listings: ' + error.message + '</p>';
+    }
+};
+
+window.closeMyListings = () => {
+    document.getElementById('myListingsModal').style.display = 'none';
+    document.body.style.overflow = '';
+};
+
+window.deleteSingleListing = async (docId) => {
+    if (!confirm("Delete this listing?")) return;
+    try {
+        const { deleteDoc, doc } = window.dbTools;
+        await deleteDoc(doc(window.db, "properties", docId));
+        alert("Listing deleted!");
+        window.myListings();
+    } catch (error) {
+        alert("Error: " + error.message);
+    }
+};
