@@ -33,35 +33,39 @@
     window.dbTools = { collection, addDoc, onSnapshot, query, orderBy, getDocs, where, deleteDoc, doc };
 
     window.handleLogout = () => signOut(auth);
-
     window.deleteUserListings = async () => {
-        const user = auth.currentUser;
-        if (!user) return alert("Please log in first");
-        if (confirm("Are you sure? This will remove all your property listings from the site.")) {
-    try {
-        const q = query(
-            collection(window.db, "properties"), 
-            where("userId", "==", user.uid)
-        );        
-                const querySnapshot = await getDocs(q);
-                
-                if (querySnapshot.empty) {
-                    alert("You don't have any listings to delete.");
-                    return;
-                }
+    const user = window.auth.currentUser;
+    if (!user) return alert("Not logged in");
+    
+    alert("Your UID is: " + user.uid);
 
-                const deletePromises = querySnapshot.docs.map(item => 
-                    deleteDoc(doc(window.db, "properties", item.id))
-                );
+    const { collection, query, where, getDocs, deleteDoc, doc } = window.dbTools;
+    const q = query(
+        collection(window.db, "properties"),
+        where("userId", "==", user.uid)
+    );
+    const snap = await getDocs(q);
+    alert("Found " + snap.size + " documents");
 
-                await Promise.all(deletePromises);
-                alert("Success! Your listings have been removed.");
-                location.reload(); 
-                
-            } catch (error) {
-                console.error("Delete Error:", error);
-                alert("Could not delete: " + error.message);
-            }
+    if (snap.empty) {
+        alert("You don't have any listings to delete.");
+        return;
+    }
+
+    if (confirm("Are you sure? This will remove all your property listings from the site.")) {
+        try {
+            const deletePromises = snap.docs.map(item =>
+                deleteDoc(doc(window.db, "properties", item.id))
+            );
+            await Promise.all(deletePromises);
+            alert("Success! Your listings have been removed.");
+            location.reload();
+        } catch (error) {
+            console.error("Delete Error:", error);
+            alert("Could not delete: " + error.message);
+        }
+    }
+};
         }
     };
 
