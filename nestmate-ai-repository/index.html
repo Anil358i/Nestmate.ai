@@ -60,7 +60,7 @@
                 
             } catch (error) {
                 console.error("Delete Error:", error);
-                alert("Could not delete. Check the console.");
+                alert("Could not delete: " + error.message);
             }
         }
     };
