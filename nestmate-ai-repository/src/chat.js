@@ -1,4 +1,3 @@
-JS 
 /* ── UI & CHAT LOGIC ── */
 
 function appendMsg(type, html) {
