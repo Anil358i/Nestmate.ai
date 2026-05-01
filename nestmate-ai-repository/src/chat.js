@@ -1,9 +1,9 @@
-/* -- UI & CHAT LOGIC -- */
+JS 
+/* ── UI & CHAT LOGIC ── */
 
 function appendMsg(type, html) {
     const box = document.getElementById('chatBox');
     if (!box) return;
-
     const div = document.createElement('div');
     div.className = `msg ${type}`;
     div.innerHTML = `
@@ -17,7 +17,6 @@ function appendMsg(type, html) {
 function showTyping() {
     const box = document.getElementById('chatBox');
     if (!box) return;
-
     const div = document.createElement('div');
     div.className = 'msg ai';
     div.id = 'typingIndicator';
@@ -37,7 +36,6 @@ function removeTyping() {
 function sendMsg() {
     const input = document.getElementById('userInput');
     if (!input) return;
-
     const text = input.value.trim();
     if (!text) return;
 
@@ -47,14 +45,12 @@ function sendMsg() {
 
     setTimeout(() => {
         removeTyping();
-        const reply = typeof getResponse === 'function'
-            ? getResponse(text)
-            : "I'm looking into that for you!";
+        const reply = (typeof getResponse === 'function') ? getResponse(text) : "I'm looking into that for you!";
         appendMsg('ai', reply);
     }, 900);
 }
 
-/* -- POPUP & MODAL LOGIC -- */
+/* ── POPUP & MODAL LOGIC (UPDATED FOR CENTERING) ── */
 
 function openPopup(title, body) {
     const backdrop = document.getElementById('popupBackdrop');
@@ -65,36 +61,396 @@ function openPopup(title, body) {
 
     titleEl.textContent = title;
     bodyEl.textContent = body;
-
+    
+    // Using flex to ensure the CSS centering works perfectly
     backdrop.style.display = 'flex';
-    if ('hidden' in backdrop) backdrop.hidden = false;
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden'; 
 }
 
 function closePopup() {
     const backdrop = document.getElementById('popupBackdrop');
-    if (!backdrop) return;
-
-    backdrop.style.display = 'none';
-    if ('hidden' in backdrop) backdrop.hidden = true;
-    document.body.style.overflow = '';
+    if (backdrop) {
+        backdrop.style.display = 'none';
+        document.body.style.overflow = ''; 
+    }
 }
 
-/* -- PROPERTY ENGINE: CLOUDINARY + FIREBASE -- */
+document.addEventListener('DOMContentLoaded', () => {
+    // Scroll animations
+    const fadeElements = document.querySelectorAll('.fade-in');
+    const checkFade = () => {
+        fadeElements.forEach((el) => {
+            const rect = el.getBoundingClientRect();
+            if (rect.top < window.innerHeight - 50) {
+                el.classList.add('visible');
+            }
+        });
+    };
+    window.addEventListener('scroll', checkFade);
+    checkFade();
+
+    // Carousel dragging
+    const slider = document.querySelector('.carousel-outer'); 
+    let isDown = false, startX, scrollLeft;
+    if (slider) {
+        slider.addEventListener('mousedown', (e) => {
+            isDown = true;
+            slider.classList.add('active');
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+        });
+        slider.addEventListener('mouseleave', () => { isDown = false; slider.classList.remove('active'); });
+        slider.addEventListener('mouseup', () => { isDown = false; slider.classList.remove('active'); });
+        slider.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - slider.offsetLeft;
+            const walk = (x - startX) * 2;
+            slider.scrollLeft = scrollLeft - walk;
+        });
+    }
+});
+
+/* ── PROPERTY ENGINE (CLOUDINARY + FIREBASE) ── */
 
 const perLabels = { day: '/ day', week: '/ week', month: '/ month' };
-let selectedDuration = 'day';
-let latestProperties = [];
 
-function escapeHtml(value) {
-    const div = document.createElement('div');
-    div.textContent = value || '';
-    return div.innerHTML;
+function setDuration(duration, btn) {
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+
+    document.querySelectorAll('.prop-price').forEach(el => {
+        const newPrice = el.dataset[duration]; 
+        const strongTag = el.querySelector('strong');
+        const perTag = el.querySelector('.per');
+        if (strongTag) strongTag.textContent = newPrice;
+        if (perTag) perTag.textContent = perLabels[duration];
+    });
 }
 
 function calculatePrices(weeklyRent) {
-    const rent = Number(weeklyRent) || 0;
     return {
-        day: Math.round(rent / 7),
-        week: rent,
-        month: Math.round(rent * 4.33)
+        day: Math.round(weeklyRent / 7),
+        week: weeklyRent,
+        month: Math.round(weeklyRent * 4.33)
+    };
+}
+
+async function uploadProperty() {
+    if (!window.dbTools || !window.db) {
+        alert("Services are still initializing. Please wait.");
+        return;
+    }
+    const user = window.auth.currentUser; 
+    if (!user) {
+        alert("You must be logged in to post a property.");
+        return;
+    }
+    const name = document.getElementById('propName').value;
+    const weeklyPrice = document.getElementById('propPriceWeek').value;
+    const status = document.getElementById('uploadStatus');
+
+    if(!name || !weeklyPrice) {
+        alert("Please enter Name and Price.");
+        return;
+    }
+
+    cloudinary.openUploadWidget({
+        cloudName: "dhmsg8euy", 
+        uploadPreset: "nestmate_unsigned", 
+        sources: ['local', 'url', 'camera'],
+        multiple: false,
+        cropping: true,
+        styles: { palette: { window: "#FFFFFF", sourceBg: "#F4F4F5" } }
+    }, async (error, result) => {
+        if (!error && result && result.event === "success") {
+            const imageUrl = result.info.secure_url;
+            status.textContent = "Photo secured! Saving...";
+
+            try {
+                const { collection, addDoc } = window.dbTools;
+                await addDoc(collection(window.db, "properties"), {
+                    name: name,
+                    priceWeek: parseInt(weeklyPrice),
+                    imageUrl: imageUrl,
+                    userId: user.uid,
+                    userEmail: user.email,
+                    createdAt: new Date()
+                });
+
+                status.textContent = "Success! Your listing is live.";
+                document.getElementById('propName').value = '';
+                document.getElementById('propPriceWeek').value = '';
+                window.scrollTo({ top: document.getElementById('explore').offsetTop - 100, behavior: 'smooth' });
+            } catch (firebaseError) {
+                console.error("Firebase Error:", firebaseError);
+                status.textContent = "Database error.";
+            }
+        }
+    });
+}
+
+function loadProperties() {
+    const track = document.getElementById('carouselTrack');
+    if (!track || !window.dbTools || !window.db) return;
+
+    const { query, collection, orderBy, onSnapshot } = window.dbTools;
+    const q = query(collection(window.db, "properties"), orderBy("createdAt", "desc"));
+
+    onSnapshot(q, (snapshot) => {
+        track.innerHTML = ''; 
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            const prices = calculatePrices(data.priceWeek);
+            const card = document.createElement('div');
+            card.className = 'prop-card';
+            card.innerHTML = `
+                <div class="prop-image-wrap">
+                    <img src="${data.imageUrl}" alt="Property" loading="lazy">
+                </div>
+                <div class="prop-info">
+                    <div class="prop-name">${data.name}</div>
+                    <div class="prop-price" 
+                         data-day="£${prices.day.toLocaleString()}" 
+                         data-week="£${prices.week.toLocaleString()}" 
+                         data-month="£${prices.month.toLocaleString()}">
+                        <strong>£${prices.day.toLocaleString()}</strong> <span class="per">/ day</span>
+                    </div>
+                </div>
+            `;
+            track.appendChild(card);
+        });
+    });
+}
+
+/* ── USER MENU & AUTH LOGIC ── */
+
+function toggleUserMenu() {
+    const menu = document.getElementById('userDropdown');
+    if (!menu) return;
+    const isVisible = menu.style.display === 'block';
+    menu.style.display = isVisible ? 'none' : 'block';
+}
+
+window.addEventListener('click', (e) => {
+    const menu = document.getElementById('userDropdown');
+    const trigger = document.querySelector('.profile-trigger');
+    if (menu && trigger && !trigger.contains(e.target) && !menu.contains(e.target)) {
+        menu.style.display = 'none';
+    }
+});
+
+async function handleLogout() {
+    if (window.handleLogout) {
+        await window.handleLogout();
+    }
+}
+
+// Global exposure
+window.uploadProperty = uploadProperty;
+window.loadProperties = loadProperties;
+window.toggleUserMenu = toggleUserMenu;
+window.handleLogout = handleLogout;
+window.openPopup = openPopup;
+window.closePopup = closePopup;
+/* ── VIDEO MODAL LOGIC ── */
+
+function openVideoModal() {
+  const modal = document.getElementById('videoModal');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeVideoModal(e) {
+  if (e && e.target !== document.getElementById('videoModal') && 
+      !e.target.classList.contains('video-close-btn')) return;
+  const modal = document.getElementById('videoModal');
+  const video = document.getElementById('nestVideo');
+  modal.style.display = 'none';
+  video.pause();
+  document.body.style.overflow = '';
+}
+
+function togglePlay() {
+  const video = document.getElementById('nestVideo');
+  const icon = document.getElementById('playIcon');
+  if (video.paused) {
+    video.play();
+    icon.setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'); // pause icon
+  } else {
+    video.pause();
+    icon.setAttribute('d', 'M8 5v14l11-7z'); // play icon
+  }
+}
+
+function toggleFullscreen() {
+  const card = document.querySelector('.video-modal-card');
+  if (!document.fullscreenElement) {
+    card.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+// Sync progress bar with video
+document.addEventListener('DOMContentLoaded', () => {
+  const video = document.getElementById('nestVideo');
+  const progress = document.getElementById('progressBar');
+  const volume = document.getElementById('volumeBar');
+  const icon = document.getElementById('playIcon');
+
+  if (!video) return;
+
+  video.addEventListener('timeupdate', () => {
+    if (video.duration) {
+      progress.max = video.duration;
+      progress.value = video.currentTime;
+    }
+  });
+
+  video.addEventListener('ended', () => {
+    icon.setAttribute('d', 'M8 5v14l11-7z');
+    progress.value = 0;
+  });
+
+  progress.addEventListener('input', () => {
+    video.currentTime = progress.value;
+  });
+
+  volume.addEventListener('input', () => {
+    video.volume = volume.value / 100;
+  });
+});
+
+window.openVideoModal = openVideoModal;
+window.closeVideoModal = closeVideoModal;
+window.togglePlay = togglePlay;
+window.toggleFullscreen = toggleFullscreen;
+/* ── MOBILE MENU ── */
+function toggleMobileMenu() {
+  document.querySelector('.site-header').classList.toggle('mobile-nav-open');
+}
+
+// Close menu when a nav link is clicked
+document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', () => {
+    document.querySelector('.site-header').classList.remove('mobile-nav-open');
+  });
+});
+
+window.toggleMobileMenu = toggleMobileMenu;
+/* ── MY LISTINGS MODAL ── */
+window.myListings = async () => {
+    const user = window.auth.currentUser;
+    if (!user) return alert("Not logged in");
+
+    const modal = document.getElementById('myListingsModal');
+    const grid = document.getElementById('myListingsGrid');
+    grid.innerHTML = '<p style="color:#86868b;">Loading...</p>';
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    try {
+        const { collection, query, where, getDocs } = window.dbTools;
+        const q = query(
+            collection(window.db, "properties"),
+            where("userId", "==", user.uid)
+        );
+        const snap = await getDocs(q);
+
+        if (snap.empty) {
+            grid.innerHTML = '<p style="color:#86868b; text-align:center;">You have no listings yet.</p>';
+            return;
+        }
+
+        grid.innerHTML = '';
+        snap.forEach((item) => {
+            const data = item.data();
+            const prices = calculatePrices(data.priceWeek);
+            const card = document.createElement('div');
+            card.style.cssText = `
+                display:flex; align-items:center; gap:16px;
+                background:#f5f5f7; border-radius:18px; padding:16px;
+            `;
+            card.innerHTML = `
+                <img src="${data.imageUrl}" style="width:80px; height:80px; border-radius:12px; object-fit:cover;">
+                <div style="flex:1;">
+                    <div style="font-weight:700; font-size:1rem;">${data.name}</div>
+                    <div style="color:#86868b; font-size:0.9rem;">£${prices.week} / week</div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <button onclick="deleteSingleListing('${item.id}')" 
+                        style="padding:8px 16px; background:#ff3b30; color:white; 
+                        border:none; border-radius:10px; cursor:pointer; font-weight:600;">
+                        Delete
+                    </button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+    } catch (error) {
+        grid.innerHTML = '<p style="color:red;">Error loading listings: ' + error.message + '</p>';
+    }
+};
+
+window.closeMyListings = () => {
+    document.getElementById('myListingsModal').style.display = 'none';
+    document.body.style.overflow = '';
+};
+
+window.deleteSingleListing = async (docId) => {
+    if (!confirm("Delete this listing?")) return;
+    try {
+        const { deleteDoc, doc } = window.dbTools;
+        await deleteDoc(doc(window.db, "properties", docId));
+        alert("Listing deleted!");
+        window.myListings();
+    } catch (error) {
+        alert("Error: " + error.message);
+    }
+};
+window.modalUploadProperty = () => {
+    const user = window.auth.currentUser;
+    if (!user) return alert("Not logged in");
+
+    const name = document.getElementById('modalPropName').value;
+    const weeklyPrice = document.getElementById('modalPropPrice').value;
+    const status = document.getElementById('modalUploadStatus');
+
+    if (!name || !weeklyPrice) {
+        alert("Please enter Name and Price.");
+        return;
+    }
+
+    cloudinary.openUploadWidget({
+        cloudName: "dhmsg8euy",
+        uploadPreset: "nestmate_unsigned",
+        sources: ['local', 'url', 'camera'],
+        multiple: false,
+        cropping: true,
+        styles: { palette: { window: "#FFFFFF", sourceBg: "#F4F4F5" } }
+    }, async (error, result) => {
+        if (!error && result && result.event === "success") {
+            const imageUrl = result.info.secure_url;
+            status.textContent = "Photo secured! Saving...";
+            try {
+                const { collection, addDoc } = window.dbTools;
+                await addDoc(collection(window.db, "properties"), {
+                    name: name,
+                    priceWeek: parseInt(weeklyPrice),
+                    imageUrl: imageUrl,
+                    userId: user.uid,
+                    userEmail: user.email,
+                    createdAt: new Date()
+                });
+                status.textContent = "Published successfully!";
+                document.getElementById('modalPropName').value = '';
+                document.getElementById('modalPropPrice').value = '';
+                window.myListings();
+            } catch (err) {
+                status.textContent = "Error: " + err.message;
+            }
+        }
+    });
+};
