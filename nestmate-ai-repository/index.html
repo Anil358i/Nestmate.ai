@@ -37,7 +37,7 @@
     window.deleteUserListings = async () => {
         const user = auth.currentUser;
         if (!user) return alert("Please log in first");
-
+          alert("Your user ID is: " + user.uid);
         if (confirm("Are you sure? This will remove all your property listings from the site.")) {
             try {
                 const q = query(
