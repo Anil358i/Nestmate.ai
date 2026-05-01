@@ -140,7 +140,7 @@ async function uploadProperty() {
         alert("Services are still initializing. Please wait.");
         return;
     }
-    const user = auth.currentUser; 
+    const user = window.auth.currentUser; 
     if (!user) {
         alert("You must be logged in to post a property.");
         return;
