@@ -1,146 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NestMate AI - London</title>
-  <link rel="stylesheet" href="src/style.css">
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { 
-        getFirestore, collection, addDoc, onSnapshot, query, orderBy, 
-        deleteDoc, doc, getDocs, where 
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDTxyr3zJGsyfmdztvfFz8aw9XSyPCNeQM",
-      authDomain: "nestmate-ai.firebaseapp.com",
-      projectId: "nestmate-ai",
-      storageBucket: "nestmate-ai.firebasestorage.app",
-      messagingSenderId: "7053398074",
-      appId: "1:7053398074:web:13dc18b49402d95107a503"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    window.auth = auth;
-    window.db = getFirestore(app);
-    
-    window.dbTools = { collection, addDoc, onSnapshot, query, orderBy, getDocs, where, deleteDoc, doc };
-
-    window.handleLogout = () => signOut(auth);
-
-    window.deleteUserListings = async () => {
-        const user = window.auth.currentUser;
-        if (!user) return alert("Not logged in");
-
-        const { collection, query, where, getDocs, deleteDoc, doc } = window.dbTools;
-        const q = query(
-            collection(window.db, "properties"),
-            where("userId", "==", user.uid)
-        );
-        const snap = await getDocs(q);
-
-        if (snap.empty) {
-            alert("You don't have any listings to delete.");
-            return;
-        }
-
-        if (confirm("Are you sure? This will remove all your property listings from the site.")) {
-            try {
-                const deletePromises = snap.docs.map(item =>
-                    deleteDoc(doc(window.db, "properties", item.id))
-                );
-                await Promise.all(deletePromises);
-                alert("Success! Your listings have been removed.");
-                location.reload();
-            } catch (error) {
-                console.error("Delete Error:", error);
-                alert("Could not delete: " + error.message);
-            }
-        }
-    };
-
-    onAuthStateChanged(auth, (user) => {
-      const shell = document.querySelector('.page-shell');
-      const overlay = document.getElementById('auth-overlay');
-
-      if (user) {
-        overlay.style.display = 'none';
-        shell.style.visibility = 'visible';
-        shell.style.opacity = '1';
-        shell.style.transition = 'opacity 0.3s ease';
-        if (typeof window.loadProperties === "function") window.loadProperties();
-        setTimeout(() => {
-          document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
-        }, 150);
-      } else {
-        window.location.href = "login.html";
-      }
-    });
-  </script>
-  <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
+  <link rel="stylesheet" href="src/style.css" />
 </head>
 <body>
-
-  <div id="auth-overlay" style="position:fixed;inset:0;background:white;display:flex;align-items:center;justify-content:center;z-index:10000;">
-    <p>Connecting...</p>
-  </div>
-
-  <!-- VIDEO MODAL -->
-  <div id="videoModal" class="video-modal-backdrop" onclick="closeVideoModal(event)">
-    <div class="video-modal-card">
-      <button class="video-close-btn" onclick="closeVideoModal()">&#x2715;</button>
-      <div class="video-container">
-        <video id="nestVideo" src="https://res.cloudinary.com/dhmsg8euy/video/upload/v1776991469/YTDown.com_YouTube_LONDON-Cinematic-Travel-Video-Sony-A-7-I_Media_MR79R-Yj884_001_1080p_fav8ns.mp4" preload="metadata"></video>
-        <div class="video-controls">
-          <button class="ctrl-btn" onclick="togglePlay()" id="playBtn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
-          </button>
-          <input type="range" id="progressBar" class="progress-bar" value="0" min="0" step="0.1">
-          <div class="volume-group">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-            <input type="range" id="volumeBar" class="volume-bar" value="100" min="0" max="100">
-          </div>
-          <button class="ctrl-btn" onclick="toggleFullscreen()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- POPUP MODAL -->
-  <div id="popupBackdrop" class="popup-backdrop" onclick="closePopup()">
-    <div class="popup-card" onclick="event.stopPropagation()">
-      <span class="close-x" onclick="closePopup()">&times;</span>
-      <h2 id="popupTitle" style="margin-top:0;"></h2>
-      <p id="popupBody" style="color: #666; margin-bottom: 25px;"></p>
-      <button class="apple-btn-black" onclick="closePopup()">Done</button>
-    </div>
-  </div>
-  <!-- MY LISTINGS MODAL -->
-<div id="myListingsModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(10px); z-index:3000; align-items:center; justify-content:center; padding:20px;">
-  <div style="background:white; width:100%; max-width:600px; border-radius:28px; padding:30px; max-height:80vh; overflow-y:auto; position:relative;">
-    <h2 style="margin-top:0;">My Listings</h2>
-    <span onclick="closeMyListings()" style="position:absolute; top:20px; right:24px; font-size:24px; cursor:pointer; color:#86868b;">&times;</span>
-    <!-- PUBLISH FORM INSIDE MODAL -->
-<div style="background:#f5f5f7; border-radius:18px; padding:20px; margin-bottom:20px;">
-    <p style="color:#0071e3; font-weight:700; font-size:0.8rem; text-transform:uppercase; margin:0 0 10px 0;">Add New Listing</p>
-    <input type="text" id="modalPropName" placeholder="Property Name" style="width:100%; padding:14px; border-radius:12px; border:1px solid #e0e0e0; margin-bottom:10px; outline:none; background:white; box-sizing:border-box;">
-    <input type="number" id="modalPropPrice" placeholder="Weekly Rent (£)" style="width:100%; padding:14px; border-radius:12px; border:1px solid #e0e0e0; margin-bottom:10px; outline:none; background:white; box-sizing:border-box;">
-    <button onclick="modalUploadProperty()" style="width:100%; padding:14px; background:black; color:white; border:none; border-radius:12px; font-weight:600; cursor:pointer;">
-        Publish
-    </button>
-    <p id="modalUploadStatus" style="text-align:center; color:#86868b; font-size:0.85rem; margin-top:8px;"></p>
-</div>
-
-<!-- LISTINGS GRID -->
-<div id="myListingsGrid" style="display:flex; flex-direction:column; gap:16px;"></div>
-  </div>
-</div>
-  <div class="page-shell" style="visibility:hidden; opacity:0;">
+  <div class="page-shell">
     <header class="site-header">
       <div class="nav-inner">
         <div class="logo">NestMate AI</div>
@@ -149,76 +16,176 @@
           <a href="#list-property">Host</a>
           <a href="#demo">AI Chat</a>
         </nav>
-        <div class="mobile-menu-btn" onclick="toggleMobileMenu()">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-        <div class="user-menu-container">
-          <div class="profile-trigger" onclick="toggleUserMenu()"><span>A</span></div>
-          <div id="userDropdown" class="user-dropdown">
-            <div class="dropdown-item" onclick="openPopup('Settings', 'Customize your NestMate preferences.')">Settings</div>
-            <div class="dropdown-item" onclick="openPopup('Contact', 'Reach us at support@nestmate.ai')">Contact</div>
-            <hr style="border:0; border-top:1px solid #eee; margin:5px 0;">
-            <div class="dropdown-item" onclick="myListings()" style="color:#0071e3; font-weight: 600;">My Listings</div>
-            <div class="dropdown-item logout-btn" onclick="handleLogout()" style="color:#ff3b30;">Logout</div>
-          </div>
-        </div>
       </div>
     </header>
 
     <main>
-      <section class="hero-section fade-in">
+      <section class="hero-section fade-in visible">
         <h1 class="hero-title">Live in London <span>for almost free.</span></h1>
         <p class="hero-copy">Rent a 3-bed house, fill spare rooms, and save up to £1,800.</p>
       </section>
 
-      <!-- VIDEO BANNER SECTION -->
-      <section class="video-banner-section fade-in">
+      <section class="video-banner-section fade-in visible">
         <h2 class="video-banner-heading">Find your perfect space.</h2>
         <div class="video-banner-card" onclick="openVideoModal()">
-          <img src="https://res.cloudinary.com/dhmsg8euy/image/upload/v1776990329/pexels-vincent-wei-64074344-8332179_uhd8c0.jpg" alt="NestMate London" class="video-banner-img">
+          <img
+            src="https://res.cloudinary.com/dhmsg8euy/image/upload/v1776990329/pexels-vincent-wei-64074344-8332179_uhd8c0.jpg"
+            alt="NestMate London"
+            class="video-banner-img"
+          />
           <div class="video-banner-overlay">
-            <div class="video-play-hint">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
-              Watch the tour
-            </div>
+            <div class="video-play-hint">▶ Watch the tour</div>
           </div>
         </div>
       </section>
 
-      <section class="explore-section fade-in" id="explore" style="text-align:center;">
+      <section class="explore-section fade-in visible" id="explore" style="text-align:center;">
         <h2>Available Listings</h2>
         <div class="toggle-group">
           <button class="toggle-btn active" onclick="setDuration('day', this)">Day</button>
           <button class="toggle-btn" onclick="setDuration('week', this)">Week</button>
           <button class="toggle-btn" onclick="setDuration('month', this)">Month</button>
         </div>
-        <div class="carousel-outer"><div id="carouselTrack" class="carousel-track"></div></div>
+        <div class="carousel-outer">
+          <div id="carouselTrack" class="carousel-track"></div>
+        </div>
       </section>
 
-      <section class="upload-section fade-in" id="list-property">
+      <section class="upload-section fade-in visible" id="list-property">
         <div class="glass-card">
-          <p style="color:#0071e3; font-weight:700; font-size:0.8rem; text-transform:uppercase;">For Hosts</p>
+          <p style="color:#0071e3;font-weight:700;font-size:0.8rem;text-transform:uppercase;">For Hosts</p>
           <h2>Share your space.</h2>
-          <input type="text" id="propName" placeholder="Property Name">
-          <input type="number" id="propPriceWeek" placeholder="Weekly Rent (£)">
+
+          <input type="text" id="propName" placeholder="Property Name" />
+          <input type="number" id="propPriceWeek" placeholder="Weekly Rent (£)" />
+          <input type="tel" id="propPhone" placeholder="Your Phone Number" />
+          <input type="text" id="propAddress" placeholder="Property Address (e.g. 12 Baker St, London)" />
+
           <button onclick="uploadProperty()" class="apple-btn-black">Publish</button>
           <p id="uploadStatus"></p>
         </div>
       </section>
 
-      <section class="demo-section fade-in" id="demo">
+      <section class="demo-section fade-in visible" id="demo">
         <div class="chat-wrapper">
-          <div class="chat-messages" id="chatBox"></div>
+          <div class="chat-messages" id="chatBox">
+            <div class="msg ai">
+              <div class="msg-avatar ai">N</div>
+              <div class="msg-bubble">
+                Hey, I am NestMate. Ask me about London rent, landlord messages, listings, or savings.
+              </div>
+            </div>
+          </div>
+
           <div class="chat-input-area">
-            <input type="text" id="userInput" placeholder="Ask NestMate AI..." onkeydown="if(event.key==='Enter') sendMsg()">
+            <input type="text" id="userInput" placeholder="Ask NestMate AI..." />
             <button onclick="sendMsg()" class="send-btn">Send</button>
           </div>
         </div>
       </section>
     </main>
   </div>
+
+  <div id="videoModal" class="video-modal-backdrop" style="display:none;" onclick="closeVideoModal(event)">
+    <div class="video-modal-card" onclick="event.stopPropagation()">
+      <button onclick="closeVideoModal()" class="video-close-btn">✕</button>
+      <video
+        id="nestVideo"
+        src="https://res.cloudinary.com/dhmsg8euy/video/upload/v1776991469/YTDown.com_YouTube_LONDON-Cinematic-Travel-Video-Sony-A-7-I_Media_MR79R-Yj884_001_1080p_fav8ns.mp4"
+        controls
+        style="width:100%;display:block;"
+      ></video>
+    </div>
+  </div>
+
+  <script>
+    const demoListings = [
+      {
+        name: "Bright Room in Stratford",
+        priceWeek: 210,
+        phone: "+44 7000 000000",
+        address: "Stratford, London",
+        imageUrl: "https://res.cloudinary.com/dhmsg8euy/image/upload/v1776990329/pexels-vincent-wei-64074344-8332179_uhd8c0.jpg"
+      },
+      {
+        name: "Modern Double Room",
+        priceWeek: 240,
+        phone: "+44 7111 111111",
+        address: "Woolwich, London",
+        imageUrl: "https://res.cloudinary.com/dhmsg8euy/image/upload/v1776990329/pexels-vincent-wei-64074344-8332179_uhd8c0.jpg"
+      }
+    ];
+
+    let duration = "day";
+
+    function priceText(priceWeek) {
+      if (duration === "day") return "£" + Math.round(priceWeek / 7) + " / day";
+      if (duration === "month") return "£" + Math.round(priceWeek * 4.345) + " / month";
+      return "£" + priceWeek + " / week";
+    }
+
+    function renderListings() {
+      const track = document.getElementById("carouselTrack");
+      track.innerHTML = demoListings.map((item, index) => `
+        <div class="property-card">
+          <img src="${item.imageUrl}" alt="${item.name}">
+          <div class="property-card-body">
+            <h3>${item.name}</h3>
+            <p>${item.address}</p>
+            <p><strong>${priceText(item.priceWeek)}</strong></p>
+            <button onclick="alert('Phone: ${item.phone}\\nAddress: ${item.address}')" class="apple-btn-black">
+              View Details
+            </button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function setDuration(value, btn) {
+      duration = value;
+      document.querySelectorAll(".toggle-btn").forEach(button => button.classList.remove("active"));
+      btn.classList.add("active");
+      renderListings();
+    }
+
+    function uploadProperty() {
+      const name = document.getElementById("propName").value.trim();
+      const price = document.getElementById("propPriceWeek").value.trim();
+      const phone = document.getElementById("propPhone").value.trim();
+      const address = document.getElementById("propAddress").value.trim();
+      const status = document.getElementById("uploadStatus");
+
+      if (!name || !price || !phone || !address) {
+        status.textContent = "Please fill all fields.";
+        return;
+      }
+
+      demoListings.unshift({
+        name,
+        priceWeek: Number(price),
+        phone,
+        address,
+        imageUrl: "https://res.cloudinary.com/dhmsg8euy/image/upload/v1776990329/pexels-vincent-wei-64074344-8332179_uhd8c0.jpg"
+      });
+
+      status.textContent = "Listing added.";
+      renderListings();
+    }
+
+    function openVideoModal() {
+      document.getElementById("videoModal").style.display = "flex";
+      document.getElementById("nestVideo").play();
+    }
+
+    function closeVideoModal() {
+      const modal = document.getElementById("videoModal");
+      const video = document.getElementById("nestVideo");
+      video.pause();
+      modal.style.display = "none";
+    }
+
+    renderListings();
+  </script>
 
   <script src="src/responses.js"></script>
   <script src="src/chat.js"></script>
