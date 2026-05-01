@@ -409,3 +409,47 @@ window.deleteSingleListing = async (docId) => {
         alert("Error: " + error.message);
     }
 };
+window.modalUploadProperty = () => {
+    const user = window.auth.currentUser;
+    if (!user) return alert("Not logged in");
+
+    const name = document.getElementById('modalPropName').value;
+    const weeklyPrice = document.getElementById('modalPropPrice').value;
+    const status = document.getElementById('modalUploadStatus');
+
+    if (!name || !weeklyPrice) {
+        alert("Please enter Name and Price.");
+        return;
+    }
+
+    cloudinary.openUploadWidget({
+        cloudName: "dhmsg8euy",
+        uploadPreset: "nestmate_unsigned",
+        sources: ['local', 'url', 'camera'],
+        multiple: false,
+        cropping: true,
+        styles: { palette: { window: "#FFFFFF", sourceBg: "#F4F4F5" } }
+    }, async (error, result) => {
+        if (!error && result && result.event === "success") {
+            const imageUrl = result.info.secure_url;
+            status.textContent = "Photo secured! Saving...";
+            try {
+                const { collection, addDoc } = window.dbTools;
+                await addDoc(collection(window.db, "properties"), {
+                    name: name,
+                    priceWeek: parseInt(weeklyPrice),
+                    imageUrl: imageUrl,
+                    userId: user.uid,
+                    userEmail: user.email,
+                    createdAt: new Date()
+                });
+                status.textContent = "Published successfully!";
+                document.getElementById('modalPropName').value = '';
+                document.getElementById('modalPropPrice').value = '';
+                window.myListings();
+            } catch (err) {
+                status.textContent = "Error: " + err.message;
+            }
+        }
+    });
+};
