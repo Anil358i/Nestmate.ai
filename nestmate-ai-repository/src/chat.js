@@ -190,6 +190,7 @@ async function uploadProperty() {
 }
 
 function loadProperties() {
+function loadProperties() {
     const track = document.getElementById('carouselTrack');
     if (!track || !window.dbTools || !window.db) return;
 
@@ -197,12 +198,13 @@ function loadProperties() {
     const q = query(collection(window.db, "properties"), orderBy("createdAt", "desc"));
 
     onSnapshot(q, (snapshot) => {
-        track.innerHTML = ''; 
-        snapshot.forEach((doc) => {
-            const data = doc.data();
+        track.innerHTML = '';
+        snapshot.forEach((docSnap) => {
+            const data = docSnap.data();
             const prices = calculatePrices(data.priceWeek);
             const card = document.createElement('div');
             card.className = 'prop-card';
+            card.style.cursor = 'pointer';
             card.innerHTML = `
                 <div class="prop-image-wrap">
                     <img src="${data.imageUrl}" alt="Property" loading="lazy">
@@ -217,11 +219,20 @@ function loadProperties() {
                     </div>
                 </div>
             `;
+            card.addEventListener('click', () => {
+                openPropertyDetail({
+                    name: data.name,
+                    imageUrl: data.imageUrl,
+                    priceWeek: data.priceWeek,
+                    phone: data.phone || 'Not provided',
+                    email: data.userEmail || 'Not provided',
+                    address: data.address || 'Not provided'
+                });
+            });
             track.appendChild(card);
         });
     });
 }
-
 /* ── USER MENU & AUTH LOGIC ── */
 
 function toggleUserMenu() {
