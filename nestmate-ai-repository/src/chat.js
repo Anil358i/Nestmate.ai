@@ -464,3 +464,25 @@ window.modalUploadProperty = () => {
         }
     });
 };
+/* ── PROPERTY DETAIL MODAL ── */
+window.openPropertyDetail = (data) => {
+    const prices = calculatePrices(data.priceWeek);
+    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.address)}`;
+
+    document.getElementById('detailImage').src = data.imageUrl;
+    document.getElementById('detailName').textContent = data.name;
+    document.getElementById('detailPrice').textContent = `£${prices.week} / week  •  £${prices.month} / month  •  £${prices.day} / day`;
+    document.getElementById('detailPhone').textContent = '📞 ' + data.phone;
+    document.getElementById('detailEmail').textContent = '📧 ' + data.email;
+    document.getElementById('detailAddress').textContent = '📍 ' + data.address;
+    document.getElementById('detailMapLink').href = mapUrl;
+
+    const modal = document.getElementById('propertyDetailModal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+};
+
+window.closePropertyDetail = () => {
+    document.getElementById('propertyDetailModal').style.display = 'none';
+    document.body.style.overflow = '';
+};
