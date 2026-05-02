@@ -492,3 +492,34 @@ window.closePropertyDetail = () => {
     document.getElementById('propertyDetailModal').style.display = 'none';
     document.body.style.overflow = '';
 };
+/* ── BOOK NOW ── */
+window.bookNow = () => {
+    const name = document.getElementById('detailName').textContent;
+    const price = document.getElementById('detailPrice').textContent;
+    const address = document.getElementById('detailAddress').textContent;
+    const phone = document.getElementById('detailPhone').textContent;
+    const email = document.getElementById('detailEmail').textContent;
+
+    const message = `Hi! I found your property on NestMate AI and I am interested in booking it.
+
+🏠 Property: ${name}
+💰 Price: ${price}
+📍 ${address}
+
+Please let me know how to proceed.`;
+
+    // Open WhatsApp with host phone number
+    const phoneNumber = phone.replace('📞 ', '').replace(/\s+/g, '').replace(/[^0-9+]/g, '');
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    
+    // Open email as fallback
+    const emailAddress = email.replace('📧 ', '').trim();
+    const mailUrl = `mailto:${emailAddress}?subject=Booking Enquiry - ${name}&body=${encodeURIComponent(message)}`;
+
+    // Try WhatsApp first, fallback to email
+    if (phoneNumber && phoneNumber.length > 5) {
+        window.open(whatsappUrl, '_blank');
+    } else {
+        window.open(mailUrl, '_blank');
+    }
+};
