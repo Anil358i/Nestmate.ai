@@ -145,7 +145,7 @@
         <a id="detailMapLink" href="" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; background:#f5f5f7; color:#1d1d1f; padding:14px; border-radius:14px; text-decoration:none; font-weight:600; font-size:0.9rem; margin-bottom:20px;">
           🗺️ Open in Google Maps
         </a>
-        <button onclick="bookNow()" style="width:100%; padding:16px; background:#0071e3; color:white; border:none; border-radius:14px; font-weight:600; cursor:pointer; font-size:1rem; margin-bottom:10px; letter-spacing:-0.01em;">
+        <button onclick="bookNow()" style="width:100%; padding:16px; background:#0071e3; color:white; border:none; border-radius:14px; font-weight:600; cursor:pointer; font-size:1rem; margin-bottom:10px;">
           Book Now
         </button>
         <button onclick="closePropertyDetail()" style="width:100%; padding:16px; background:#f5f5f7; color:#1d1d1f; border:none; border-radius:14px; font-weight:600; cursor:pointer; font-size:1rem;">
@@ -199,99 +199,51 @@
           </div>
         </div>
       </section>
-      /* ── WHY NESTMATE SECTION ── */
-.why-section {
-  padding: 60px 0;
-}
 
-.why-heading {
-  font-size: clamp(1.8rem, 4vw, 2.8rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  margin: 0 0 24px 40px;
-}
+      <!-- WHY NESTMATE SECTION -->
+      <section class="why-section fade-in">
+        <h2 class="why-heading">Why NestMate?</h2>
+        <div class="why-carousel">
 
-.why-carousel {
-  display: flex;
-  gap: 20px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 10px 40px 30px;
-  scrollbar-width: none;
-  scroll-snap-type: x mandatory;
-}
+          <div class="why-card">
+            <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600" class="why-card-img">
+            <div class="why-card-content">
+              <p class="why-label">Verified Listings</p>
+              <h3 class="why-title">Real homes.<br>Real hosts.</h3>
+              <p class="why-desc">Every property is posted by a verified host with direct contact details.</p>
+            </div>
+          </div>
 
-.why-carousel::-webkit-scrollbar {
-  display: none;
-}
+          <div class="why-card">
+            <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600" class="why-card-img">
+            <div class="why-card-content">
+              <p class="why-label">Save Money</p>
+              <h3 class="why-title">Live for<br>almost free.</h3>
+              <p class="why-desc">Rent a 3-bed house, fill spare rooms and save up to £1,800 a month.</p>
+            </div>
+          </div>
 
-.why-card {
-  flex: 0 0 320px;
-  width: 320px;
-  background: white;
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.06);
-  border: 1px solid var(--line);
-  scroll-snap-align: start;
-  display: flex;
-  flex-direction: column;
-}
+          <div class="why-card">
+            <img src="https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600" class="why-card-img">
+            <div class="why-card-content">
+              <p class="why-label">Instant Contact</p>
+              <h3 class="why-title">One tap<br>to connect.</h3>
+              <p class="why-desc">Message any host instantly via WhatsApp or email directly from the listing.</p>
+            </div>
+          </div>
 
-.why-card-img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.5s ease;
-}
+          <div class="why-card">
+            <img src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5ce?w=600" class="why-card-img">
+            <div class="why-card-content">
+              <p class="why-label">Find Your Way</p>
+              <h3 class="why-title">Every listing<br>on the map.</h3>
+              <p class="why-desc">Every property includes a Google Maps link so you know exactly where it is.</p>
+            </div>
+          </div>
 
-.why-card:hover .why-card-img {
-  transform: scale(1.04);
-}
+        </div>
+      </section>
 
-.why-card-content {
-  padding: 20px;
-}
-
-.why-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #0071e3;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin: 0 0 8px 0;
-}
-
-.why-title {
-  font-size: 1.3rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1.2;
-  margin: 0 0 10px 0;
-  color: #1d1d1f;
-}
-
-.why-desc {
-  font-size: 0.88rem;
-  color: #86868b;
-  line-height: 1.5;
-  margin: 0;
-}
-
-/* MOBILE */
-@media (max-width: 768px) {
-  .why-heading {
-    margin-left: 16px;
-  }
-  .why-carousel {
-    padding: 10px 16px 24px;
-  }
-  .why-card {
-    flex: 0 0 270px;
-    width: 270px;
-  }
-}
       <section class="explore-section fade-in" id="explore" style="text-align:center;">
         <h2>Available Listings</h2>
         <div class="toggle-group">
