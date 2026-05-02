@@ -37,11 +37,9 @@ function sendMsg() {
     if (!input) return;
     const text = input.value.trim();
     if (!text) return;
-
     appendMsg('user', text);
     input.value = '';
     showTyping();
-
     setTimeout(() => {
         removeTyping();
         const reply = (typeof getResponse === 'function') ? getResponse(text) : "I'm looking into that for you!";
@@ -49,33 +47,28 @@ function sendMsg() {
     }, 900);
 }
 
-/* ── POPUP & MODAL LOGIC (UPDATED FOR CENTERING) ── */
+/* ── POPUP & MODAL LOGIC ── */
 
 function openPopup(title, body) {
     const backdrop = document.getElementById('popupBackdrop');
     const titleEl = document.getElementById('popupTitle');
     const bodyEl = document.getElementById('popupBody');
-
     if (!backdrop || !titleEl || !bodyEl) return;
-
     titleEl.textContent = title;
     bodyEl.textContent = body;
-    
-    // Using flex to ensure the CSS centering works perfectly
     backdrop.style.display = 'flex';
-    document.body.style.overflow = 'hidden'; 
+    document.body.style.overflow = 'hidden';
 }
 
 function closePopup() {
     const backdrop = document.getElementById('popupBackdrop');
     if (backdrop) {
         backdrop.style.display = 'none';
-        document.body.style.overflow = ''; 
+        document.body.style.overflow = '';
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Scroll animations
     const fadeElements = document.querySelectorAll('.fade-in');
     const checkFade = () => {
         fadeElements.forEach((el) => {
@@ -88,8 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', checkFade);
     checkFade();
 
-    // Carousel dragging
-    const slider = document.querySelector('.carousel-outer'); 
+    const slider = document.querySelector('.carousel-outer');
     let isDown = false, startX, scrollLeft;
     if (slider) {
         slider.addEventListener('mousedown', (e) => {
@@ -110,16 +102,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-/* ── PROPERTY ENGINE (CLOUDINARY + FIREBASE) ── */
+/* ── PROPERTY ENGINE ── */
 
 const perLabels = { day: '/ day', week: '/ week', month: '/ month' };
 
 function setDuration(duration, btn) {
     document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
-
     document.querySelectorAll('.prop-price').forEach(el => {
-        const newPrice = el.dataset[duration]; 
+        const newPrice = el.dataset[duration];
         const strongTag = el.querySelector('strong');
         const perTag = el.querySelector('.per');
         if (strongTag) strongTag.textContent = newPrice;
@@ -135,61 +126,6 @@ function calculatePrices(weeklyRent) {
     };
 }
 
-async function uploadProperty() {
-    if (!window.dbTools || !window.db) {
-        alert("Services are still initializing. Please wait.");
-        return;
-    }
-    const user = window.auth.currentUser; 
-    if (!user) {
-        alert("You must be logged in to post a property.");
-        return;
-    }
-    const name = document.getElementById('propName').value;
-    const weeklyPrice = document.getElementById('propPriceWeek').value;
-    const status = document.getElementById('uploadStatus');
-
-    if(!name || !weeklyPrice) {
-        alert("Please enter Name and Price.");
-        return;
-    }
-
-    cloudinary.openUploadWidget({
-        cloudName: "dhmsg8euy", 
-        uploadPreset: "nestmate_unsigned", 
-        sources: ['local', 'url', 'camera'],
-        multiple: false,
-        cropping: true,
-        styles: { palette: { window: "#FFFFFF", sourceBg: "#F4F4F5" } }
-    }, async (error, result) => {
-        if (!error && result && result.event === "success") {
-            const imageUrl = result.info.secure_url;
-            status.textContent = "Photo secured! Saving...";
-
-            try {
-                const { collection, addDoc } = window.dbTools;
-                await addDoc(collection(window.db, "properties"), {
-                    name: name,
-                    priceWeek: parseInt(weeklyPrice),
-                    imageUrl: imageUrl,
-                    userId: user.uid,
-                    userEmail: user.email,
-                    createdAt: new Date()
-                });
-
-                status.textContent = "Success! Your listing is live.";
-                document.getElementById('propName').value = '';
-                document.getElementById('propPriceWeek').value = '';
-                window.scrollTo({ top: document.getElementById('explore').offsetTop - 100, behavior: 'smooth' });
-            } catch (firebaseError) {
-                console.error("Firebase Error:", firebaseError);
-                status.textContent = "Database error.";
-            }
-        }
-    });
-}
-
-function loadProperties() {
 function loadProperties() {
     const track = document.getElementById('carouselTrack');
     if (!track || !window.dbTools || !window.db) return;
@@ -233,6 +169,7 @@ function loadProperties() {
         });
     });
 }
+
 /* ── USER MENU & AUTH LOGIC ── */
 
 function toggleUserMenu() {
@@ -256,100 +193,100 @@ async function handleLogout() {
     }
 }
 
-// Global exposure
-window.uploadProperty = uploadProperty;
 window.loadProperties = loadProperties;
 window.toggleUserMenu = toggleUserMenu;
 window.handleLogout = handleLogout;
 window.openPopup = openPopup;
 window.closePopup = closePopup;
+
 /* ── VIDEO MODAL LOGIC ── */
 
 function openVideoModal() {
-  const modal = document.getElementById('videoModal');
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
+    const modal = document.getElementById('videoModal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
 }
 
 function closeVideoModal(e) {
-  if (e && e.target !== document.getElementById('videoModal') && 
-      !e.target.classList.contains('video-close-btn')) return;
-  const modal = document.getElementById('videoModal');
-  const video = document.getElementById('nestVideo');
-  modal.style.display = 'none';
-  video.pause();
-  document.body.style.overflow = '';
+    if (e && e.target !== document.getElementById('videoModal') &&
+        !e.target.classList.contains('video-close-btn')) return;
+    const modal = document.getElementById('videoModal');
+    const video = document.getElementById('nestVideo');
+    modal.style.display = 'none';
+    video.pause();
+    document.body.style.overflow = '';
 }
 
 function togglePlay() {
-  const video = document.getElementById('nestVideo');
-  const icon = document.getElementById('playIcon');
-  if (video.paused) {
-    video.play();
-    icon.setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'); // pause icon
-  } else {
-    video.pause();
-    icon.setAttribute('d', 'M8 5v14l11-7z'); // play icon
-  }
+    const video = document.getElementById('nestVideo');
+    const icon = document.getElementById('playIcon');
+    if (video.paused) {
+        video.play();
+        icon.setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z');
+    } else {
+        video.pause();
+        icon.setAttribute('d', 'M8 5v14l11-7z');
+    }
 }
 
 function toggleFullscreen() {
-  const card = document.querySelector('.video-modal-card');
-  if (!document.fullscreenElement) {
-    card.requestFullscreen();
-  } else {
-    document.exitFullscreen();
-  }
+    const card = document.querySelector('.video-modal-card');
+    if (!document.fullscreenElement) {
+        card.requestFullscreen();
+    } else {
+        document.exitFullscreen();
+    }
 }
 
-// Sync progress bar with video
 document.addEventListener('DOMContentLoaded', () => {
-  const video = document.getElementById('nestVideo');
-  const progress = document.getElementById('progressBar');
-  const volume = document.getElementById('volumeBar');
-  const icon = document.getElementById('playIcon');
+    const video = document.getElementById('nestVideo');
+    const progress = document.getElementById('progressBar');
+    const volume = document.getElementById('volumeBar');
+    const icon = document.getElementById('playIcon');
+    if (!video) return;
 
-  if (!video) return;
+    video.addEventListener('timeupdate', () => {
+        if (video.duration) {
+            progress.max = video.duration;
+            progress.value = video.currentTime;
+        }
+    });
 
-  video.addEventListener('timeupdate', () => {
-    if (video.duration) {
-      progress.max = video.duration;
-      progress.value = video.currentTime;
-    }
-  });
+    video.addEventListener('ended', () => {
+        icon.setAttribute('d', 'M8 5v14l11-7z');
+        progress.value = 0;
+    });
 
-  video.addEventListener('ended', () => {
-    icon.setAttribute('d', 'M8 5v14l11-7z');
-    progress.value = 0;
-  });
+    progress.addEventListener('input', () => {
+        video.currentTime = progress.value;
+    });
 
-  progress.addEventListener('input', () => {
-    video.currentTime = progress.value;
-  });
-
-  volume.addEventListener('input', () => {
-    video.volume = volume.value / 100;
-  });
+    volume.addEventListener('input', () => {
+        video.volume = volume.value / 100;
+    });
 });
 
 window.openVideoModal = openVideoModal;
 window.closeVideoModal = closeVideoModal;
 window.togglePlay = togglePlay;
 window.toggleFullscreen = toggleFullscreen;
+
 /* ── MOBILE MENU ── */
+
 function toggleMobileMenu() {
-  document.querySelector('.site-header').classList.toggle('mobile-nav-open');
+    document.querySelector('.site-header').classList.toggle('mobile-nav-open');
 }
 
-// Close menu when a nav link is clicked
 document.querySelectorAll('.nav-links a').forEach(link => {
-  link.addEventListener('click', () => {
-    document.querySelector('.site-header').classList.remove('mobile-nav-open');
-  });
+    link.addEventListener('click', () => {
+        document.querySelector('.site-header').classList.remove('mobile-nav-open');
+    });
 });
 
 window.toggleMobileMenu = toggleMobileMenu;
+
 /* ── MY LISTINGS MODAL ── */
+
 window.myListings = async () => {
     const user = window.auth.currentUser;
     if (!user) return alert("Not logged in");
@@ -420,6 +357,9 @@ window.deleteSingleListing = async (docId) => {
         alert("Error: " + error.message);
     }
 };
+
+/* ── MODAL UPLOAD PROPERTY ── */
+
 window.modalUploadProperty = () => {
     const user = window.auth.currentUser;
     if (!user) return alert("Not logged in");
@@ -470,7 +410,9 @@ window.modalUploadProperty = () => {
         }
     });
 };
+
 /* ── PROPERTY DETAIL MODAL ── */
+
 window.openPropertyDetail = (data) => {
     const prices = calculatePrices(data.priceWeek);
     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.address)}`;
@@ -492,7 +434,9 @@ window.closePropertyDetail = () => {
     document.getElementById('propertyDetailModal').style.display = 'none';
     document.body.style.overflow = '';
 };
+
 /* ── BOOK NOW ── */
+
 window.bookNow = () => {
     const name = document.getElementById('detailName').textContent;
     const price = document.getElementById('detailPrice').textContent;
@@ -508,15 +452,11 @@ window.bookNow = () => {
 
 Please let me know how to proceed.`;
 
-    // Open WhatsApp with host phone number
     const phoneNumber = phone.replace('📞 ', '').replace(/\s+/g, '').replace(/[^0-9+]/g, '');
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    
-    // Open email as fallback
     const emailAddress = email.replace('📧 ', '').trim();
     const mailUrl = `mailto:${emailAddress}?subject=Booking Enquiry - ${name}&body=${encodeURIComponent(message)}`;
 
-    // Try WhatsApp first, fallback to email
     if (phoneNumber && phoneNumber.length > 5) {
         window.open(whatsappUrl, '_blank');
     } else {
