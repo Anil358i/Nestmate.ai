@@ -426,10 +426,12 @@ window.modalUploadProperty = () => {
 
     const name = document.getElementById('modalPropName').value;
     const weeklyPrice = document.getElementById('modalPropPrice').value;
+    const phone = document.getElementById('modalPropPhone').value;
+    const address = document.getElementById('modalPropAddress').value;
     const status = document.getElementById('modalUploadStatus');
 
-    if (!name || !weeklyPrice) {
-        alert("Please enter Name and Price.");
+    if (!name || !weeklyPrice || !phone || !address) {
+        alert("Please fill in all fields.");
         return;
     }
 
@@ -449,6 +451,8 @@ window.modalUploadProperty = () => {
                 await addDoc(collection(window.db, "properties"), {
                     name: name,
                     priceWeek: parseInt(weeklyPrice),
+                    phone: phone,
+                    address: address,
                     imageUrl: imageUrl,
                     userId: user.uid,
                     userEmail: user.email,
@@ -457,6 +461,8 @@ window.modalUploadProperty = () => {
                 status.textContent = "Published successfully!";
                 document.getElementById('modalPropName').value = '';
                 document.getElementById('modalPropPrice').value = '';
+                document.getElementById('modalPropPhone').value = '';
+                document.getElementById('modalPropAddress').value = '';
                 window.myListings();
             } catch (err) {
                 status.textContent = "Error: " + err.message;
