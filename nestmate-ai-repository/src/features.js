@@ -13,14 +13,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ── CARD 1: VERIFIED HOST & REPORT FEATURE CODE ──
+// ── VERIFIED LISTINGS PAGE: Load live host count ──
 async function loadVerifiedHostCount() {
   try {
     const q = query(collection(db, "properties"));
     const snapshot = await getDocs(q);
     const uniqueHosts = new Set();
     snapshot.forEach(doc => {
-      if(doc.data().userId) uniqueHosts.add(doc.data().userId);
+      if (doc.data().userId) uniqueHosts.add(doc.data().userId);
     });
     const el = document.getElementById('hostCount');
     if (el) el.textContent = uniqueHosts.size;
@@ -29,6 +29,7 @@ async function loadVerifiedHostCount() {
   }
 }
 
+// ── VERIFIED LISTINGS PAGE: Submit abuse report ──
 async function submitReport(event) {
   const btn = event.target;
   const email = document.getElementById('reportEmail').value.trim();
@@ -54,64 +55,68 @@ async function submitReport(event) {
       reportedAt: new Date(),
       status: 'pending'
     });
-    if(successMsg) successMsg.style.display = 'block';
+    if (successMsg) successMsg.style.display = 'block';
+    if (errorMsg) errorMsg.style.display = 'none';
   } catch (error) {
-    if(errorMsg) errorMsg.style.display = 'block';
+    console.error("Report submit error:", error);
+    if (errorMsg) {
+      errorMsg.textContent = '⚠ Could not submit report. Please try again.';
+      errorMsg.style.display = 'block';
+    }
   } finally {
     btn.disabled = false;
   }
 }
 
-// ── CARD 2: SAVINGS CALCULATOR MODULE LOGIC ──
+// ── SAVE MONEY PAGE: Savings calculator ──
 function initializeSavingsCalculator() {
-  // Matched exactly with the IDs in your preferred savings.html structure
-  const inputRent = document.getElementById('totalRent');
-  const inputRooms = document.getElementById('rooms');
+  const inputRent   = document.getElementById('totalRent');
+  const inputRooms  = document.getElementById('rooms');
   const inputWeekly = document.getElementById('roomRent');
 
-  // Guard clause: Stop if these element IDs are missing (meaning we are not on savings.html)
+  // Only runs if we're on the savings page (these IDs exist)
   if (!inputRent || !inputRooms || !inputWeekly) return;
 
-  const calculateLeaseOptimization = () => {
-    const totalRent = parseFloat(inputRent.value) || 0;
-    const rooms = parseInt(inputRooms.value) || 1;
-    const roomRent = parseFloat(inputWeekly.value) || 0;
+  const calculate = () => {
+    const totalRent  = parseFloat(inputRent.value)   || 0;
+    const rooms      = parseInt(inputRooms.value)     || 1;
+    const roomRent   = parseFloat(inputWeekly.value)  || 0;
 
-    // Financial calculations (4.33 weeks per average month)
-    const monthlyIncome = Math.round(rooms * roomRent * 4.33);
-    const netCost = Math.max(0, Math.round(totalRent - monthlyIncome));
-    const yearSave = monthlyIncome * 12;
-    const coveragePercentage = totalRent > 0 ? Math.min(100, Math.round((monthlyIncome / totalRent) * 100)) : 0;
+    // 4.33 = average weeks per month
+    const monthlyIncome       = Math.round(rooms * roomRent * 4.33);
+    const netCost             = Math.max(0, Math.round(totalRent - monthlyIncome));
+    const yearSave            = monthlyIncome * 12;
+    const coveragePercentage  = totalRent > 0
+      ? Math.min(100, Math.round((monthlyIncome / totalRent) * 100))
+      : 0;
 
-    // DOM Value Binder Layer updates using your HTML IDs
-    document.getElementById('income').textContent = '£' + monthlyIncome.toLocaleString();
-    document.getElementById('youPay').textContent = '£' + netCost.toLocaleString();
-    document.getElementById('yearSave').textContent = '£' + yearSave.toLocaleString();
-    
-    document.getElementById('tipRooms').textContent = rooms;
-    document.getElementById('tipRent').textContent = roomRent;
+    document.getElementById('income').textContent    = '£' + monthlyIncome.toLocaleString();
+    document.getElementById('youPay').textContent    = '£' + netCost.toLocaleString();
+    document.getElementById('yearSave').textContent  = '£' + yearSave.toLocaleString();
+    document.getElementById('tipRooms').textContent  = rooms;
+    document.getElementById('tipRent').textContent   = roomRent;
     document.getElementById('tipPercent').textContent = coveragePercentage;
-    document.getElementById('roomVal').textContent = rooms + (rooms > 1 ? ' rooms' : ' room');
+    document.getElementById('roomVal').textContent   = rooms + (rooms > 1 ? ' rooms' : ' room');
   };
 
-  // Event monitors tracking user runtime slide/typing interactions
-  inputRent.addEventListener('input', calculateLeaseOptimization);
-  inputRooms.addEventListener('input', calculateLeaseOptimization);
-  inputWeekly.addEventListener('input', calculateLeaseOptimization);
+  inputRent.addEventListener('input', calculate);
+  inputRooms.addEventListener('input', calculate);
+  inputWeekly.addEventListener('input', calculate);
 
-  // Compute values immediately on engine startup
-  calculateLeaseOptimization();
+  // Run once immediately so results show on page load
+  calculate();
 }
 
-// ── CENTRAL ROUTER LIFECYCLE INITIALIZER ──
+// ── ROUTER: runs on DOMContentLoaded, activates the right module ──
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Check if we're on the Verified Listings/Reporting Frame
+
+  // Verified Listings / Report page
   const submitBtn = document.getElementById('submitReportBtn');
   if (submitBtn) {
     loadVerifiedHostCount();
     submitBtn.addEventListener('click', submitReport);
   }
 
-  // 2. Check if we're on the Standalone Savings Page Frame
+  // Savings Calculator page
   initializeSavingsCalculator();
 });
