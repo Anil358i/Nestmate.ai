@@ -5,92 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Savings Calculator — NestMate AI</title>
   <link rel="stylesheet" href="src/style.css">
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#f5f5f7; margin:0; padding:0; }
-    .page { max-width:680px; margin:0 auto; padding:60px 24px; }
-    .back-btn { display:inline-flex; align-items:center; gap:8px; color:#0071e3; font-weight:600; font-size:0.95rem; text-decoration:none; margin-bottom:40px; }
-    .hero-img { width:100%; height:280px; object-fit:cover; border-radius:24px; margin-bottom:32px; }
-    h1 { font-size:2rem; font-weight:800; letter-spacing:-0.03em; margin:0 0 12px 0; }
-    .subtitle { color:#86868b; font-size:1.05rem; margin:0 0 40px 0; line-height:1.6; }
-    .calc-card { background:white; border-radius:24px; padding:32px; margin-bottom:24px; }
-    .calc-label { font-size:0.8rem; font-weight:700; color:#86868b; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 8px 0; }
-    .calc-input { width:100%; padding:14px 16px; border-radius:12px; border:1.5px solid #e0e0e0; font-size:1rem; outline:none; box-sizing:border-box; transition:border 0.2s; }
-    .calc-input:focus { border-color:#0071e3; }
-    .slider-wrap { margin:16px 0 8px; }
-    input[type=range] { width:100%; accent-color:#0071e3; height:4px; }
-    .slider-val { font-size:1.4rem; font-weight:800; color:#0071e3; }
-    .result-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:24px; }
-    .result-box { background:#f5f5f7; border-radius:16px; padding:20px; text-align:center; }
-    .result-box.highlight { background:#0071e3; color:white; }
-    .result-box .r-label { font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; opacity:0.7; margin:0 0 6px 0; }
-    .result-box .r-val { font-size:1.6rem; font-weight:800; margin:0; }
-    .tip { background:#e8f5e9; border-radius:16px; padding:20px; margin-top:24px; }
-    .tip p { margin:0; color:#2e7d32; font-size:0.95rem; line-height:1.6; }
-  </style>
 </head>
-<body>
-  <div class="page">
-    <a href="index.html" class="back-btn">← Back to NestMate</a>
-    <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800" class="hero-img" alt="Save money">
-    <h1>How much could you save?</h1>
-    <p class="subtitle">Rent a 3-bed house, fill the spare rooms, and let your tenants cover most of your rent. Use the calculator below.</p>
+<body class="modal-open"> <div class="popup-backdrop" style="display: flex; position: relative; min-height: 100vh; padding: 40px 20px; box-sizing: border-box;">
+    <div class="popup-card extended-card" style="position: relative; margin: auto; transform: none; top: 0; left: 0;">
+      
+      <a href="index.html" class="sf-back-link">← Back to NestMate</a>
+      
+      <div class="sf-modal-hero">
+        <h1>How much could you save?</h1>
+        <p>Rent a multi-room house, fill your spare spaces, and watch your housing costs disappear.</p>
+      </div>
 
-    <div class="calc-card">
-      <p class="calc-label">Your monthly rent (£)</p>
-      <input type="number" class="calc-input" id="totalRent" value="2000" oninput="calculate()">
+      <div class="sf-form-card">
+        <div class="sf-input-wrapper">
+          <input class="sf-input-field" id="calcTotalRent" value="2000" placeholder=" " type="number">
+          <label class="sf-floating-label">Your Target Monthly Lease (£)</label>
+        </div>
 
-      <p class="calc-label" style="margin-top:24px;">Number of spare rooms you'll rent out</p>
-      <div class="slider-wrap">
-        <input type="range" min="1" max="4" value="2" id="rooms" oninput="calculate(); document.getElementById('roomVal').textContent=this.value">
-        <div style="display:flex; justify-content:space-between; margin-top:4px;">
-          <span style="font-size:0.85rem; color:#86868b;">1 room</span>
-          <span class="slider-val" id="roomVal">2 rooms</span>
-          <span style="font-size:0.85rem; color:#86868b;">4 rooms</span>
+        <div class="sf-section-label" style="margin: 24px 0 4px 4px;">Spare Rooms Subletted</div>
+        <div class="sf-slider-container">
+          <input type="range" min="1" max="4" value="2" id="calcRooms" class="sf-range-slider">
+          <div class="sf-slider-meta">
+            <span>1 Space</span>
+            <span id="calcRoomVal" style="color: var(--accent); font-weight: 600;">2 Spaces</span>
+            <span>4 Spaces</span>
+          </div>
+        </div>
+
+        <div class="sf-input-wrapper" style="margin-top: 24px;">
+          <input class="sf-input-field" id="calcRoomRent" value="150" placeholder=" " type="number">
+          <label class="sf-floating-label">Weekly Rent Per Sub-Tenant (£)</label>
+        </div>
+
+        <div class="sf-calc-grid">
+          <div class="sf-calc-box">
+            <div class="sf-calc-lbl">Sublet Income</div>
+            <div class="sf-calc-val" id="resIncome">£0</div>
+          </div>
+          <div class="sf-calc-box highlight">
+            <div class="sf-calc-lbl">Net Cost To You</div>
+            <div class="sf-calc-val" id="resYouPay">£0</div>
+          </div>
+          <div class="sf-calc-box hero-dark">
+            <div class="sf-calc-lbl">Annualized Balance Saved</div>
+            <div class="sf-calc-val" id="resYearSave">£0</div>
+          </div>
+        </div>
+
+        <div class="sf-tip-callout">
+          <p>💡 With <span id="tipBoxRooms">2</span> spaces rented at £<span id="tipBoxRent">150</span>/wk, your sublets cover <span id="tipBoxPercent">0</span>% of your overhead.</p>
         </div>
       </div>
 
-      <p class="calc-label" style="margin-top:24px;">Weekly rent per room (£)</p>
-      <input type="number" class="calc-input" id="roomRent" value="150" oninput="calculate()">
-
-      <div class="result-grid">
-        <div class="result-box">
-          <p class="r-label">Monthly income</p>
-          <p class="r-val" id="income">£1,300</p>
-        </div>
-        <div class="result-box highlight">
-          <p class="r-label">You pay</p>
-          <p class="r-val" id="youPay">£700</p>
-        </div>
-        <div class="result-box highlight" style="grid-column:1/-1; background:#1d1d1f;">
-          <p class="r-label">You save per year</p>
-          <p class="r-val" id="yearSave">£15,600</p>
-        </div>
-      </div>
-
-      <div class="tip">
-        <p>💡 With <span id="tipRooms">2</span> rooms at £<span id="tipRent">150</span>/week, your tenants cover <span id="tipPercent">65</span>% of your rent — you keep the rest.</p>
-      </div>
     </div>
   </div>
 
-  <script>
-    function calculate() {
-      const totalRent = parseFloat(document.getElementById('totalRent').value) || 0;
-      const rooms = parseInt(document.getElementById('rooms').value) || 1;
-      const roomRent = parseFloat(document.getElementById('roomRent').value) || 0;
-      const monthlyIncome = Math.round(rooms * roomRent * 4.33);
-      const youPay = Math.max(0, Math.round(totalRent - monthlyIncome));
-      const yearSave = monthlyIncome * 12;
-      const percent = totalRent > 0 ? Math.min(100, Math.round((monthlyIncome / totalRent) * 100)) : 0;
-      document.getElementById('income').textContent = '£' + monthlyIncome.toLocaleString();
-      document.getElementById('youPay').textContent = '£' + youPay.toLocaleString();
-      document.getElementById('yearSave').textContent = '£' + yearSave.toLocaleString();
-      document.getElementById('tipRooms').textContent = rooms;
-      document.getElementById('tipRent').textContent = roomRent;
-      document.getElementById('tipPercent').textContent = percent;
-      document.getElementById('roomVal').textContent = rooms + ' room' + (rooms > 1 ? 's' : '');
-    }
-    calculate();
-  </script>
+  <script src="src/feature.js"></script>
 </body>
 </html>
