@@ -79,10 +79,14 @@
 
   <!-- POPUP MODAL -->
   <div id="popupBackdrop" class="popup-backdrop" onclick="closePopup()">
-    <div class="popup-card" onclick="event.stopPropagation()">
+    <div class="popup-card extended-card" onclick="event.stopPropagation()">
       <span class="close-x" onclick="closePopup()">&times;</span>
-      <h2 id="popupTitle" style="margin-top:0;"></h2>
-      <p id="popupBody" style="color:#666; margin-bottom:25px;"></p>
+      
+      <div class="popup-scroll-container">
+        <div id="popupDynamicContent">
+          </div>
+      </div>
+      
       <button class="apple-btn-black" onclick="closePopup()">Done</button>
     </div>
   </div>
