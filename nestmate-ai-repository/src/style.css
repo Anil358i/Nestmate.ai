@@ -630,25 +630,31 @@ body {
 @import url('https://fonts.cdnfonts.com/css/sf-pro-display');
 
 .extended-card {
-  max-width: 520px !important;
-  background: rgba(255, 255, 255, 0.82) !important;
-  backdrop-filter: blur(30px) saturate(210%) !important;
-  -webkit-backdrop-filter: blur(30px) saturate(210%) !important;
+  max-width: 760px !important; /* Made significantly wider to feel spacious */
+  width: 92% !important;
+  background: rgba(255, 255, 255, 0.86) !important;
+  backdrop-filter: blur(40px) saturate(210%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(210%) !important;
   border: 0.5px solid rgba(0, 0, 0, 0.1) !important;
-  border-radius: 30px !important; /* Authentic squircle approximation */
-  padding: 34px 28px 24px 28px !important;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif !important;
+  border-radius: 36px !important; /* Slightly more curved for the larger canvas */
+  padding: 40px 36px 30px 36px !important;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif !important;
   -webkit-font-smoothing: antialiased;
 }
 
 .popup-scroll-container {
-  max-height: 68vh;
+  max-height: 75vh; /* Increased height to maximize internal content canvas */
   overflow-y: auto;
-  padding-right: 4px;
-  margin-bottom: 20px;
+  overscroll-behavior: contain; /* CRITICAL FIX: Tells the browser NEVER to scroll the background homepage */
+  padding-right: 10px;
+  margin-bottom: 24px;
 }
-.popup-scroll-container::-webkit-scrollbar { width: 5px; }
-.popup-scroll-container::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 10px; }
+
+/* ── BACKGROUND SCROLL LOCK HELPER ── */
+body.modal-open {
+  overflow: hidden !important; /* Completely freezes the home page scroll */
+  height: 100vh !important;
+}
 
 /* Apple Minimal Hero Layout */
 .sf-modal-hero { margin-bottom: 28px; }
