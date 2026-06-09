@@ -5,36 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Listings Map — NestMate AI</title>
   <link rel="stylesheet" href="src/style.css">
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#f5f5f7; margin:0; padding:0; }
-    .page { max-width:680px; margin:0 auto; padding:60px 24px; }
-    .back-btn { display:inline-flex; align-items:center; gap:8px; color:#0071e3; font-weight:600; font-size:0.95rem; text-decoration:none; margin-bottom:40px; }
-    h1 { font-size:2rem; font-weight:800; letter-spacing:-0.03em; margin:0 0 12px 0; }
-    .subtitle { color:#86868b; font-size:1.05rem; margin:0 0 32px 0; line-height:1.6; }
-    .map-frame { width:100%; height:420px; border-radius:24px; overflow:hidden; border:none; margin-bottom:24px; }
-    .search-bar { display:flex; gap:12px; margin-bottom:24px; }
-    .search-input { flex:1; padding:14px 16px; border-radius:14px; border:1.5px solid #e0e0e0; font-size:1rem; outline:none; background:white; }
-    .search-input:focus { border-color:#0071e3; }
-    .search-btn { padding:14px 24px; background:#0071e3; color:white; border:none; border-radius:14px; font-weight:700; cursor:pointer; font-size:1rem; white-space:nowrap; }
-    .zone-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:24px; }
-    .zone-btn { padding:12px; background:white; border:1.5px solid #e0e0e0; border-radius:14px; font-weight:600; font-size:0.9rem; cursor:pointer; text-align:center; transition:all 0.2s; }
-    .zone-btn:hover { background:#0071e3; color:white; border-color:#0071e3; }
-    .tip-card { background:white; border-radius:18px; padding:20px 24px; display:flex; gap:14px; align-items:flex-start; }
-    .tip-icon { font-size:1.5rem; }
-    .tip-text { font-size:0.9rem; color:#86868b; line-height:1.6; margin:0; }
-  </style>
 </head>
 <body>
-  <div class="page">
-    <a href="index.html" class="back-btn">← Back to NestMate</a>
-    <h1>Every listing on the map.</h1>
-    <p class="subtitle">Search any London area to find NestMate properties near you. Every listing has a verified address and Google Maps link.</p>
 
-    <div class="search-bar">
-      <input type="text" class="search-input" id="areaInput" placeholder="Search area e.g. Hackney, Brixton, Canary Wharf..." onkeydown="if(event.key==='Enter') searchArea()">
-      <button class="search-btn" onclick="searchArea()">Search</button>
+  <div class="page">
+
+    <a href="index.html" class="back-btn">← Back to NestMate</a>
+
+    <!-- HERO -->
+    <h1>Every listing<br>on the map.</h1>
+    <p class="subtitle">Search any London area to find NestMate properties near you. Every listing has a verified address and a direct Google Maps link.</p>
+
+    <!-- STATS ROW -->
+    <div class="sf-stats-grid map-stats-grid">
+      <div class="sf-stat-pill">
+        <div class="sf-stat-num">📍</div>
+        <div class="sf-stat-lbl">Exact address</div>
+      </div>
+      <div class="sf-stat-pill">
+        <div class="sf-stat-num">🗺️</div>
+        <div class="sf-stat-lbl">Maps link</div>
+      </div>
+      <div class="sf-stat-pill">
+        <div class="sf-stat-num">🚇</div>
+        <div class="sf-stat-lbl">Commute ready</div>
+      </div>
     </div>
 
+    <!-- SEARCH BAR -->
+    <div class="map-search-bar">
+      <input
+        type="text"
+        class="map-search-input"
+        id="areaInput"
+        placeholder="Search area e.g. Hackney, Brixton, Canary Wharf..."
+        onkeydown="if(event.key==='Enter') searchArea()"
+      >
+      <button class="map-search-btn" onclick="searchArea()">Search</button>
+    </div>
+
+    <!-- MAP IFRAME -->
     <iframe
       id="mapFrame"
       class="map-frame"
@@ -42,7 +52,8 @@
       allowfullscreen>
     </iframe>
 
-    <p style="font-size:0.8rem; font-weight:700; color:#86868b; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 12px 0;">Browse by zone</p>
+    <!-- ZONE BUTTONS -->
+    <p class="sf-section-label">Browse by zone</p>
     <div class="zone-grid">
       <button class="zone-btn" onclick="searchZone('Zone 1 Central London')">Zone 1</button>
       <button class="zone-btn" onclick="searchZone('Zone 2 London')">Zone 2</button>
@@ -55,25 +66,59 @@
       <button class="zone-btn" onclick="searchZone('Stratford London')">Stratford</button>
     </div>
 
-    <div class="tip-card">
-      <div class="tip-icon">💡</div>
-      <p class="tip-text">Every listing on NestMate includes a direct Google Maps link. Click <strong>Open in Google Maps</strong> on any property card to see the exact location before you contact the host.</p>
+    <!-- HOW IT WORKS -->
+    <p class="sf-section-label">What you get on every listing</p>
+    <div class="sf-list-group">
+      <div class="sf-list-row">
+        <div class="sf-icon-box glyph-green">
+          <svg viewBox="0 0 24 24">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <div class="sf-row-content">
+          <div class="sf-row-title">Google Maps Link on Every Listing</div>
+          <div class="sf-row-desc">One tap opens the property in Google Maps so you can check commute times, tube stops, and nearby amenities instantly.</div>
+        </div>
+      </div>
+      <div class="sf-list-row">
+        <div class="sf-icon-box glyph-blue">
+          <svg viewBox="0 0 24 24">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </div>
+        <div class="sf-row-content">
+          <div class="sf-row-title">Full Street Address Shown Upfront</div>
+          <div class="sf-row-desc">No vague "North London" descriptions. Every listing shows the complete street address before you even contact the host.</div>
+        </div>
+      </div>
+      <div class="sf-list-row">
+        <div class="sf-icon-box glyph-green">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+        </div>
+        <div class="sf-row-content">
+          <div class="sf-row-title">Plan Your Commute Before Moving</div>
+          <div class="sf-row-desc">Use the Maps link to check walking distance to tube stations, bus routes, and your workplace before committing to a viewing.</div>
+        </div>
+      </div>
     </div>
+
+    <!-- TIP -->
+    <div class="tip">
+      <svg class="sf-tip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <p>Every listing on NestMate includes a direct <strong>Open in Google Maps</strong> link on the property card. Click it to see the exact location before you contact the host.</p>
+    </div>
+
   </div>
 
-  <script>
-    function searchArea() {
-      const area = document.getElementById('areaInput').value.trim();
-      if (!area) return;
-      const query = encodeURIComponent('rental properties ' + area);
-      document.getElementById('mapFrame').src =
-        `https://www.google.com/maps/embed/v1/search?q=${query}&key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY`;
-    }
-    function searchZone(zone) {
-      const query = encodeURIComponent('rental properties ' + zone);
-      document.getElementById('mapFrame').src =
-        `https://www.google.com/maps/embed/v1/search?q=${query}&key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY`;
-    }
-  </script>
+  <script src="src/features.js" type="module"></script>
+
 </body>
 </html>
