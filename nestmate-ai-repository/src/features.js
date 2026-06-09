@@ -78,25 +78,25 @@ function initializeSavingsCalculator() {
   if (!inputRent || !inputRooms || !inputWeekly) return;
 
   const calculate = () => {
-    const totalRent  = parseFloat(inputRent.value)   || 0;
-    const rooms      = parseInt(inputRooms.value)     || 1;
-    const roomRent   = parseFloat(inputWeekly.value)  || 0;
+    const totalRent  = parseFloat(inputRent.value)  || 0;
+    const rooms      = parseInt(inputRooms.value)    || 1;
+    const roomRent   = parseFloat(inputWeekly.value) || 0;
 
     // 4.33 = average weeks per month
-    const monthlyIncome       = Math.round(rooms * roomRent * 4.33);
-    const netCost             = Math.max(0, Math.round(totalRent - monthlyIncome));
-    const yearSave            = monthlyIncome * 12;
-    const coveragePercentage  = totalRent > 0
+    const monthlyIncome      = Math.round(rooms * roomRent * 4.33);
+    const netCost            = Math.max(0, Math.round(totalRent - monthlyIncome));
+    const yearSave           = monthlyIncome * 12;
+    const coveragePercentage = totalRent > 0
       ? Math.min(100, Math.round((monthlyIncome / totalRent) * 100))
       : 0;
 
-    document.getElementById('income').textContent    = '£' + monthlyIncome.toLocaleString();
-    document.getElementById('youPay').textContent    = '£' + netCost.toLocaleString();
-    document.getElementById('yearSave').textContent  = '£' + yearSave.toLocaleString();
-    document.getElementById('tipRooms').textContent  = rooms;
-    document.getElementById('tipRent').textContent   = roomRent;
+    document.getElementById('income').textContent     = '£' + monthlyIncome.toLocaleString();
+    document.getElementById('youPay').textContent     = '£' + netCost.toLocaleString();
+    document.getElementById('yearSave').textContent   = '£' + yearSave.toLocaleString();
+    document.getElementById('tipRooms').textContent   = rooms;
+    document.getElementById('tipRent').textContent    = roomRent;
     document.getElementById('tipPercent').textContent = coveragePercentage;
-    document.getElementById('roomVal').textContent   = rooms + (rooms > 1 ? ' rooms' : ' room');
+    document.getElementById('roomVal').textContent    = rooms + (rooms > 1 ? ' rooms' : ' room');
   };
 
   inputRent.addEventListener('input', calculate);
@@ -106,6 +106,22 @@ function initializeSavingsCalculator() {
   // Run once immediately so results show on page load
   calculate();
 }
+
+// ── MAPS.HTML: Search area by typed input ──
+window.searchArea = function() {
+  const area = document.getElementById('areaInput').value.trim();
+  if (!area) return;
+  const q = encodeURIComponent('rental properties ' + area);
+  document.getElementById('mapFrame').src =
+    `https://www.google.com/maps/embed/v1/search?q=${q}&key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY`;
+};
+
+// ── MAPS.HTML: Search area by zone button ──
+window.searchZone = function(zone) {
+  const q = encodeURIComponent('rental properties ' + zone);
+  document.getElementById('mapFrame').src =
+    `https://www.google.com/maps/embed/v1/search?q=${q}&key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY`;
+};
 
 // ── ROUTER: runs on DOMContentLoaded, activates the right module ──
 document.addEventListener('DOMContentLoaded', () => {
