@@ -633,3 +633,128 @@ body.modal-open {
     border-bottom: 1px solid var(--line);
   }
 }
+/* ── CALCULATION UTILITY GRID EXTENSIONS ── */
+.sf-back-link {
+  display: inline-flex;
+  align-items: center;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  margin-bottom: 24px;
+  transition: opacity 0.2s ease;
+}
+.sf-back-link:hover {
+  opacity: 0.7;
+}
+
+.sf-calc-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.sf-calc-box {
+  background: rgba(0, 0, 0, 0.02);
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.sf-calc-box.highlight {
+  background: var(--accent);
+  border: none;
+}
+
+.sf-calc-box.highlight .sf-calc-lbl,
+.sf-calc-box.highlight .sf-calc-val {
+  color: #ffffff;
+}
+
+.sf-calc-box.hero-dark {
+  grid-column: 1 / -1;
+  background: #1d1d1f;
+  border: none;
+  padding: 20px;
+}
+
+.sf-calc-box.hero-dark .sf-calc-lbl,
+.sf-calc-box.hero-dark .sf-calc-val {
+  color: #ffffff;
+}
+
+.sf-calc-lbl {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.sf-calc-val {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+/* Custom Native Look Range Sliders */
+.sf-slider-container {
+  padding: 10px 4px 6px 4px;
+}
+
+.sf-range-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.08);
+  outline: none;
+  accent-color: var(--accent);
+}
+
+.sf-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.sf-range-slider::-webkit-slider-thumb:active {
+  transform: scale(1.1);
+}
+
+.sf-slider-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+/* Translucent Tip Box Alert Styling */
+.sf-tip-callout {
+  background: rgba(52, 199, 89, 0.07);
+  border-left: 3.5px solid #34c759;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 20px;
+}
+
+.sf-tip-callout p {
+  margin: 0;
+  color: #1c662c;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+}
