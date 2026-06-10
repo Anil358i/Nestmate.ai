@@ -47,7 +47,7 @@
       }
     });
 
-    // ── FETCH AND RENDER LOGGED-IN USER'S PORTFOLIO LISTINGS WITH DYNAMIC PRICES ──
+    // ── FETCH AND RENDER LOGGED-IN USER'S PORTFOLIO LISTINGS WITH EXACT NUMBER MATCHING ──
     async function renderMyListingsGrid() {
       const grid = document.getElementById('myListingsGrid');
       if (!grid) return;
@@ -70,7 +70,7 @@
           return;
         }
 
-        // Detect active toggle view mode from the main homepage dashboard layout (day, week, month)
+        // Detect active toggle view mode from the main homepage dashboard layout
         let activeDuration = 'day'; 
         const activeToggleBtn = document.querySelector('.toggle-group .toggle-btn.active');
         if (activeToggleBtn) {
@@ -85,16 +85,32 @@
           
           const imageUrl = data.image || data.imageUrl || data.img || data.propertyImage || "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600";
           
-          // Get the base rate value stored in database documents
-          const basePrice = parseFloat(data.price || data.weeklyRent || data.rent || 0);
+          // Step 1: Check database keys comprehensively
+          let basePrice = parseFloat(data.price || data.weeklyRent || data.rent || data.modalPropPrice || 0);
           
-          // Match the exact math scaling logic used inside your main page carousel
+          // Step 2: Fallback text scraper matrix if database yields an unexpected zero profile state
+          if (basePrice === 0) {
+             const trackCards = document.querySelectorAll('#carouselTrack .property-card, #carouselTrack div, .explore-section div');
+             trackCards.forEach(card => {
+                if (card.textContent.includes(data.name)) {
+                   const numbersFound = card.textContent.match(/\d+/g);
+                   if (numbersFound && numbersFound.length > 0) {
+                      const detectedNum = parseInt(numbersFound[0]);
+                      if (activeDuration === 'day') basePrice = detectedNum * 7;
+                      else if (activeDuration === 'month') basePrice = detectedNum / 4.33;
+                      else basePrice = detectedNum;
+                   }
+                }
+             });
+          }
+
+          // Build finalized display rate label using identical math models
           let displayedPriceText = "";
           if (activeDuration === 'day') {
-            const dayPrice = Math.round(basePrice / 7);
+            const dayPrice = basePrice > 0 ? Math.round(basePrice / 7) : 0;
             displayedPriceText = `£${dayPrice} / Day`;
           } else if (activeDuration === 'month') {
-            const monthPrice = Math.round(basePrice * 4.33);
+            const monthPrice = basePrice > 0 ? Math.round(basePrice * 4.33) : 0;
             displayedPriceText = `£${monthPrice} / Month`;
           } else {
             displayedPriceText = `£${Math.round(basePrice)} / Week`;
@@ -161,7 +177,7 @@
       }
     };
 
-    // ── SUBMIT DATA MANUALLY BACKED TO FIRESTORE ──
+    // ── SUBMIT DATA MANUALLY BACKED TO FIRESTORE WITH CROSS-COMPATIBLE FIELD MAPS ──
     window.modalUploadProperty = async function() {
       const name = document.getElementById('modalPropName').value.trim();
       const price = document.getElementById('modalPropPrice').value.trim();
@@ -184,9 +200,15 @@
         statusText.style.color = "var(--text)";
         statusText.textContent = "Publishing to cloud...";
 
+        const parsedPrice = parseFloat(price);
+
+        // Saves under all possible keyword variants to completely break dependency locks
         await addDoc(collection(db, "properties"), {
           name: name,
-          price: parseFloat(price),
+          price: parsedPrice,
+          weeklyRent: parsedPrice,
+          rent: parsedPrice,
+          modalPropPrice: parsedPrice,
           phone: phone,
           address: address,
           userId: currentUser.uid,
@@ -220,6 +242,7 @@
     <p>Connecting...</p>
   </div>
 
+  <!-- VIDEO MODAL -->
   <div id="videoModal" class="video-modal-backdrop" onclick="closeVideoModal(event)">
     <div class="video-modal-card">
       <button class="video-close-btn" onclick="closeVideoModal()">&#x2715;</button>
@@ -242,6 +265,7 @@
     </div>
   </div>
 
+  <!-- MY LISTINGS MODAL -->
   <div id="myListingsModal" class="popup-backdrop" style="z-index: 3000;" onclick="closeMyListings()">
     <div class="popup-card extended-card" style="max-width: 600px;" onclick="event.stopPropagation()">
       <span class="close-x" onclick="closeMyListings()">&times;</span>
@@ -281,6 +305,7 @@
     </div>
   </div>
 
+  <!-- PROPERTY DETAIL MODAL -->
   <div id="propertyDetailModal" class="popup-backdrop" style="z-index:4000;" onclick="closePropertyDetail()">
     <div class="popup-card extended-card" style="max-width:540px; padding:0; overflow:hidden;" onclick="event.stopPropagation()">
       <button onclick="closePropertyDetail()" class="video-close-btn" style="top:16px; right:16px;">✕</button>
@@ -291,7 +316,7 @@
       
       <div style="padding: 24px 24px 30px 24px;">
         <h2 id="detailName" style="margin:0 0 4px 0; font-size:24px; font-weight:700; letter-spacing:-0.03em;"></h2>
-        <p id="detailPrice" style="color:var(--accent); font-weight:600; font-size:16px; margin:0 0 24px 0;"></p>
+        <div id="detailPrice" style="color:var(--accent); font-weight:600; font-size:16px; margin:0 0 24px 0;"></div>
         
         <div class="sf-section-label" style="margin: 0 0 8px 0;">Host Contact</div>
         <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
