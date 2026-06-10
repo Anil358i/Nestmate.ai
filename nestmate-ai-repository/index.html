@@ -47,7 +47,7 @@
       }
     });
 
-    // ── FETCH AND RENDER LOGGED-IN USER'S PORTFOLIO LISTINGS ──
+    // ── FETCH AND RENDER LOGGED-IN USER'S PORTFOLIO LISTINGS WITH IMAGE ──
     async function renderMyListingsGrid() {
       const grid = document.getElementById('myListingsGrid');
       if (!grid) return;
@@ -73,19 +73,25 @@
         querySnapshot.forEach((docSnap) => {
           const data = docSnap.data();
           const docId = docSnap.id;
+          
+          // Use the saved cloud image string or a secure default fallback image placeholder
+          const imageUrl = data.image || "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600";
 
           const card = document.createElement('div');
-          card.style.cssText = 'background:rgba(0,0,0,0.02); padding:16px; border-radius:14px; display:flex; justify-content:space-between; align-items:center; gap:16px; border:1px solid rgba(0,0,0,0.04);';
+          card.style.cssText = 'background:rgba(0,0,0,0.02); padding:12px; border-radius:14px; display:flex; align-items:center; gap:16px; border:1px solid rgba(0,0,0,0.04);';
 
           card.innerHTML = `
+            <div style="width:70px; height:70px; border-radius:10px; overflow:hidden; background:#f0f0f2; flex-shrink:0;">
+              <img src="${imageUrl}" style="width:100%; height:100%; object-fit:cover; display:block;">
+            </div>
             <div style="flex:1;">
               <div style="font-weight:600; font-size:15px; color:#1d1d1f;">${data.name || 'Unnamed Property'}</div>
-              <div style="font-size:13px; color:#86868b; margin-top:4px; line-height:1.4;">
+              <div style="font-size:13px; color:#86868b; margin-top:3px; line-height:1.4;">
                 📍 ${data.address || 'No Address'}<br>
                 💰 £${data.price}/week | 📞 ${data.phone || 'No Phone'}
               </div>
             </div>
-            <button class="delete-listing-btn" style="background:#ff3b30; color:white; border:none; padding:8px 14px; border-radius:8px; font-weight:600; cursor:pointer; font-size:13px; transition: opacity 0.2s;">
+            <button class="delete-listing-btn" style="background:#ff3b30; color:white; border:none; padding:8px 14px; border-radius:8px; font-weight:600; cursor:pointer; font-size:13px; transition: opacity 0.2s; flex-shrink:0;">
               Delete
             </button>
           `;
