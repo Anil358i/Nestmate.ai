@@ -1,1 +1,424 @@
-b
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NestMate AI - London</title>
+  <link rel="stylesheet" href="src/style.css">
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { 
+        getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs, where 
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDTxyr3zJGsyfmdztvfFz8aw9XSyPCNeQM",
+      authDomain: "nestmate-ai.firebaseapp.com",
+      projectId: "nestmate-ai",
+      storageBucket: "nestmate-ai.firebasestorage.app",
+      messagingSenderId: "7053398074",
+      appId: "1:7053398074:web:13dc18b49402d95107a503"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    window.auth = auth;
+    window.db = db;
+    window.dbTools = { collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs, where };
+    window.handleLogout = () => signOut(auth);
+
+    onAuthStateChanged(auth, (user) => {
+      const shell = document.querySelector('.page-shell');
+      const overlay = document.getElementById('auth-overlay');
+      if (user) {
+        overlay.style.display = 'none';
+        shell.style.visibility = 'visible';
+        shell.style.opacity = '1';
+        shell.style.transition = 'opacity 0.3s ease';
+        if (typeof window.loadProperties === "function") window.loadProperties();
+        setTimeout(() => {
+          document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
+        }, 150);
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    // ── FETCH AND RENDER LOGGED-IN USER'S PORTFOLIO LISTINGS WITH EXACT NUMBER MATCHING ──
+    async function renderMyListingsGrid() {
+      const grid = document.getElementById('myListingsGrid');
+      if (!grid) return;
+
+      grid.innerHTML = '<p style="text-align:center; color:var(--muted); font-size:14px; padding:10px;">Loading your spaces...</p>';
+
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        grid.innerHTML = '<p style="text-align:center; color:#ff3b30; font-size:14px; padding:10px;">Please log in to view your listings.</p>';
+        return;
+      }
+
+      try {
+        const q = query(collection(db, "properties"), where("userId", "==", currentUser.uid));
+        const querySnapshot = await getDocs(q);
+        grid.innerHTML = ''; 
+
+        if (querySnapshot.empty) {
+          grid.innerHTML = '<p style="text-align:center; color:var(--muted); padding:20px; font-size:14px;">You haven\'t published any spaces yet.</p>';
+          return;
+        }
+
+        // Detect active toggle view mode from the main homepage dashboard layout
+        let activeDuration = 'day'; 
+        const activeToggleBtn = document.querySelector('.toggle-group .toggle-btn.active');
+        if (activeToggleBtn) {
+          const btnText = activeToggleBtn.textContent.trim().toLowerCase();
+          if (btnText.includes('week')) activeDuration = 'week';
+          else if (btnText.includes('month')) activeDuration = 'month';
+        }
+
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const docId = docSnap.id;
+          
+          const imageUrl = data.image || data.imageUrl || data.img || data.propertyImage || "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600";
+          
+          // Step 1: Check database keys comprehensively
+          let basePrice = parseFloat(data.price || data.weeklyRent || data.rent || data.modalPropPrice || 0);
+          
+          // Step 2: Fallback text scraper matrix if database yields an unexpected zero profile state
+          if (basePrice === 0) {
+             const trackCards = document.querySelectorAll('#carouselTrack .property-card, #carouselTrack div, .explore-section div');
+             trackCards.forEach(card => {
+                if (card.textContent.includes(data.name)) {
+                   const numbersFound = card.textContent.match(/\d+/g);
+                   if (numbersFound && numbersFound.length > 0) {
+                      const detectedNum = parseInt(numbersFound[0]);
+                      if (activeDuration === 'day') basePrice = detectedNum * 7;
+                      else if (activeDuration === 'month') basePrice = detectedNum / 4.33;
+                      else basePrice = detectedNum;
+                   }
+                }
+             });
+          }
+
+          // Build finalized display rate label using identical math models
+          let displayedPriceText = "";
+          if (activeDuration === 'day') {
+            const dayPrice = basePrice > 0 ? Math.round(basePrice / 7) : 0;
+            displayedPriceText = `£${dayPrice} / Day`;
+          } else if (activeDuration === 'month') {
+            const monthPrice = basePrice > 0 ? Math.round(basePrice * 4.33) : 0;
+            displayedPriceText = `£${monthPrice} / Month`;
+          } else {
+            displayedPriceText = `£${Math.round(basePrice)} / Week`;
+          }
+
+          const card = document.createElement('div');
+          card.style.cssText = 'background:rgba(0,0,0,0.02); padding:12px; border-radius:14px; display:flex; align-items:center; gap:16px; border:1px solid rgba(0,0,0,0.04);';
+
+          card.innerHTML = `
+            <div style="width:70px; height:70px; border-radius:10px; overflow:hidden; background:#f0f0f2; flex-shrink:0;">
+              <img src="${imageUrl}" style="width:100%; height:100%; object-fit:cover; display:block;">
+            </div>
+            <div style="flex:1;">
+              <div style="font-weight:600; font-size:15px; color:#1d1d1f;">${data.name || 'Unnamed Property'}</div>
+              <div style="font-size:13px; color:#86868b; margin-top:3px; line-height:1.4;">
+                📍 ${data.address || 'No Address'}<br>
+                💰 Rent: ${displayedPriceText} | 📞 ${data.phone || 'No Phone'}
+              </div>
+            </div>
+            <button class="delete-listing-btn" style="background:#ff3b30; color:white; border:none; padding:8px 14px; border-radius:8px; font-weight:600; cursor:pointer; font-size:13px; transition: opacity 0.2s; flex-shrink:0;">
+              Delete
+            </button>
+          `;
+
+          card.querySelector('.delete-listing-btn').addEventListener('click', async (e) => {
+            if (confirm("Are you sure you want to permanently delete this listing?")) {
+              try {
+                e.target.disabled = true;
+                e.target.textContent = "Deleting...";
+                await deleteDoc(doc(db, "properties", docId));
+                renderMyListingsGrid(); 
+              } catch (err) {
+                console.error("Error removing document:", err);
+                alert("Could not remove property. Check network privileges.");
+                e.target.disabled = false;
+                e.target.textContent = "Delete";
+              }
+            }
+          });
+
+          grid.appendChild(card);
+        });
+      } catch (error) {
+        console.error("Fault retrieving user portfolio entries:", error);
+        grid.innerHTML = '<p style="text-align:center; color:#ff3b30; font-size:13px;">Failed to load listings.</p>';
+      }
+    }
+
+    // Expose control workflows to global window scope
+    window.myListings = function() {
+      const modal = document.getElementById('myListingsModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        document.body.classList.add('modal-open');
+        renderMyListingsGrid();
+      }
+    };
+
+    window.closeMyListings = function() {
+      const modal = document.getElementById('myListingsModal');
+      if (modal) {
+        modal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+      }
+    };
+
+    // ── SUBMIT DATA MANUALLY BACKED TO FIRESTORE WITH CROSS-COMPATIBLE FIELD MAPS ──
+    window.modalUploadProperty = async function() {
+      const name = document.getElementById('modalPropName').value.trim();
+      const price = document.getElementById('modalPropPrice').value.trim();
+      const phone = document.getElementById('modalPropPhone').value.trim();
+      const address = document.getElementById('modalPropAddress').value.trim();
+      const statusText = document.getElementById('modalUploadStatus');
+
+      if (!name || !price || !phone || !address) {
+        alert("⚠ Please fill in all fields before publishing.");
+        return;
+      }
+
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        alert("⚠ Critical session mismatch. Please log in again.");
+        return;
+      }
+
+      try {
+        statusText.style.color = "var(--text)";
+        statusText.textContent = "Publishing to cloud...";
+
+        const parsedPrice = parseFloat(price);
+
+        // Saves under all possible keyword variants to completely break dependency locks
+        await addDoc(collection(db, "properties"), {
+          name: name,
+          price: parsedPrice,
+          weeklyRent: parsedPrice,
+          rent: parsedPrice,
+          modalPropPrice: parsedPrice,
+          phone: phone,
+          address: address,
+          userId: currentUser.uid,
+          email: currentUser.email,
+          createdAt: new Date(),
+          image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600" 
+        });
+
+        statusText.style.color = "green";
+        statusText.textContent = "Space successfully published!";
+        
+        // Reset manual inputs
+        document.getElementById('modalPropName').value = '';
+        document.getElementById('modalPropPrice').value = '';
+        document.getElementById('modalPropPhone').value = '';
+        document.getElementById('modalPropAddress').value = '';
+
+        renderMyListingsGrid();
+      } catch (err) {
+        console.error("Listing publish process failure:", err);
+        statusText.style.color = "#ff3b30";
+        statusText.textContent = "Upload failed. Try again.";
+      }
+    };
+  </script>
+  <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
+</head>
+<body>
+
+  <div id="auth-overlay" style="position:fixed;inset:0;background:#f5f5f7;display:flex;align-items:center;justify-content:center;z-index:10000;font-family:-apple-system,sans-serif;font-weight:500;color:#86868b;">
+    <p>Connecting...</p>
+  </div>
+
+  <!-- VIDEO MODAL -->
+  <div id="videoModal" class="video-modal-backdrop" onclick="closeVideoModal(event)">
+    <div class="video-modal-card">
+      <button class="video-close-btn" onclick="closeVideoModal()">&#x2715;</button>
+      <div class="video-container">
+        <video id="nestVideo" src="https://res.cloudinary.com/dhmsg8euy/video/upload/v1776991469/YTDown.com_YouTube_LONDON-Cinematic-Travel-Video-Sony-A-7-I_Media_MR79R-Yj884_001_1080p_fav8ns.mp4" preload="metadata"></video>
+        <div class="video-controls">
+          <button class="ctrl-btn" onclick="togglePlay()" id="playBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
+          </button>
+          <input type="range" id="progressBar" class="progress-bar" value="0" min="0" step="0.1">
+          <div class="volume-group">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+            <input type="range" id="volumeBar" class="volume-bar" value="100" min="0" max="100">
+          </div>
+          <button class="ctrl-btn" onclick="toggleFullscreen()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY LISTINGS MODAL -->
+  <div id="myListingsModal" class="popup-backdrop" style="z-index: 3000;" onclick="closeMyListings()">
+    <div class="popup-card extended-card" style="max-width: 600px;" onclick="event.stopPropagation()">
+      <span class="close-x" onclick="closeMyListings()">&times;</span>
+      
+      <div class="sf-modal-hero">
+        <h1>My Listings</h1>
+        <p>Publish and manage your active properties</p>
+      </div>
+
+      <div class="popup-scroll-container">
+        <div class="sf-form-card" style="margin-bottom: 24px; background: rgba(0,0,0,0.02);">
+          <div class="sf-section-label" style="margin: 0 0 14px 0; color: var(--accent);">Add New Listing</div>
+          
+          <div class="sf-input-wrapper">
+            <input type="text" id="modalPropName" class="sf-input-field" placeholder=" ">
+            <label class="sf-floating-label">Property Name</label>
+          </div>
+          <div class="sf-input-wrapper">
+            <input type="number" id="modalPropPrice" class="sf-input-field" placeholder=" ">
+            <label class="sf-floating-label">Weekly Rent (£)</label>
+          </div>
+          <div class="sf-input-wrapper">
+            <input type="tel" id="modalPropPhone" class="sf-input-field" placeholder=" ">
+            <label class="sf-floating-label">Your Phone Number</label>
+          </div>
+          <div class="sf-input-wrapper">
+            <input type="text" id="modalPropAddress" class="sf-input-field" placeholder=" ">
+            <label class="sf-floating-label">Property Address (e.g. 12 Baker St, London)</label>
+          </div>
+          
+          <button onclick="modalUploadProperty()" class="apple-btn-black" style="margin-top: 4px;">Publish Space</button>
+          <p id="modalUploadStatus" style="text-align:center; color:var(--muted); font-size:12px; margin: 8px 0 0 0;"></p>
+        </div>
+
+        <div id="myListingsGrid" style="display:flex; flex-direction:column; gap:16px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROPERTY DETAIL MODAL -->
+  <div id="propertyDetailModal" class="popup-backdrop" style="z-index:4000;" onclick="closePropertyDetail()">
+    <div class="popup-card extended-card" style="max-width:540px; padding:0; overflow:hidden;" onclick="event.stopPropagation()">
+      <button onclick="closePropertyDetail()" class="video-close-btn" style="top:16px; right:16px;">✕</button>
+      
+      <div style="width:100%; height:260px; overflow:hidden; background:#f0f0f2;">
+        <img id="detailImage" src="" style="width:100%; height:100%; object-fit:cover; display:block;">
+      </div>
+      
+      <div style="padding: 24px 24px 30px 24px;">
+        <h2 id="detailName" style="margin:0 0 4px 0; font-size:24px; font-weight:700; letter-spacing:-0.03em;"></h2>
+        <div id="detailPrice" style="color:var(--accent); font-weight:600; font-size:16px; margin:0 0 24px 0;"></div>
+        
+        <div class="sf-section-label" style="margin: 0 0 8px 0;">Host Contact</div>
+        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+          <div style="display:flex; align-items:center; gap:14px; background:rgba(0,0,0,0.02); border-radius:14px; padding:12px 16px;">
+            <span style="font-size:18px;">📞</span>
+            <div>
+              <p style="margin:0; font-size:10px; color:var(--muted); font-weight:600; text-transform:uppercase;">Phone</p>
+              <p id="detailPhone" style="margin:2px 0 0 0; font-weight:600; font-size:14px;"></p>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:14px; background:rgba(0,0,0,0.02); border-radius:14px; padding:12px 16px;">
+            <span style="font-size:18px;">✉️</span>
+            <div>
+              <p style="margin:0; font-size:10px; color:var(--muted); font-weight:600; text-transform:uppercase;">Email</p>
+              <p id="detailEmail" style="margin:2px 0 0 0; font-weight:600; font-size:14px;"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="sf-section-label" style="margin: 0 0 8px 0;">Location</div>
+        <div style="display:flex; align-items:center; gap:14px; background:rgba(0,0,0,0.02); border-radius:14px; padding:12px 16px; margin-bottom:12px;">
+          <span style="font-size:18px;">📍</span>
+          <div>
+            <p style="margin:0; font-size:10px; color:var(--muted); font-weight:600; text-transform:uppercase;">Address</p>
+            <p id="detailAddress" style="margin:2px 0 0 0; font-weight:600; font-size:14px;"></p>
+          </div>
+        </div>
+
+        <a id="detailMapLink" href="" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; background:rgba(0,0,0,0.04); color:var(--text); padding:14px; border-radius:14px; text-decoration:none; font-weight:600; font-size:14px; margin-bottom:20px; transition: background 0.2s;">
+          🗺️ Open in Google Maps
+        </a>
+
+        <button onclick="bookNow()" class="sf-action-btn" style="border-radius: 14px; padding: 16px;">Book Now</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-shell" style="visibility:hidden; opacity:0;">
+    <header class="site-header">
+      <div class="nav-inner">
+        <div class="logo">NestMate AI</div>
+        <nav class="nav-links">
+          <a href="#explore">Explore</a>
+          <a href="#demo">AI Chat</a>
+        </nav>
+        <div class="mobile-menu-btn" onclick="toggleMobileMenu()">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="user-menu-container">
+          <div class="profile-trigger" onclick="toggleUserMenu()"><span>A</span></div>
+          <div id="userDropdown" class="user-dropdown">
+            <div class="dropdown-item" onclick="myListings()" style="color:var(--accent); font-weight:600;">My Listings</div>
+            <div class="dropdown-item logout-btn" onclick="handleLogout()">Logout</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero-section fade-in">
+        <h1 class="hero-title">Live in London <span>for almost free.</span></h1>
+        <p class="hero-copy">Rent a 3-bed house, fill spare rooms, and save up to £1,800.</p>
+      </section>
+
+      <section class="video-banner-section fade-in">
+        <h2 class="video-banner-heading">Find your perfect space.</h2>
+        <div class="video-banner-card" onclick="openVideoModal()">
+          <img src="https://res.cloudinary.com/dhmsg8euy/image/upload/v1776990329/pexels-vincent-wei-64074344-8332179_uhd8c0.jpg" alt="NestMate London" class="video-banner-img">
+          <div class="video-banner-overlay">
+            <div class="video-play-hint">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+              Watch the tour
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="explore-section fade-in" id="explore">
+        <h2>Available Listings</h2>
+        <div class="toggle-group">
+          <button class="toggle-btn active" onclick="setDuration('day', this)">Day</button>
+          <button class="toggle-btn" onclick="setDuration('week', this)">Week</button>
+          <button class="toggle-btn" onclick="setDuration('month', this)">Month</button>
+        </div>
+        <div class="carousel-outer"><div id="carouselTrack" class="carousel-track"></div></div>
+      </section>
+
+      <section class="demo-section fade-in" id="demo">
+        <div class="chat-wrapper">
+          <div class="chat-messages" id="chatBox"></div>
+          <div class="chat-input-area">
+            <input type="text" id="userInput" placeholder="Ask NestMate AI..." onkeydown="if(event.key==='Enter') sendMsg()">
+            <button onclick="sendMsg()" class="send-btn">Send</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="src/responses.js"></script>
+  <script src="src/chat.js"></script>
+</body>
+</html>
