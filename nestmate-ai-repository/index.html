@@ -9,7 +9,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { 
-        getFirestore, collection, onSnapshot, query, orderBy, deleteDoc, doc 
+        getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs, where 
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -23,9 +23,11 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
+
     window.auth = auth;
-    window.db = getFirestore(app);
-    window.dbTools = { collection, onSnapshot, query, orderBy, deleteDoc, doc };
+    window.db = db;
+    window.dbTools = { collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs, where };
     window.handleLogout = () => signOut(auth);
 
     onAuthStateChanged(auth, (user) => {
@@ -44,6 +46,144 @@
         window.location.href = "login.html";
       }
     });
+
+    // ── FETCH AND RENDER LOGGED-IN USER'S PORTFOLIO LISTINGS ──
+    async function renderMyListingsGrid() {
+      const grid = document.getElementById('myListingsGrid');
+      if (!grid) return;
+
+      grid.innerHTML = '<p style="text-align:center; color:var(--muted); font-size:14px; padding:10px;">Loading your spaces...</p>';
+
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        grid.innerHTML = '<p style="text-align:center; color:#ff3b30; font-size:14px; padding:10px;">Please log in to view your listings.</p>';
+        return;
+      }
+
+      try {
+        const q = query(collection(db, "properties"), where("userId", "==", currentUser.uid));
+        const querySnapshot = await getDocs(q);
+        grid.innerHTML = ''; 
+
+        if (querySnapshot.empty) {
+          grid.innerHTML = '<p style="text-align:center; color:var(--muted); padding:20px; font-size:14px;">You haven\'t published any spaces yet.</p>';
+          return;
+        }
+
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const docId = docSnap.id;
+
+          const card = document.createElement('div');
+          card.style.cssText = 'background:rgba(0,0,0,0.02); padding:16px; border-radius:14px; display:flex; justify-content:space-between; align-items:center; gap:16px; border:1px solid rgba(0,0,0,0.04);';
+
+          card.innerHTML = `
+            <div style="flex:1;">
+              <div style="font-weight:600; font-size:15px; color:#1d1d1f;">${data.name || 'Unnamed Property'}</div>
+              <div style="font-size:13px; color:#86868b; margin-top:4px; line-height:1.4;">
+                📍 ${data.address || 'No Address'}<br>
+                💰 £${data.price}/week | 📞 ${data.phone || 'No Phone'}
+              </div>
+            </div>
+            <button class="delete-listing-btn" style="background:#ff3b30; color:white; border:none; padding:8px 14px; border-radius:8px; font-weight:600; cursor:pointer; font-size:13px; transition: opacity 0.2s;">
+              Delete
+            </button>
+          `;
+
+          // Handle listing deletion inside the loop
+          card.querySelector('.delete-listing-btn').addEventListener('click', async (e) => {
+            if (confirm("Are you sure you want to permanently delete this listing?")) {
+              try {
+                e.target.disabled = true;
+                e.target.textContent = "Deleting...";
+                await deleteDoc(doc(db, "properties", docId));
+                renderMyListingsGrid(); // Reload listings layout dynamically
+              } catch (err) {
+                console.error("Error removing document:", err);
+                alert("Could not remove property. Check network privileges.");
+                e.target.disabled = false;
+                e.target.textContent = "Delete";
+              }
+            }
+          });
+
+          grid.appendChild(card);
+        });
+      } catch (error) {
+        console.error("Fault retrieving user portfolio entries:", error);
+        grid.innerHTML = '<p style="text-align:center; color:#ff3b30; font-size:13px;">Failed to load listings.</p>';
+      }
+    }
+
+    // Expose control workflows to global window scope
+    window.myListings = function() {
+      const modal = document.getElementById('myListingsModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        document.body.classList.add('modal-open');
+        renderMyListingsGrid();
+      }
+    };
+
+    window.closeMyListings = function() {
+      const modal = document.getElementById('myListingsModal');
+      if (modal) {
+        modal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+      }
+    };
+
+    // ── SUBMIT DATA MANUALLY BACKED TO FIRESTORE ──
+    window.modalUploadProperty = async function() {
+      const name = document.getElementById('modalPropName').value.trim();
+      const price = document.getElementById('modalPropPrice').value.trim();
+      const phone = document.getElementById('modalPropPhone').value.trim();
+      const address = document.getElementById('modalPropAddress').value.trim();
+      const statusText = document.getElementById('modalUploadStatus');
+
+      if (!name || !price || !phone || !address) {
+        alert("⚠ Please fill in all fields before publishing.");
+        return;
+      }
+
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        alert("⚠ Critical session mismatch. Please log in again.");
+        return;
+      }
+
+      try {
+        statusText.style.color = "var(--text)";
+        statusText.textContent = "Publishing to cloud...";
+
+        await addDoc(collection(db, "properties"), {
+          name: name,
+          price: parseFloat(price),
+          phone: phone,
+          address: address,
+          userId: currentUser.uid,
+          email: currentUser.email,
+          createdAt: new Date(),
+          image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600" // Default fall-back photo placeholder
+        });
+
+        statusText.style.color = "green";
+        statusText.textContent = "Space successfully published!";
+        
+        // Reset manual inputs
+        document.getElementById('modalPropName').value = '';
+        document.getElementById('modalPropPrice').value = '';
+        document.getElementById('modalPropPhone').value = '';
+        document.getElementById('modalPropAddress').value = '';
+
+        // Reload items inside the portfolio dashboard immediately
+        renderMyListingsGrid();
+      } catch (err) {
+        console.error("Listing publish process failure:", err);
+        statusText.style.color = "#ff3b30";
+        statusText.textContent = "Upload failed. Try again.";
+      }
+    };
   </script>
   <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
 </head>
