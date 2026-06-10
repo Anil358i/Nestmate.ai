@@ -30,9 +30,6 @@
     window.dbTools = { collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs, where };
     window.handleLogout = () => signOut(auth);
 
-    // Dynamic variable holding the active Cloudinary upload path link signature
-    let uploadedImageUrl = "";
-
     onAuthStateChanged(auth, (user) => {
       const shell = document.querySelector('.page-shell');
       const overlay = document.getElementById('auth-overlay');
@@ -50,7 +47,7 @@
       }
     });
 
-    // ── FETCH AND RENDER LOGGED-IN USER'S PORTFOLIO LISTINGS WITH DYNAMIC IMAGE ──
+    // ── FETCH AND RENDER LOGGED-IN USER'S PORTFOLIO LISTINGS USING MAIN PAGE IMAGE URLS ──
     async function renderMyListingsGrid() {
       const grid = document.getElementById('myListingsGrid');
       if (!grid) return;
@@ -77,7 +74,7 @@
           const data = docSnap.data();
           const docId = docSnap.id;
           
-          // Pulls the image string dynamically uploaded by the user
+          // Using the exact image URL variable that displays correctly on the main page
           const imageUrl = data.image || "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600";
 
           const card = document.createElement('div');
@@ -141,30 +138,7 @@
       }
     };
 
-    // ── INITIALIZE CLOUDINARY UPLOAD WIDGET ENGINE ──
-    window.openCloudinaryUploadWidget = function() {
-      const statusText = document.getElementById('modalUploadStatus');
-      
-      window.cloudinary.openUploadWidget({
-        cloudName: "dhmsg8euy", 
-        uploadPreset: "ml_default", // Replace this with your exact active Cloudinary Unsigned Preset Name if different
-        sources: ["local", "url", "camera"],
-        multiple: false,
-        theme: "minimal"
-      }, (error, result) => {
-        if (!error && result && result.event === "success") {
-          uploadedImageUrl = result.info.secure_url;
-          statusText.style.color = "green";
-          statusText.textContent = "✓ Image uploaded successfully!";
-        }
-        if (error) {
-          console.error("Cloudinary deployment error log:", error);
-          alert("Image upload failed. Ensure your Cloudinary upload settings are correct.");
-        }
-      });
-    };
-
-    // ── SUBMIT DYNAMIC DATA MANUALLY BACKED TO FIRESTORE ──
+    // ── SUBMIT DATA MANUALLY BACKED TO FIRESTORE ──
     window.modalUploadProperty = async function() {
       const name = document.getElementById('modalPropName').value.trim();
       const price = document.getElementById('modalPropPrice').value.trim();
@@ -174,11 +148,6 @@
 
       if (!name || !price || !phone || !address) {
         alert("⚠ Please fill in all fields before publishing.");
-        return;
-      }
-
-      if (!uploadedImageUrl) {
-        alert("⚠ Please upload an image for your listing before publishing.");
         return;
       }
 
@@ -200,18 +169,17 @@
           userId: currentUser.uid,
           email: currentUser.email,
           createdAt: new Date(),
-          image: uploadedImageUrl // Applies the image asset URL saved from Cloudinary
+          image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600" // Fallback placeholder if no image field exists
         });
 
         statusText.style.color = "green";
         statusText.textContent = "Space successfully published!";
         
-        // Reset local form states
+        // Reset manual inputs
         document.getElementById('modalPropName').value = '';
         document.getElementById('modalPropPrice').value = '';
         document.getElementById('modalPropPhone').value = '';
         document.getElementById('modalPropAddress').value = '';
-        uploadedImageUrl = ""; // Clear media state holder
 
         renderMyListingsGrid();
       } catch (err) {
@@ -229,7 +197,6 @@
     <p>Connecting...</p>
   </div>
 
-  <!-- VIDEO MODAL -->
   <div id="videoModal" class="video-modal-backdrop" onclick="closeVideoModal(event)">
     <div class="video-modal-card">
       <button class="video-close-btn" onclick="closeVideoModal()">&#x2715;</button>
@@ -252,7 +219,6 @@
     </div>
   </div>
 
-  <!-- MY LISTINGS MODAL -->
   <div id="myListingsModal" class="popup-backdrop" style="z-index: 3000;" onclick="closeMyListings()">
     <div class="popup-card extended-card" style="max-width: 600px;" onclick="event.stopPropagation()">
       <span class="close-x" onclick="closeMyListings()">&times;</span>
@@ -282,11 +248,6 @@
             <input type="text" id="modalPropAddress" class="sf-input-field" placeholder=" ">
             <label class="sf-floating-label">Property Address (e.g. 12 Baker St, London)</label>
           </div>
-
-          <!-- New interactive media uploader trigger button -->
-          <button onclick="openCloudinaryUploadWidget()" class="apple-btn-black" style="margin-bottom: 12px; background: #0071e3; color: white;">
-            📷 Upload Property Image
-          </button>
           
           <button onclick="modalUploadProperty()" class="apple-btn-black" style="margin-top: 4px;">Publish Space</button>
           <p id="modalUploadStatus" style="text-align:center; color:var(--muted); font-size:12px; margin: 8px 0 0 0;"></p>
@@ -297,7 +258,6 @@
     </div>
   </div>
 
-  <!-- PROPERTY DETAIL MODAL -->
   <div id="propertyDetailModal" class="popup-backdrop" style="z-index:4000;" onclick="closePropertyDetail()">
     <div class="popup-card extended-card" style="max-width:540px; padding:0; overflow:hidden;" onclick="event.stopPropagation()">
       <button onclick="closePropertyDetail()" class="video-close-btn" style="top:16px; right:16px;">✕</button>
