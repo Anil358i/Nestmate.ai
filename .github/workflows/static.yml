@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # This must be '.' if index.html is in your root folder
-          path: dist 
+          path: ./illU_repository 
 
       - name: Deploy to GitHub Pages
         id: deployment
